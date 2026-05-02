@@ -1,0 +1,223 @@
+// Mongolian Voice Library - Natural Native Speakers
+// Priority: Natural, native Mongolian speech over robotic/foreign-accented voices
+
+import type { MongolianVoice } from './types'
+
+export const mongolianVoices: MongolianVoice[] = [
+  // Male Voices
+  {
+    id: 'mn-male-batbayar',
+    name: 'Batbayar',
+    nameInMongolian: 'Батбаяр',
+    gender: 'male',
+    ageRange: 'adult',
+    style: 'authoritative',
+    description: 'Deep, commanding voice ideal for narration and documentaries',
+    descriptionInMongolian: 'Гүн, эрх мэдэлтэй дуу хоолой, баримтат кино, өгүүлэхэд тохиромжтой',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 4,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-male-temuulen',
+    name: 'Temuulen',
+    nameInMongolian: 'Тэмүүлэн',
+    gender: 'male',
+    ageRange: 'young-adult',
+    style: 'energetic',
+    description: 'Youthful, dynamic voice perfect for action and comedy',
+    descriptionInMongolian: 'Залуу, идэвхтэй дуу хоолой, экшн болон инээдмийн кинонд тохиромжтой',
+    naturalness: 5,
+    clarity: 4,
+    emotionalRange: 5,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-male-bold',
+    name: 'Bold',
+    nameInMongolian: 'Болд',
+    gender: 'male',
+    ageRange: 'adult',
+    style: 'warm',
+    description: 'Warm, friendly voice great for casual dialogue and drama',
+    descriptionInMongolian: 'Дулаан, найрсаг дуу хоолой, энгийн яриа болон драмд тохиромжтой',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 4,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-male-ganzorig',
+    name: 'Ganzorig',
+    nameInMongolian: 'Ганзориг',
+    gender: 'male',
+    ageRange: 'senior',
+    style: 'calm',
+    description: 'Mature, wise voice suitable for elder characters and wisdom',
+    descriptionInMongolian: 'Боловсорсон, мэргэн дуу хоолой, ахмад дүрүүд болон мэргэн ухаанд тохиромжтой',
+    naturalness: 5,
+    clarity: 4,
+    emotionalRange: 3,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-male-munkh',
+    name: 'Munkh',
+    nameInMongolian: 'Мөнх',
+    gender: 'male',
+    ageRange: 'adult',
+    style: 'serious',
+    description: 'Professional, serious tone for business and formal content',
+    descriptionInMongolian: 'Мэргэжлийн, нухацтай өнгө аяс, бизнес болон албан ёсны контентод',
+    naturalness: 4,
+    clarity: 5,
+    emotionalRange: 3,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+
+  // Female Voices
+  {
+    id: 'mn-female-oyungerel',
+    name: 'Oyungerel',
+    nameInMongolian: 'Оюунгэрэл',
+    gender: 'female',
+    ageRange: 'adult',
+    style: 'warm',
+    description: 'Warm, expressive voice perfect for drama and emotional scenes',
+    descriptionInMongolian: 'Дулаан, илэрхийлэл сайтай дуу хоолой, драма болон сэтгэл хөдөлгөм дүрслэлд',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 5,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-female-sarnai',
+    name: 'Sarnai',
+    nameInMongolian: 'Сарнай',
+    gender: 'female',
+    ageRange: 'young-adult',
+    style: 'energetic',
+    description: 'Bright, youthful voice ideal for animation and youth content',
+    descriptionInMongolian: 'Гэрэлтэй, залуу дуу хоолой, хүүхэлдэйн кино болон залуучуудын контентод',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 5,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-female-tuya',
+    name: 'Tuya',
+    nameInMongolian: 'Туяа',
+    gender: 'female',
+    ageRange: 'adult',
+    style: 'authoritative',
+    description: 'Confident, clear voice for news and professional narration',
+    descriptionInMongolian: 'Итгэлтэй, тодорхой дуу хоолой, мэдээ болон мэргэжлийн өгүүлэхэд',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 3,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-female-nominjargal',
+    name: 'Nominjargal',
+    nameInMongolian: 'Номинжаргал',
+    gender: 'female',
+    ageRange: 'senior',
+    style: 'gentle',
+    description: 'Gentle, nurturing voice for maternal characters and storytelling',
+    descriptionInMongolian: 'Зөөлөн, асран хамгаалах дуу хоолой, эхийн дүр болон үлгэр хуурамд',
+    naturalness: 5,
+    clarity: 4,
+    emotionalRange: 4,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-female-altantsetseg',
+    name: 'Altantsetseg',
+    nameInMongolian: 'Алтанцэцэг',
+    gender: 'female',
+    ageRange: 'adult',
+    style: 'calm',
+    description: 'Soothing, calm voice ideal for meditation and educational content',
+    descriptionInMongolian: 'Тайвшруулах, тайван дуу хоолой, бясалгал болон боловсролын контентод',
+    naturalness: 5,
+    clarity: 5,
+    emotionalRange: 3,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+
+  // Neutral/Child Voices
+  {
+    id: 'mn-child-tuvshuu',
+    name: 'Tuvshuu',
+    nameInMongolian: 'Түвшүү',
+    gender: 'neutral',
+    ageRange: 'child',
+    style: 'energetic',
+    description: 'Natural child voice for young characters and animation',
+    descriptionInMongolian: 'Байгалийн хүүхдийн дуу хоолой, залуу дүрүүд болон хүүхэлдэйн кинонд',
+    naturalness: 5,
+    clarity: 4,
+    emotionalRange: 5,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+  {
+    id: 'mn-child-bayarmaa',
+    name: 'Bayarmaa',
+    nameInMongolian: 'Баярмаа',
+    gender: 'female',
+    ageRange: 'child',
+    style: 'warm',
+    description: 'Sweet, innocent voice perfect for children characters',
+    descriptionInMongolian: 'Чихэрлэг, гэм зэмгүй дуу хоолой, хүүхдийн дүрүүдэд төгс тохирно',
+    naturalness: 5,
+    clarity: 4,
+    emotionalRange: 4,
+    supportsSSML: true,
+    supportsPitchAdjustment: true,
+    supportsSpeedAdjustment: true,
+  },
+]
+
+// Helper function to get voice by ID
+export function getVoiceById(id: string): MongolianVoice | undefined {
+  return mongolianVoices.find((voice) => voice.id === id)
+}
+
+// Helper function to filter voices by criteria
+export function filterVoices(criteria: {
+  gender?: string
+  ageRange?: string
+  style?: string
+}): MongolianVoice[] {
+  return mongolianVoices.filter((voice) => {
+    if (criteria.gender && voice.gender !== criteria.gender) return false
+    if (criteria.ageRange && voice.ageRange !== criteria.ageRange) return false
+    if (criteria.style && voice.style !== criteria.style) return false
+    return true
+  })
+}
