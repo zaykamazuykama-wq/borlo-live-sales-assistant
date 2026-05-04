@@ -233,7 +233,7 @@ const STORAGE_KEYS = {
   activeБарааCode: 'live-shop-active-product-code',
   orders: 'live-shop-orders',
   unclearComments: 'live-shop-unclear-comments',
-  paymentШалгахEvents: 'live-shop-payment-шалгах-events',
+  paymentReviewEvents: 'live-shop-payment-шалгах-events',
   successfulPaymentEvents: 'live-shop-successful-payment-events',
 }
 
@@ -460,6 +460,17 @@ function csvEscape(value: string | number | undefined) {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
 }
 
+function getPaymentReviewReasonLabel(reason: string, item: PaymentEvent): string {
+  if (reason.includes('Төлбөр дутуу байна')) return 'Төлбөр дутуу';
+  if (reason.includes('Төлбөр илүү байна')) return 'Төлбөр илүү';
+  if (reason.includes('Олон боломжит захиалга олдлоо')) return 'Олон захиалга таарч байна';
+  if (reason.includes('Олон боломжит захиалгын нийлбэр таарч байна')) return 'Нийлбэр дүн таарч байна';
+  if (reason.includes('Тохирох pending захиалга олдсонгүй')) return 'Захиалга тодорхойгүй';
+  if (item.buyerName === '') return 'Худалдан авагчийн нэр дутуу';
+  if (!item.phone) return 'Худалдан авагчийн утас дутуу';
+  return 'Гараар шалгах шаардлагатай';
+}
+
 export default function LiveShopManagerDemo() {
   const [trialLead, setTrialLead] = useState({
     facebook: '',
@@ -475,7 +486,7 @@ export default function LiveShopManagerDemo() {
   const [activeБарааCode, setActiveБарааCode] = useState('A12')
   const [orders, setOrders] = useState<Order[]>([])
   const [unclearComments, setUnclearComments] = useState<ШалгахItem[]>([])
-  const [paymentШалгахEvents, setPaymentШалгахEvents] = useState<PaymentEvent[]>([])
+  const [paymentReviewEvents, setPaymentReviewEvents] = useState<PaymentEvent[]>([])
   const [successfulPaymentEvents, setSuccessfulPaymentEvents] = useState<PaymentEvent[]>([])
   const [commentPaste, setCommentPaste] = useState('Болор: A12 хар M авъя\nСараа: A12 улаан L 2ш\nНомин: C01 цагаан 38 авъя')
   const [paymentPaste, setPaymentPaste] = useState('89000 Болор A12 99112233')
@@ -555,7 +566,7 @@ export default function LiveShopManagerDemo() {
     setActiveБарааCode(localStorage.getItem(STORAGE_KEYS.activeБарааCode) || 'A12')
     setOrders(safeParse<Order[]>(localStorage.getItem(STORAGE_KEYS.orders), []))
     setUnclearComments(safeParse<ШалгахItem[]>(localStorage.getItem(STORAGE_KEYS.unclearComments), []))
-    setPaymentШалгахEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentШалгахEvents), []))
+    setPaymentReviewEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentReviewEvents), []))
     setSuccessfulPaymentEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.successfulPaymentEvents), []))
     setHydrated(true)
   }, [])
@@ -582,8 +593,8 @@ export default function LiveShopManagerDemo() {
 
   useEffect(() => {
     if (!hydrated) return
-    localStorage.setItem(STORAGE_KEYS.paymentШалгахEvents, JSON.stringify(paymentШалгахEvents))
-  }, [hydrated, paymentШалгахEvents])
+    localStorage.setItem(STORAGE_KEYS.paymentReviewEvents, JSON.stringify(paymentReviewEvents))
+  }, [hydrated, paymentReviewEvents])
 
   useEffect(() => {
     if (!hydrated) return
@@ -774,7 +785,7 @@ export default function LiveShopManagerDemo() {
 
     const now = Date.now()
     const successEvents: PaymentEvent[] = []
-    const шалгахEvents: PaymentEvent[] = []
+    const reviewEvents: PaymentEvent[] = []
     const paidOrderIdsWithPhone = new Map<string, string | undefined>()
     let workingOrders = [...orders]
 
@@ -853,7 +864,7 @@ export default function LiveShopManagerDemo() {
         else if (typeof parsed.amount === 'number' && parsed.amount > buyerPendingTotal) reason = 'Төлбөр илүү байна'
       }
 
-      шалгахEvents.push({
+      reviewEvents.push({
         id: makeId('PAYMENT-REVIEW'),
         ...baseEvent,
         reason,
@@ -867,7 +878,7 @@ export default function LiveShopManagerDemo() {
       }))
     }
     if (successEvents.length > 0) setSuccessfulPaymentEvents([...successEvents, ...successfulPaymentEvents])
-    if (шалгахEvents.length > 0) setPaymentШалгахEvents([...шалгахEvents, ...paymentШалгахEvents])
+    if (reviewEvents.length > 0) setPaymentReviewEvents([...reviewEvents, ...paymentReviewEvents])
     setPaymentPaste('')
   }
 
@@ -905,7 +916,7 @@ export default function LiveShopManagerDemo() {
     setActiveБарааCode('A12')
     setOrders([])
     setUnclearComments([])
-    setPaymentШалгахEvents([])
+    setPaymentReviewEvents([])
     setSuccessfulPaymentEvents([])
     setCommentPaste('Болор: A12 хар M авъя')
     setPaymentPaste('89000 Болор A12 99112233')
@@ -1313,7 +1324,7 @@ export default function LiveShopManagerDemo() {
               </div>
               <div className="rounded-2xl bg-amber-50 p-4">
                 <p className="font-black">Төлбөр шалгах шаардлагатай</p>
-                <p className="text-3xl font-black">{paymentШалгахEvents.length}</p>
+                <p className="text-3xl font-black">{paymentReviewEvents.length}</p>
               </div>
             </div>
             <div className="mt-4 space-y-3">
@@ -1372,11 +1383,11 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Төлбөр шалгах шаардлагатай</h2>
             <div className="mt-4 space-y-3">
-              {paymentШалгахEvents.length === 0 && <p className="text-slate-500">Төлбөр шалгах шаардлагатай алга.</p>}
-              {paymentШалгахEvents.map((item) => (
+              {paymentReviewEvents.length === 0 && <p className="text-slate-500">Төлбөр шалгах шаардлагатай алга.</p>}
+              {paymentReviewEvents.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-rose-50 p-4">
                   <p className="font-bold">{item.rawText}</p>
-                  <p className="text-sm text-rose-800">{item.reason}</p>
+                  <p className="text-sm inline-flex rounded-full bg-rose-200 px-3 py-1 font-bold text-rose-800">{getPaymentReviewReasonLabel(item.reason || '', item)}</p>
                 </div>
               ))}
             </div>
