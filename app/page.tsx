@@ -1338,7 +1338,8 @@ export default function LiveShopManagerDemo() {
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">5-minute demo guide</h2>
+          <h2 className="text-2xl font-black">5 минутын demo заавар</h2>
+              <p className="mt-2 text-sm text-slate-600">Энэ зааврыг seller-д demo үзүүлэхдээ дагахад хангалттай.</p>
           <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-white">{`1. A12-ыг Active болгох
 2. Лайв коммент наах:
    Болор: A12 хар M авъя
