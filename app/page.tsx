@@ -969,7 +969,7 @@ export default function LiveShopManagerDemo() {
               <div className="rounded-3xl border bg-slate-50 p-4">
                 <p className="text-lg font-black">Лайвын үеэр</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  Коммент наахад барааны код, өнгө, размер, тоо ширхэгээр хүлээгдэж буй захиалга үүсгэнэ.
+                  Лайв коммент наахад барааны код, өнгө, размер, тоо ширхэгээр хүлээгдэж буй захиалга үүсгэнэ.
                 </p>
               </div>
               <div className="rounded-3xl border bg-slate-50 p-4">
@@ -1200,7 +1200,7 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 id="orders" className="text-2xl font-black">Коммент наах</h2>
+            <h2 id="orders" className="text-2xl font-black">Лайв коммент наах</h2>
             <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
             <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
             <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Захиалга үүсгэх</button>
@@ -1339,7 +1339,7 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">5-minute demo guide</h2>
           <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-white">{`1. A12-ыг Active болгох
-2. Коммент наах:
+2. Лайв коммент наах:
    Болор: A12 хар M авъя
    Болор: C01 цагаан 38 авъя
 3. Төлбөрийн мэдээлэл наах:
