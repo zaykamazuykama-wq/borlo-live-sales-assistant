@@ -468,6 +468,7 @@ export default function LiveShopManagerDemo() {
     liveCount: '',
     plan: 'Эхлээд үнэгүй туршъя',
   })
+  const [copyStatus, setCopyStatus] = useState('')
   const [hydrated, setHydrated] = useState(false)
   const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS)
   const [activeProductCode, setActiveProductCode] = useState('A12')
@@ -1119,11 +1120,18 @@ export default function LiveShopManagerDemo() {
                   navigator.clipboard.writeText(
                     `Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна.\n\nFacebook/live хаяг: ${trialLead.facebook || '[энд бичнэ]'}\nУтас: ${trialLead.phone || '[энд бичнэ]'}\nГол зардаг бараа: ${trialLead.product || '[энд бичнэ]'}\nСард хийх live: ${trialLead.liveCount || '[энд бичнэ]'}\nСонирхож буй хувилбар: ${trialLead.plan}`
                   )
+                  setCopyStatus('Хууллаа — Messenger/Telegram рүү paste хийгээрэй')
+                  window.setTimeout(() => setCopyStatus(''), 2500)
                 }}
                 className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2"
               >
                 Demo хүсэлтийн текст хуулах
               </button>
+              {copyStatus && (
+                <p className="rounded-2xl bg-emerald-50 p-3 text-center text-sm font-bold text-emerald-700 sm:col-span-2">
+                  {copyStatus}
+                </p>
+              )
             </div>
           </div>
         </section>
