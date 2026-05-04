@@ -813,7 +813,7 @@ export default function LiveShopManagerDemo() {
         return
       }
 
-      const buyerХүлээгдэж буйOrders = workingOrders
+      const buyerPendingOrders = workingOrders
         .filter((order) => {
           if (order.status !== 'Хүлээгдэж буй') return false
           if (parsed.productCode && order.productCode.toUpperCase() !== parsed.productCode.toUpperCase()) return false
@@ -821,7 +821,7 @@ export default function LiveShopManagerDemo() {
         })
         .slice(0, 10)
 
-      const combinations = findExactAmountCombinations(buyerХүлээгдэж буйOrders, parsed.amount)
+      const combinations = findExactAmountCombinations(buyerPendingOrders, parsed.amount)
 
       if (singleMatches.length === 0 && combinations.length === 1) {
         const matchedOrders = combinations[0]
@@ -846,10 +846,10 @@ export default function LiveShopManagerDemo() {
         reason = 'Олон боломжит захиалга олдлоо'
       } else if (combinations.length > 1) {
         reason = 'Олон боломжит захиалгын нийлбэр таарч байна'
-      } else if (buyerХүлээгдэж буйOrders.length > 0) {
-        const buyerХүлээгдэж буйTotal = buyerХүлээгдэж буйOrders.reduce((sum, order) => sum + order.amount, 0)
-        if (typeof parsed.amount === 'number' && parsed.amount < buyerХүлээгдэж буйTotal) reason = 'Төлбөр дутуу байна'
-        else if (typeof parsed.amount === 'number' && parsed.amount > buyerХүлээгдэж буйTotal) reason = 'Төлбөр илүү байна'
+      } else if (buyerPendingOrders.length > 0) {
+        const buyerPendingTotal = buyerPendingOrders.reduce((sum, order) => sum + order.amount, 0)
+        if (typeof parsed.amount === 'number' && parsed.amount < buyerPendingTotal) reason = 'Төлбөр дутуу байна'
+        else if (typeof parsed.amount === 'number' && parsed.amount > buyerPendingTotal) reason = 'Төлбөр илүү байна'
       }
 
       шалгахEvents.push({
