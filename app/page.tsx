@@ -383,7 +383,7 @@ function parseVariantStockInput(value: string, colors: string[], template: Ра�
     )
 }
 
-function extractТоо ширхэг(text: string, productCode?: string) {
+function extractQuantity(text: string, productCode?: string) {
   let cleaned = text
   if (productCode) {
     cleaned = cleaned.replace(new RegExp(productCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), ' ')
@@ -699,7 +699,7 @@ export default function LiveShopManagerDemo() {
         return
       }
 
-      const quantity = extractТоо ширхэг(line, product.code)
+      const quantity = extractQuantity(line, product.code)
       const key = variantKey(product.code, colorResult.color, sizeResult.size)
       const available = availableStockByVariant.get(key) || 0
 
