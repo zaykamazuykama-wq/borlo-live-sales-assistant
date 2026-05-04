@@ -472,6 +472,67 @@ export default function LiveShopManagerDemo() {
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
 
+  const LANG_TEXT = {
+    mn: {
+      mainHeading: "Лайв Захиалга Тулгагч",
+      subtitle: "Шууд борлуулалтын туслах / Live Sales Assistant",
+      flow: "Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → CSV",
+      trialBadge: "Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй",
+      demoResetButton: "Demo сэргээх",
+      pendingCount: "Хүлээгдэж буй",
+      paidPackingCount: "Төлсөн / Баглах",
+      revenue: "Орлого",
+      homeNav: "Нүүр",
+      liveNav: "Лайв",
+      ordersNav: "Захиалга",
+      paymentsNav: "Төлбөр",
+      productsNav: "Бараа",
+      packingNav: "Баглаа боодол",
+      insightsNav: "Тайлан",
+      sellerLeadTitle: "Туршилт авах хүсэлт",
+      sellerLeadCopy: "Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.",
+      facebookPlaceholder: "Facebook page / live хаяг",
+      phonePlaceholder: "Утас",
+      productPlaceholder: "Гол зардаг бараа",
+      liveCountPlaceholder: "Сард хэдэн live хийдэг вэ?",
+      planHeading: "Сонирхож буй хувилбар:",
+      basicPlan: "Basic 99,000₮",
+      autoPlan: "Auto 149,000₮ + 1%",
+      freeTrial: "Эхлээд үнэгүй туршъя",
+      demoCta: "Demo авах",
+      demoFormNote: "Одоогоор туршилтын form — илгээх backend холбогдоогүй",
+    },
+    en: {
+      mainHeading: "Live Shop Manager",
+      subtitle: "Live Sales Assistant",
+      flow: "Comment → Order → Payment → Stock → Packing list → CSV",
+      trialBadge: "Trial version — real Facebook/QPay integrations are not connected yet",
+      demoResetButton: "Demo reset",
+      pendingCount: "Pending count",
+      paidPackingCount: "Paid / Packing count",
+      revenue: "Revenue",
+      homeNav: "Home",
+      liveNav: "Live",
+      ordersNav: "Orders",
+      paymentsNav: "Payments",
+      productsNav: "Products",
+      packingNav: "Packing List",
+      insightsNav: "Insights",
+      sellerLeadTitle: "Request a Trial",
+      sellerLeadCopy: "Try Borlo on your first 2 live streams and verify the Comment → Order → Payment → Stock → Packing list flow.",
+      facebookPlaceholder: "Facebook page / live link",
+      phonePlaceholder: "Phone",
+      productPlaceholder: "Main products sold",
+      liveCountPlaceholder: "How many live streams per month?",
+      planHeading: "Interested plan:",
+      basicPlan: "Basic 99,000₮",
+      autoPlan: "Auto 149,000₮ + 1%",
+      freeTrial: "Try free first",
+      demoCta: "Get Demo",
+      demoFormNote: "Currently a trial form — no backend integration for submission",
+    },
+  };
+
   useEffect(() => {
     setProducts(safeParse<Product[]>(localStorage.getItem(STORAGE_KEYS.products), DEFAULT_PRODUCTS).map(normalizeProduct))
     setActiveProductCode(localStorage.getItem(STORAGE_KEYS.activeProductCode) || 'A12')
@@ -836,7 +897,7 @@ export default function LiveShopManagerDemo() {
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-5">
-        <section className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-5 text-white shadow-lg sm:p-8">
+        <section id="home" className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-5 text-white shadow-lg sm:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="text-sm font-semibold text-amber-300">Borlo</p>
@@ -852,6 +913,18 @@ export default function LiveShopManagerDemo() {
             </button>
           </div>
         </section>
+
+        <nav className="sticky top-3 z-20 rounded-3xl border bg-white/90 p-3 shadow-sm backdrop-blur">
+          <div className="flex gap-2 overflow-x-auto text-sm font-bold text-slate-700">
+            <a href="#home" className="whitespace-nowrap rounded-2xl bg-slate-950 px-4 py-2 text-white">Нүүр</a>
+            <a href="#live" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Шууд дамжуулалт</a>
+            <a href="#orders" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Захиалга</a>
+            <a href="#payments" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Төлбөр</a>
+            <a href="#products" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Бараа</a>
+            <a href="#packing" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Баглаа боодол</a>
+            <a href="#insights" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Тайлан</a>
+          </div>
+        </nav>
 
         <section className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
@@ -869,7 +942,7 @@ export default function LiveShopManagerDemo() {
         </section>
 
         {activeProduct && (
-          <section className="rounded-3xl border-2 border-emerald-300 bg-emerald-50 p-5 shadow-sm">
+          <section id="live" className="rounded-3xl border-2 border-emerald-300 bg-emerald-50 p-5 shadow-sm">
             <p className="text-sm font-bold uppercase text-emerald-700">Active product</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-4">
               <div><p className="text-xs text-slate-500">Код</p><p className="text-2xl font-black">{activeProduct.code}</p></div>
@@ -988,7 +1061,7 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Коммент наах</h2>
+            <h2 id="orders" className="text-2xl font-black">Коммент наах</h2>
             <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
             <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
             <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Захиалга үүсгэх</button>
