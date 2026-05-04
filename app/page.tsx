@@ -461,6 +461,13 @@ function csvEscape(value: string | number | undefined) {
 }
 
 export default function LiveShopManagerDemo() {
+  const [trialLead, setTrialLead] = useState({
+    facebook: '',
+    phone: '',
+    product: '',
+    liveCount: '',
+    plan: 'Эхлээд үнэгүй туршъя',
+  })
   const [hydrated, setHydrated] = useState(false)
   const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS)
   const [activeProductCode, setActiveProductCode] = useState('A12')
@@ -1011,10 +1018,31 @@ export default function LiveShopManagerDemo() {
           <h2 className="text-2xl font-black">Туршилт авах хүсэлт</h2>
           <p className="mt-2 text-slate-700">Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / лайв хаяг" />
-            <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
-            <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
-            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
+            <input
+                className="rounded-2xl border p-4 sm:col-span-2"
+                placeholder="Facebook page / лайв хаяг"
+                value={trialLead.facebook}
+                onChange={(e) => setTrialLead({ ...trialLead, facebook: e.target.value })}
+              />
+            <input
+                className="rounded-2xl border p-4"
+                placeholder="Утас"
+                type="tel"
+                value={trialLead.phone}
+                onChange={(e) => setTrialLead({ ...trialLead, phone: e.target.value })}
+              />
+            <input
+                className="rounded-2xl border p-4"
+                placeholder="Гол зардаг бараа"
+                value={trialLead.product}
+                onChange={(e) => setTrialLead({ ...trialLead, product: e.target.value })}
+              />
+            <input
+                className="rounded-2xl border p-4 sm:col-span-2"
+                placeholder="Сард хэдэн live хийдэг вэ?"
+                value={trialLead.liveCount}
+                onChange={(e) => setTrialLead({ ...trialLead, liveCount: e.target.value })}
+              />
             <p className="sm:col-span-2 text-lg font-bold text-slate-950">Сонирхож буй хувилбар:</p>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" />
@@ -1056,15 +1084,30 @@ export default function LiveShopManagerDemo() {
                 <p className="font-bold text-slate-950">Сонирхож буй хувилбар</p>
                 <div className="mt-3 grid gap-2">
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="trial-plan" />
+                    <input
+                      type="radio"
+                      name="trial-plan"
+                      checked={trialLead.plan === 'Basic 99,000₮'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Basic 99,000₮' })}
+                    />
                     <span>Basic 99,000₮</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="trial-plan" />
+                    <input
+                      type="radio"
+                      name="trial-plan"
+                      checked={trialLead.plan === 'Auto 149,000₮ + 1%'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Auto 149,000₮ + 1%' })}
+                    />
                     <span>Auto 149,000₮ + 1%</span>
                   </label>
                   <label className="flex items-center gap-2">
-                    <input type="radio" name="trial-plan" defaultChecked />
+                    <input
+                      type="radio"
+                      name="trial-plan"
+                      checked={trialLead.plan === 'Эхлээд үнэгүй туршъя'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Эхлээд үнэгүй туршъя' })}
+                    />
                     <span>Эхлээд үнэгүй туршъя</span>
                   </label>
                 </div>
@@ -1074,7 +1117,7 @@ export default function LiveShopManagerDemo() {
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    'Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна. Миний Facebook/live хаяг: [энд бичнэ]. Холбогдох утас: [энд бичнэ].'
+                    `Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна.\n\nFacebook/live хаяг: ${trialLead.facebook || '[энд бичнэ]'}\nУтас: ${trialLead.phone || '[энд бичнэ]'}\nГол зардаг бараа: ${trialLead.product || '[энд бичнэ]'}\nСард хийх live: ${trialLead.liveCount || '[энд бичнэ]'}\nСонирхож буй хувилбар: ${trialLead.plan}`
                   )
                 }}
                 className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2"
