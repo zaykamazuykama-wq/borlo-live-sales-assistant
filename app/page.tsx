@@ -876,7 +876,7 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    const header = ['Order ID', 'Buyer', 'Phone', 'Бараа Code', 'Бараа Name', 'Өнгө', 'Размер', 'Тоо ширхэг', 'Amount', 'Төлсөн At']
+    const header = ['Захиалгын ID', 'Худалдан авагч', 'Утас', 'Барааны код', 'Барааны нэр', 'Өнгө', 'Размер', 'Тоо ширхэг', 'Дүн', 'Төлсөн огноо']
     const rows = paidOrders.map((order) => [
       order.id,
       order.buyerDisplayName,
