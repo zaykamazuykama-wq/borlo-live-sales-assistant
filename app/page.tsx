@@ -33,7 +33,7 @@ type Бараа = {
   variants: БарааVariant[]
 }
 
-type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
+type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Цуцлахled'
 
 type Order = {
   id: string
@@ -47,9 +47,9 @@ type Order = {
   status: OrderStatus
   sourceCommentText: string
   createdAt: number
-  expiresAt: number
+  хугацаа дууснаAt: number
   paidAt?: number
-  cancelledAt?: number
+  цуцлахledAt?: number
   expiredAt?: number
   phone?: string
 }
@@ -592,7 +592,7 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      const expiredХүлээгдэж буйOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now)
+      const expiredХүлээгдэж буйOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.хугацаа дууснаAt <= now)
       if (expiredХүлээгдэж буйOrders.length === 0) return
 
       const releaseByVariant = new Map<string, number>()
@@ -726,7 +726,7 @@ export default function LiveShopManagerDemo() {
         status: 'Хүлээгдэж буй',
         sourceCommentText: line,
         createdAt: now,
-        expiresAt: now + TEN_MINUTES,
+        хугацаа дууснаAt: now + TEN_MINUTES,
       })
     })
 
@@ -753,7 +753,7 @@ export default function LiveShopManagerDemo() {
     )
   }
 
-  function cancelOrder(orderId: string) {
+  function цуцлахOrder(orderId: string) {
     const now = Date.now()
     const order = orders.find((item) => item.id === orderId)
     if (!order || order.status !== 'Хүлээгдэж буй') return
@@ -763,7 +763,7 @@ export default function LiveShopManagerDemo() {
     ))
 
     setOrders(orders.map((item) =>
-      item.id === orderId ? { ...item, status: 'Cancelled', cancelledAt: now } : item,
+      item.id === orderId ? { ...item, status: 'Цуцлахled', цуцлахledAt: now } : item,
     ))
   }
 
@@ -1253,11 +1253,11 @@ export default function LiveShopManagerDemo() {
                       <p className="text-xl font-black">{order.id} • {order.buyerDisplayName}</p>
                       <p className="text-slate-600">{order.productCode} {order.productName} • {order.color} / {order.size} × {order.quantity}</p>
                       <p className="font-bold">{money(order.amount)}</p>
-                      <p className="text-xs text-slate-500">Дуусах: {dateTime(order.expiresAt)}</p>
+                      <p className="text-xs text-slate-500">Дуусах: {dateTime(order.хугацаа дууснаAt)}</p>
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
                       <button onClick={() => markТөлсөн(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Төлсөн болгох</button>
-                      <button onClick={() => cancelOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
+                      <button onClick={() => цуцлахOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
                     </div>
                   </div>
                 </div>
