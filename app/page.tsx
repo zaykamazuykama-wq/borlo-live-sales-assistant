@@ -469,6 +469,7 @@ export default function LiveShopManagerDemo() {
     plan: 'Эхлээд үнэгүй туршъя',
   })
   const [copyStatus, setCopyStatus] = useState('')
+  const [paymentRequestCopyStatus, setPaymentRequestCopyStatus] = useState('')
   const [hydrated, setHydrated] = useState(false)
   const [products, setБарааs] = useState<Бараа[]>(DEFAULT_PRODUCTS)
   const [activeБарааCode, setActiveБарааCode] = useState('A12')
@@ -1263,9 +1264,35 @@ export default function LiveShopManagerDemo() {
                       <p className="text-xs text-slate-500">Дуусах: {dateTime(order.expiresAt)}</p>
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
+                      <button onClick={() => {
+                        const messageParts = [
+                          `Сайн байна уу, ${order.buyerDisplayName}.`,
+                          `Таны захиалга: ${order.productCode}`,
+                        ];
+                        if (order.color && order.color !== DEFAULT_COLOR) messageParts.push(order.color);
+                        if (order.size && order.size !== 'Нэг размер') messageParts.push(order.size);
+                        messageParts.push(`x${order.quantity || 1}`);
+                        messageParts.push(`Төлөх дүн: ${money(order.amount)}`);
+                        messageParts.push(`Төлбөрөө шилжүүлээд нэр/утсаа бичээрэй.`);
+
+                        const paymentRequestText = messageParts.join(' ');
+
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(paymentRequestText);
+                          setPaymentRequestCopyStatus(order.id);
+                          window.setTimeout(() => setPaymentRequestCopyStatus(''), 2500);
+                        } else {
+                          alert('Clipboard API is not available.');
+                        }
+                      }} className="rounded-2xl bg-blue-600 px-4 py-3 font-bold text-white">Төлбөр нэхэх</button>
                       <button onClick={() => markPaid(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Төлсөн болгох</button>
                       <button onClick={() => cancelOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
                     </div>
+                  {paymentRequestCopyStatus === order.id && (
+                    <p className="rounded-2xl bg-blue-100 p-2 text-center text-xs font-bold text-blue-700 sm:col-span-2 mt-2">
+                      Төлбөр нэхэх текст хуулагдлаа
+                    </p>
+                  )}
                   </div>
                 </div>
               ))}
