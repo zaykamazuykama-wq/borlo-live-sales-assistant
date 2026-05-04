@@ -220,6 +220,14 @@ const DEFAULT_PRODUCTS: Product[] = [
   },
 ]
 
+const SOCIAL_LINKS = {
+  facebook: '#',
+  instagram: '#',
+  tiktok: '#',
+  messenger: '#',
+  telegram: '#',
+}
+
 const STORAGE_KEYS = {
   products: 'live-shop-products',
   activeProductCode: 'live-shop-active-product-code',
@@ -1091,11 +1099,11 @@ export default function LiveShopManagerDemo() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-5">
-              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Facebook</a>
-              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Instagram</a>
-              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">TikTok</a>
-              <a href="#" className="rounded-2xl bg-amber-300 px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Messenger</a>
-              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Telegram</a>
+              <a href={SOCIAL_LINKS.facebook} className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Facebook</a>
+              <a href={SOCIAL_LINKS.instagram} className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Instagram</a>
+              <a href={SOCIAL_LINKS.tiktok} className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">TikTok</a>
+              <a href={SOCIAL_LINKS.messenger} className="rounded-2xl bg-amber-300 px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Messenger</a>
+              <a href={SOCIAL_LINKS.telegram} className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Telegram</a>
             </div>
           </div>
         </section>
