@@ -1162,6 +1162,40 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
+        <section className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-sm font-bold uppercase text-amber-600">Анхааруулга</p>
+              <h2 className="mt-2 text-2xl font-black">Анхаарах худалдан авагч</h2>
+              <p className="mt-3 text-slate-700">
+                Дараагийн шатанд Borlo өмнө нь захиалга аваад авахгүй алга болсон,
+                төлбөр дутуу хийсэн, эсвэл олон удаа цуцалсан худалдан авагчийг анхааруулдаг болно.
+              </p>
+            </div>
+
+            <div className="rounded-3xl border bg-amber-50 p-4">
+              <p className="font-bold text-amber-800">Туршилтын сануулга</p>
+              <div className="mt-3 grid gap-2 text-sm text-slate-700">
+                <div className="rounded-2xl bg-white p-3 shadow-sm">
+                  <p className="font-bold">Мөнхөө — 9900****</p>
+                  <p className="mt-1 text-slate-600">
+                    Өмнөх live дээр 2 захиалга цуцалсан. Төлбөр баталгаажтал бараа хадгалахгүй.
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white p-3 shadow-sm">
+                  <p className="font-bold">Нараа — 8811****</p>
+                  <p className="mt-1 text-slate-600">
+                    Баглаа боодолд орсон захиалгаа авахгүй буцаасан. Шалгаж баталгаажуулах шаардлагатай.
+                  </p>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-amber-700">
+                Одоогоор demo мэдээлэл — бодит blacklist/database холболт дараагийн шатанд нэмэгдэнэ.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
