@@ -838,9 +838,13 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-5 text-white shadow-lg sm:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-amber-300">Лайв Захиалга Тулгагч</p>
-              <h1 className="mt-2 text-3xl font-black sm:text-5xl">Live Shop Manager</h1>
+              <p className="text-sm font-semibold text-amber-300">Borlo</p>
+              <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
+              <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах / Live Sales Assistant</p>
               <p className="mt-3 max-w-2xl text-slate-200">Comment → Order → Payment status → Stock → Packing list → CSV export</p>
+              <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
+                Demo хувилбар — Facebook/QPay real холболт ороогүй
+              </p>
             </div>
             <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
               Demo reset
