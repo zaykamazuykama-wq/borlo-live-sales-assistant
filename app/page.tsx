@@ -1386,7 +1386,38 @@ export default function LiveShopManagerDemo() {
                   alert('Clipboard API is not available.');
                 }
               }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглаа боодлын жагсаалт хуулах</button>
+              <div className="flex gap-2">
+              <button onClick={() => {
+                if (paidOrders.length === 0) {
+                  setPackingListCopyStatus('Хуулах баглаа боодлын жагсаалт алга');
+                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
+                  return;
+                }
+                const packingListHeader = 'Баглаа боодлын жагсаалт';
+                const packingListItems = paidOrders.map((order, index) => {
+                  const itemParts = [
+                    `${index + 1}. ${order.buyerDisplayName}`,
+                  ];
+                  if (order.phone) itemParts[0] += ` ${order.phone}`;
+                  itemParts.push(` ${order.productCode} - ${order.productName}`);
+                  if (order.color && order.color !== DEFAULT_COLOR) itemParts.push(order.color);
+                  if (order.size && order.size !== 'Нэг размер') itemParts.push(order.size);
+                  itemParts.push(`x${order.quantity}`);
+                  itemParts.push(`Дүн: ${money(order.amount)}`);
+                  return itemParts.join(' ');
+                });
+                const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
+
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(packingListText);
+                  setPackingListCopyStatus('Баглаа боодлын жагсаалт хуулагдлаа');
+                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
+                } else {
+                  alert('Clipboard API is not available.');
+                }
+              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглаа боодлын жагсаалт хуулах</button>
               <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
+            </div>
             </div>
           </div>
           {packingListCopyStatus && (
