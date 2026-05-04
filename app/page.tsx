@@ -879,6 +879,32 @@ export default function LiveShopManagerDemo() {
           </section>
         )}
 
+        <section className="rounded-3xl bg-white p-5 shadow-sm">
+          <h2 className="text-2xl font-black">Туршилт авах хүсэлт</h2>
+          <p className="mt-2 text-slate-700">Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / live хаяг" />
+            <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
+            <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
+            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
+            <p className="sm:col-span-2 text-lg font-bold text-slate-950">Сонирхож буй хувилбар:</p>
+            <label className="flex items-center space-x-2 sm:col-span-2">
+              <input type="radio" name="plan" className="form-radio" />
+              <span>Basic 99,000₮</span>
+            </label>
+            <label className="flex items-center space-x-2 sm:col-span-2">
+              <input type="radio" name="plan" className="form-radio" />
+              <span>Auto 149,000₮ + 1%</span>
+            </label>
+            <label className="flex items-center space-x-2 sm:col-span-2">
+              <input type="radio" name="plan" className="form-radio" defaultChecked />
+              <span>Эхлээд үнэгүй туршъя</span>
+            </label>
+            <button className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Demo авах</button>
+          </div>
+          <p className="mt-4 text-sm text-slate-500 text-center">Одоогоор туршилтын form — илгээх backend холбогдоогүй.</p>
+        </section>
+
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
