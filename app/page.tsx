@@ -906,6 +906,50 @@ export default function LiveShopManagerDemo() {
           <p className="mt-4 text-sm text-slate-500 text-center">Одоогоор туршилтын form — илгээх backend холбогдоогүй.</p>
         </section>
 
+        <section className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr] lg:items-start">
+            <div>
+              <p className="text-sm font-bold uppercase text-amber-600">Анхны 2 live үнэгүй</p>
+              <h2 className="mt-2 text-2xl font-black">Туршилт авах хүсэлт</h2>
+              <p className="mt-3 text-slate-700">
+                Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.
+              </p>
+              <p className="mt-4 rounded-2xl bg-slate-100 p-4 text-sm text-slate-600">
+                Одоогоор туршилтын form — илгээх backend холбогдоогүй.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / live хаяг" />
+              <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
+              <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
+              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
+
+              <div className="rounded-2xl border p-4 sm:col-span-2">
+                <p className="font-bold text-slate-950">Сонирхож буй хувилбар</p>
+                <div className="mt-3 grid gap-2">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="trial-plan" />
+                    <span>Basic 99,000₮</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="trial-plan" />
+                    <span>Auto 149,000₮ + 1%</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="trial-plan" defaultChecked />
+                    <span>Эхлээд үнэгүй туршъя</span>
+                  </label>
+                </div>
+              </div>
+
+              <button className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2">
+                Demo авах
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
