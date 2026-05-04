@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Speaker & Voice Assignment - Mongolian AI Dubbing',
-  description: 'Assign natural Mongolian voices to speakers for AI-powered dubbing',
+  title: 'Borlo / Live Sales Assistant',
+  description: 'Borlo helps live sellers turn comments into orders, payment status, stock updates, and packing lists.',
   generator: 'v0.app',
   icons: {
     icon: [
