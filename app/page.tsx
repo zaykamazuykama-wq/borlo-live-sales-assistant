@@ -926,6 +926,44 @@ export default function LiveShopManagerDemo() {
           </div>
         </nav>
 
+        <section className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr] lg:items-start">
+            <div>
+              <p className="text-sm font-bold uppercase text-amber-600">Live workflow</p>
+              <h2 className="mt-2 text-2xl font-black">Лайв худалдаагаа нэг самбарт удирд</h2>
+              <p className="mt-3 text-slate-700">
+                Live дууссаны дараа хэн юу авсан, хэн төлсөн, ямар бараа дууссан,
+                юуг баглах ёстой вэ гэдэг хамгийн их цаг авдаг.
+              </p>
+              <p className="mt-3 text-slate-700">
+                Borlo энэ урсгалыг нэг самбарт цэгцэлнэ: коммент paste хийхэд захиалга үүснэ,
+                төлбөрийн төлөв шинэчлэгдэнэ, үлдэгдэл хасагдана, paid захиалгууд packing list дээр гарна.
+              </p>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="rounded-3xl border bg-slate-50 p-4">
+                <p className="text-lg font-black">Live-ийн үеэр</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  Коммент paste хийгээд барааны код, өнгө, размер, тоо ширхэгээр pending order үүсгэнэ.
+                </p>
+              </div>
+              <div className="rounded-3xl border bg-slate-50 p-4">
+                <p className="text-lg font-black">Төлбөр шалгах үед</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  Гараар Paid дарах эсвэл Auto demo дээр төлбөрийн event paste хийж matching шалгана.
+                </p>
+              </div>
+              <div className="rounded-3xl border bg-slate-50 p-4">
+                <p className="text-lg font-black">Live дууссаны дараа</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  Paid захиалгууд packing list дээр гарч, CSV татахад бэлэн болно.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <p className="text-sm text-slate-500">Хүлээгдэж буй</p>
