@@ -481,6 +481,7 @@ export default function LiveShopManagerDemo() {
   })
   const [copyStatus, setCopyStatus] = useState('')
   const [paymentRequestCopyStatus, setPaymentRequestCopyStatus] = useState('')
+  const [demoResetFeedback, setDemoResetFeedback] = useState('')
   const [hydrated, setHydrated] = useState(false)
   const [products, setБарааs] = useState<Бараа[]>(DEFAULT_PRODUCTS)
   const [activeБарааCode, setActiveБарааCode] = useState('A12')
@@ -920,6 +921,10 @@ export default function LiveShopManagerDemo() {
     setSuccessfulPaymentEvents([])
     setCommentPaste('Болор: A12 хар M авъя')
     setPaymentPaste('89000 Болор A12 99112233')
+    setPaymentRequestCopyStatus('') // Clear transient UI state
+    setCopyStatus('') // Clear transient UI state
+    setDemoResetFeedback('Demo data сэргээгдлээ'); // Set feedback
+    window.setTimeout(() => setDemoResetFeedback(''), 2500); // Clear feedback
   }
 
   return (
@@ -944,8 +949,13 @@ export default function LiveShopManagerDemo() {
                 Анхны 2 live үнэгүй турших
               </a>
               <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
-                Демо сэргээх
+                Demo data сэргээх
               </button>
+              {demoResetFeedback && (
+                <p className="rounded-2xl bg-slate-200 p-2 text-center text-sm font-bold text-slate-700">
+                  {demoResetFeedback}
+                </p>
+              )}
             </div>
           </div>
         </section>
