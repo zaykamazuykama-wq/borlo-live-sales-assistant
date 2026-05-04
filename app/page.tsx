@@ -1264,7 +1264,7 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Хүлээгдэж буй захиалга</h2>
             <div className="mt-4 space-y-3">
-              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Хүлээгдэж буй захиалга алга.</p>}
+              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Одоогоор хүлээгдэж буй захиалга алга. Коммент paste хийж захиалга үүсгэнэ.</p>}
               {pendingOrders.map((order) => (
                 <div key={order.id} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -1348,7 +1348,7 @@ export default function LiveShopManagerDemo() {
             <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
           </div>
           <div className="mt-4 space-y-3">
-            {paidOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Packing list хоосон байна.</p>}
+            {paidOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Paid болсон захиалга баглаа боодлын жагсаалт руу орно.</p>}
             {paidOrders.map((order) => (
               <div key={order.id} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                 <p className="text-xl font-black">{order.id} • {order.buyerDisplayName}</p>
@@ -1383,7 +1383,7 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Төлбөр шалгах шаардлагатай</h2>
             <div className="mt-4 space-y-3">
-              {paymentReviewEvents.length === 0 && <p className="text-slate-500">Төлбөр шалгах шаардлагатай алга.</p>}
+              {paymentReviewEvents.length === 0 && <p className="text-slate-500">Шалгах шаардлагатай төлбөр алга. Дутуу, илүү эсвэл тодорхойгүй төлбөр энд харагдана.</p>}
               {paymentReviewEvents.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-rose-50 p-4">
                   <p className="font-bold">{item.rawText}</p>
