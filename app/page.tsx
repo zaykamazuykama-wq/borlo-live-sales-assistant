@@ -1280,10 +1280,10 @@ export default function LiveShopManagerDemo() {
                 <div key={order.id} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xl font-black">{order.id} • {order.buyerDisplayName}</p>
+                      <p className="text-xl font-black">#{index + 1} {order.buyerDisplayName}</p>
                       <p className="text-slate-600">{order.productCode} {order.productName} • {order.color} / {order.size} × {order.quantity}</p>
                       <p className="font-bold">{money(order.amount)}</p>
-                      <p className="text-xs text-slate-500">Дуусах: {dateTime(order.expiresAt)}</p>
+                      <p className="text-xs text-slate-500">Захиалсан: {new Date(order.createdAt).toLocaleTimeString('mn-MN', {hour: '2-digit', minute:'2-digit'})} • Дуусах: {dateTime(order.expiresAt)}</p>
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
                       <button onClick={() => {
