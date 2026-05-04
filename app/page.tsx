@@ -1233,6 +1233,7 @@ export default function LiveShopManagerDemo() {
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Төлбөрийн мэдээлэл наах</h2>
+              <p className="mt-2 text-sm text-slate-600">Нэг хүн олон захиалгаа нийлүүлж төлсөн бол review хэсэгт шалгах боломжтой.</p>
             <p className="mt-1 text-sm text-slate-500">Demo-д Auto payment paste ашиглаж байна.</p>
             <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
             <button onClick={parsePaymentEvents} className="mt-3 w-full rounded-2xl bg-violet-600 px-5 py-4 text-lg font-bold text-white">Payment тулгах</button>
@@ -1352,7 +1353,7 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
           <h2 className="text-xl font-black">Limitations</h2>
-          <p className="mt-2 text-slate-200">Demo only • Facebook comment manual paste • QPay simulated • Client-side timer • All data saved in browser localStorage</p>
+          <p className="mt-2 text-slate-200">Demo only • Facebook comment manual paste • QPay туршилтын matching • Client-side timer • All data saved in browser localStorage</p>
         </section>
       </div>
     </main>
