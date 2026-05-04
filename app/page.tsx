@@ -1054,8 +1054,16 @@ export default function LiveShopManagerDemo() {
                 </div>
               </div>
 
-              <button className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2">
-                Demo авах
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    'Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна. Миний Facebook/live хаяг: [энд бичнэ]. Холбогдох утас: [энд бичнэ].'
+                  )
+                }}
+                className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2"
+              >
+                Demo хүсэлтийн текст хуулах
               </button>
             </div>
           </div>
