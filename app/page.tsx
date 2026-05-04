@@ -491,7 +491,7 @@ export default function LiveShopManagerDemo() {
       insightsNav: "Тайлан",
       sellerLeadTitle: "Туршилт авах хүсэлт",
       sellerLeadCopy: "Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.",
-      facebookPlaceholder: "Facebook page / live хаяг",
+      facebookPlaceholder: "Facebook page / лайв хаяг",
       phonePlaceholder: "Утас",
       productPlaceholder: "Гол зардаг бараа",
       liveCountPlaceholder: "Сард хэдэн live хийдэг вэ?",
@@ -929,35 +929,35 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr] lg:items-start">
             <div>
-              <p className="text-sm font-bold uppercase text-amber-600">Live workflow</p>
+              <p className="text-sm font-bold uppercase text-amber-600">Лайвын урсгал</p>
               <h2 className="mt-2 text-2xl font-black">Лайв худалдаагаа нэг самбарт удирд</h2>
               <p className="mt-3 text-slate-700">
-                Live дууссаны дараа хэн юу авсан, хэн төлсөн, ямар бараа дууссан,
+                Лайв дууссаны дараа хэн юу авсан, хэн төлсөн, ямар бараа дууссан,
                 юуг баглах ёстой вэ гэдэг хамгийн их цаг авдаг.
               </p>
               <p className="mt-3 text-slate-700">
-                Borlo энэ урсгалыг нэг самбарт цэгцэлнэ: коммент paste хийхэд захиалга үүснэ,
-                төлбөрийн төлөв шинэчлэгдэнэ, үлдэгдэл хасагдана, paid захиалгууд packing list дээр гарна.
+                Borlo энэ урсгалыг нэг самбарт цэгцэлнэ: коммент наахад захиалга үүснэ,
+                төлбөрийн төлөв шинэчлэгдэнэ, үлдэгдэл хасагдана, төлөгдсөн захиалгууд баглаа боодлын жагсаалт дээр гарна.
               </p>
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
               <div className="rounded-3xl border bg-slate-50 p-4">
-                <p className="text-lg font-black">Live-ийн үеэр</p>
+                <p className="text-lg font-black">Лайвын үеэр</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  Коммент paste хийгээд барааны код, өнгө, размер, тоо ширхэгээр pending order үүсгэнэ.
+                  Коммент наахад барааны код, өнгө, размер, тоо ширхэгээр хүлээгдэж буй захиалга үүсгэнэ.
                 </p>
               </div>
               <div className="rounded-3xl border bg-slate-50 p-4">
                 <p className="text-lg font-black">Төлбөр шалгах үед</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  Гараар Paid дарах эсвэл Auto demo дээр төлбөрийн event paste хийж matching шалгана.
+                  Гараар “Төлсөн” гэж тэмдэглэх эсвэл Auto туршилт дээр төлбөрийн мэдээлэл нааж тааруулалт шалгана.
                 </p>
               </div>
               <div className="rounded-3xl border bg-slate-50 p-4">
-                <p className="text-lg font-black">Live дууссаны дараа</p>
+                <p className="text-lg font-black">Лайв дууссаны дараа</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  Paid захиалгууд packing list дээр гарч, CSV татахад бэлэн болно.
+                  Төлөгдсөн захиалгууд баглаа боодлын жагсаалт дээр гарч, CSV татахад бэлэн болно.
                 </p>
               </div>
             </div>
@@ -995,7 +995,7 @@ export default function LiveShopManagerDemo() {
           <h2 className="text-2xl font-black">Туршилт авах хүсэлт</h2>
           <p className="mt-2 text-slate-700">Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / live хаяг" />
+            <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / лайв хаяг" />
             <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
             <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
             <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
@@ -1031,7 +1031,7 @@ export default function LiveShopManagerDemo() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / live хаяг" />
+              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / лайв хаяг" />
               <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
               <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
               <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
@@ -1073,12 +1073,12 @@ export default function LiveShopManagerDemo() {
           <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr] lg:items-center">
             <div>
               <p className="text-sm font-bold uppercase text-amber-300">Холбогдох сувгууд</p>
-              <h2 className="mt-2 text-2xl font-black">Demo авахад ойрхон байна</h2>
+              <h2 className="mt-2 text-2xl font-black">Туршилт авахад ойрхон байна</h2>
               <p className="mt-3 text-slate-300">
                 Facebook page эсвэл live хаягаа явуулбал таны одоогийн захиалга авах урсгалд Borlo хэрхэн таарахыг шалгаж өгнө.
               </p>
               <p className="mt-3 text-sm text-slate-400">
-                Одоогоор эдгээр нь demo товчнууд — real chatbot/API холболт дараагийн шатанд нэмэгдэнэ.
+                Одоогоор эдгээр нь туршилтын товчнууд — бодит chatbot/API холболт дараагийн шатанд нэмэгдэнэ.
               </p>
             </div>
 
