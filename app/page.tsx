@@ -470,6 +470,7 @@ export default function LiveShopManagerDemo() {
     colors: '',
     variantStock: '',
   })
+  const [language, setLanguage] = useState<'mn' | 'en'>('mn')
 
   useEffect(() => {
     setProducts(safeParse<Product[]>(localStorage.getItem(STORAGE_KEYS.products), DEFAULT_PRODUCTS).map(normalizeProduct))
@@ -840,29 +841,29 @@ export default function LiveShopManagerDemo() {
             <div>
               <p className="text-sm font-semibold text-amber-300">Borlo</p>
               <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
-              <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах / Live Sales Assistant</p>
-              <p className="mt-3 max-w-2xl text-slate-200">Comment → Order → Payment status → Stock → Packing list → CSV export</p>
+              <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
+              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → CSV</p>
               <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
                 Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй
               </p>
             </div>
             <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
-              Demo reset
+              Демо сэргээх
             </button>
           </div>
         </section>
 
         <section className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Pending count</p>
+            <p className="text-sm text-slate-500">Хүлээгдэж буй</p>
             <p className="mt-2 text-4xl font-black">{pendingOrders.length}</p>
           </div>
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Paid / Packing count</p>
+            <p className="text-sm text-slate-500">Төлсөн / Баглах</p>
             <p className="mt-2 text-4xl font-black">{paidOrders.length}</p>
           </div>
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Revenue</p>
+            <p className="text-sm text-slate-500">Орлого</p>
             <p className="mt-2 text-4xl font-black">{money(revenue)}</p>
           </div>
         </section>
