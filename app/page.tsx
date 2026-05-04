@@ -33,7 +33,7 @@ type Product = {
   variants: ProductVariant[]
 }
 
-type OrderStatus = 'Pending' | 'Paid' | 'Expired' | 'Cancelled'
+type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
 
 type Order = {
   id: string
@@ -54,7 +54,7 @@ type Order = {
   phone?: string
 }
 
-type ReviewItem = {
+type ШалгахItem = {
   id: string
   text: string
   reason: string
@@ -233,7 +233,7 @@ const STORAGE_KEYS = {
   activeProductCode: 'live-shop-active-product-code',
   orders: 'live-shop-orders',
   unclearComments: 'live-shop-unclear-comments',
-  paymentReviewEvents: 'live-shop-payment-review-events',
+  paymentШалгахEvents: 'live-shop-payment-шалгах-events',
   successfulPaymentEvents: 'live-shop-successful-payment-events',
 }
 
@@ -473,8 +473,8 @@ export default function LiveShopManagerDemo() {
   const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS)
   const [activeProductCode, setActiveProductCode] = useState('A12')
   const [orders, setOrders] = useState<Order[]>([])
-  const [unclearComments, setUnclearComments] = useState<ReviewItem[]>([])
-  const [paymentReviewEvents, setPaymentReviewEvents] = useState<PaymentEvent[]>([])
+  const [unclearComments, setUnclearComments] = useState<ШалгахItem[]>([])
+  const [paymentШалгахEvents, setPaymentШалгахEvents] = useState<PaymentEvent[]>([])
   const [successfulPaymentEvents, setSuccessfulPaymentEvents] = useState<PaymentEvent[]>([])
   const [commentPaste, setCommentPaste] = useState('Болор: A12 хар M авъя\nСараа: A12 улаан L 2ш\nНомин: C01 цагаан 38 авъя')
   const [paymentPaste, setPaymentPaste] = useState('89000 Болор A12 99112233')
@@ -524,8 +524,8 @@ export default function LiveShopManagerDemo() {
       flow: "Comment → Order → Payment → Stock → Packing list → CSV",
       trialBadge: "Trial version — real Facebook/QPay integrations are not connected yet",
       demoResetButton: "Demo reset",
-      pendingCount: "Pending count",
-      paidPackingCount: "Paid / Packing count",
+      pendingCount: "Хүлээгдэж буй count",
+      paidPackingCount: "Төлсөн / Packing count",
       revenue: "Revenue",
       homeNav: "Home",
       liveNav: "Live",
@@ -553,8 +553,8 @@ export default function LiveShopManagerDemo() {
     setProducts(safeParse<Product[]>(localStorage.getItem(STORAGE_KEYS.products), DEFAULT_PRODUCTS).map(normalizeProduct))
     setActiveProductCode(localStorage.getItem(STORAGE_KEYS.activeProductCode) || 'A12')
     setOrders(safeParse<Order[]>(localStorage.getItem(STORAGE_KEYS.orders), []))
-    setUnclearComments(safeParse<ReviewItem[]>(localStorage.getItem(STORAGE_KEYS.unclearComments), []))
-    setPaymentReviewEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentReviewEvents), []))
+    setUnclearComments(safeParse<ШалгахItem[]>(localStorage.getItem(STORAGE_KEYS.unclearComments), []))
+    setPaymentШалгахEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentШалгахEvents), []))
     setSuccessfulPaymentEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.successfulPaymentEvents), []))
     setHydrated(true)
   }, [])
@@ -581,8 +581,8 @@ export default function LiveShopManagerDemo() {
 
   useEffect(() => {
     if (!hydrated) return
-    localStorage.setItem(STORAGE_KEYS.paymentReviewEvents, JSON.stringify(paymentReviewEvents))
-  }, [hydrated, paymentReviewEvents])
+    localStorage.setItem(STORAGE_KEYS.paymentШалгахEvents, JSON.stringify(paymentШалгахEvents))
+  }, [hydrated, paymentШалгахEvents])
 
   useEffect(() => {
     if (!hydrated) return
@@ -592,11 +592,11 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      const expiredPendingOrders = orders.filter((order) => order.status === 'Pending' && order.expiresAt <= now)
-      if (expiredPendingOrders.length === 0) return
+      const expiredХүлээгдэж буйOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now)
+      if (expiredХүлээгдэж буйOrders.length === 0) return
 
       const releaseByVariant = new Map<string, number>()
-      expiredPendingOrders.forEach((order) => {
+      expiredХүлээгдэж буйOrders.forEach((order) => {
         const key = variantKey(order.productCode, order.color, order.size)
         releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
       })
@@ -611,10 +611,10 @@ export default function LiveShopManagerDemo() {
         })),
       )
 
-      const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
+      const expiredIds = new Set(expiredХүлээгдэж буйOrders.map((order) => order.id))
       setOrders((currentOrders) =>
         currentOrders.map((order) =>
-          expiredIds.has(order.id) && order.status === 'Pending'
+          expiredIds.has(order.id) && order.status === 'Хүлээгдэж буй'
             ? { ...order, status: 'Expired', expiredAt: now }
             : order,
         ),
@@ -625,8 +625,8 @@ export default function LiveShopManagerDemo() {
   }, [orders])
 
   const activeProduct = products.find((product) => product.code === activeProductCode) || products[0]
-  const pendingOrders = orders.filter((order) => order.status === 'Pending')
-  const paidOrders = orders.filter((order) => order.status === 'Paid')
+  const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
+  const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
 
   const maxOrderNumber = useMemo(() => Math.max(0, ...orders.map((order) => orderNumber(order.id))), [orders])
@@ -663,7 +663,7 @@ export default function LiveShopManagerDemo() {
       ),
     )
     const newOrders: Order[] = []
-    const newReviews: ReviewItem[] = []
+    const newШалгахs: ШалгахItem[] = []
     let orderSequence = maxOrderNumber + 1
     const now = Date.now()
 
@@ -672,7 +672,7 @@ export default function LiveShopManagerDemo() {
       const product = codedProduct || (hasBuyKeyword(line) ? activeProduct : undefined)
 
       if (!product) {
-        newReviews.push({
+        newШалгахs.push({
           id: makeId('COMMENT-REVIEW'),
           text: line,
           reason: 'Бүтээгдэхүүн тодорхойгүй байна',
@@ -683,19 +683,19 @@ export default function LiveShopManagerDemo() {
 
       const colorResult = detectColor(line, product)
       if (!colorResult.color) {
-        newReviews.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: colorResult.reason || 'Өнгө тодорхойгүй байна', createdAt: now })
+        newШалгахs.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: colorResult.reason || 'Өнгө тодорхойгүй байна', createdAt: now })
         return
       }
 
       const sizeResult = detectSize(line, product)
       if (!sizeResult.size) {
-        newReviews.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: sizeResult.reason || 'Сайз тодорхойгүй байна', createdAt: now })
+        newШалгахs.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: sizeResult.reason || 'Сайз тодорхойгүй байна', createdAt: now })
         return
       }
 
       const variant = findVariant(product, colorResult.color, sizeResult.size)
       if (!variant) {
-        newReviews.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: 'Ийм variant алга байна', createdAt: now })
+        newШалгахs.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: 'Ийм variant алга байна', createdAt: now })
         return
       }
 
@@ -704,7 +704,7 @@ export default function LiveShopManagerDemo() {
       const available = availableStockByVariant.get(key) || 0
 
       if (quantity > available) {
-        newReviews.push({
+        newШалгахs.push({
           id: makeId('COMMENT-REVIEW'),
           text: line,
           reason: 'Үлдэгдэл хүрэлцэхгүй байна',
@@ -723,7 +723,7 @@ export default function LiveShopManagerDemo() {
         size: sizeResult.size,
         quantity,
         amount: product.price * quantity,
-        status: 'Pending',
+        status: 'Хүлээгдэж буй',
         sourceCommentText: line,
         createdAt: now,
         expiresAt: now + TEN_MINUTES,
@@ -738,16 +738,16 @@ export default function LiveShopManagerDemo() {
       })),
     })))
     if (newOrders.length > 0) setOrders([...orders, ...newOrders])
-    if (newReviews.length > 0) setUnclearComments([...newReviews, ...unclearComments])
+    if (newШалгахs.length > 0) setUnclearComments([...newШалгахs, ...unclearComments])
     setCommentPaste('')
   }
 
-  function markPaid(orderId: string, phone?: string) {
+  function markТөлсөн(orderId: string, phone?: string) {
     const now = Date.now()
     setOrders((currentOrders) =>
       currentOrders.map((order) =>
-        order.id === orderId && order.status === 'Pending'
-          ? { ...order, status: 'Paid', paidAt: now, phone: phone || order.phone }
+        order.id === orderId && order.status === 'Хүлээгдэж буй'
+          ? { ...order, status: 'Төлсөн', paidAt: now, phone: phone || order.phone }
           : order,
       ),
     )
@@ -756,7 +756,7 @@ export default function LiveShopManagerDemo() {
   function cancelOrder(orderId: string) {
     const now = Date.now()
     const order = orders.find((item) => item.id === orderId)
-    if (!order || order.status !== 'Pending') return
+    if (!order || order.status !== 'Хүлээгдэж буй') return
 
     setProducts(products.map((product) =>
       product.code === order.productCode ? updateVariantStock(product, order.color, order.size, order.quantity) : product,
@@ -773,7 +773,7 @@ export default function LiveShopManagerDemo() {
 
     const now = Date.now()
     const successEvents: PaymentEvent[] = []
-    const reviewEvents: PaymentEvent[] = []
+    const шалгахEvents: PaymentEvent[] = []
     const paidOrderIdsWithPhone = new Map<string, string | undefined>()
     let workingOrders = [...orders]
 
@@ -789,7 +789,7 @@ export default function LiveShopManagerDemo() {
       }
 
       const singleMatches = workingOrders.filter((order) => {
-        if (order.status !== 'Pending') return false
+        if (order.status !== 'Хүлээгдэж буй') return false
         if (order.amount !== parsed.amount) return false
         if (parsed.productCode && order.productCode.toUpperCase() !== parsed.productCode.toUpperCase()) return false
         return isFuzzyBuyerMatch(order.buyerDisplayName, parsed.buyerName)
@@ -799,8 +799,8 @@ export default function LiveShopManagerDemo() {
         const order = singleMatches[0]
         paidOrderIdsWithPhone.set(order.id, parsed.phone)
         workingOrders = workingOrders.map((item) =>
-          item.id === order.id && item.status === 'Pending'
-            ? { ...item, status: 'Paid', paidAt: now, phone: parsed.phone || item.phone }
+          item.id === order.id && item.status === 'Хүлээгдэж буй'
+            ? { ...item, status: 'Төлсөн', paidAt: now, phone: parsed.phone || item.phone }
             : item,
         )
         successEvents.push({
@@ -813,23 +813,23 @@ export default function LiveShopManagerDemo() {
         return
       }
 
-      const buyerPendingOrders = workingOrders
+      const buyerХүлээгдэж буйOrders = workingOrders
         .filter((order) => {
-          if (order.status !== 'Pending') return false
+          if (order.status !== 'Хүлээгдэж буй') return false
           if (parsed.productCode && order.productCode.toUpperCase() !== parsed.productCode.toUpperCase()) return false
           return isFuzzyBuyerMatch(order.buyerDisplayName, parsed.buyerName)
         })
         .slice(0, 10)
 
-      const combinations = findExactAmountCombinations(buyerPendingOrders, parsed.amount)
+      const combinations = findExactAmountCombinations(buyerХүлээгдэж буйOrders, parsed.amount)
 
       if (singleMatches.length === 0 && combinations.length === 1) {
         const matchedOrders = combinations[0]
         matchedOrders.forEach((order) => paidOrderIdsWithPhone.set(order.id, parsed.phone))
         const matchedIds = new Set(matchedOrders.map((order) => order.id))
         workingOrders = workingOrders.map((order) =>
-          matchedIds.has(order.id) && order.status === 'Pending'
-            ? { ...order, status: 'Paid', paidAt: now, phone: parsed.phone || order.phone }
+          matchedIds.has(order.id) && order.status === 'Хүлээгдэж буй'
+            ? { ...order, status: 'Төлсөн', paidAt: now, phone: parsed.phone || order.phone }
             : order,
         )
         successEvents.push({
@@ -846,13 +846,13 @@ export default function LiveShopManagerDemo() {
         reason = 'Олон боломжит захиалга олдлоо'
       } else if (combinations.length > 1) {
         reason = 'Олон боломжит захиалгын нийлбэр таарч байна'
-      } else if (buyerPendingOrders.length > 0) {
-        const buyerPendingTotal = buyerPendingOrders.reduce((sum, order) => sum + order.amount, 0)
-        if (typeof parsed.amount === 'number' && parsed.amount < buyerPendingTotal) reason = 'Төлбөр дутуу байна'
-        else if (typeof parsed.amount === 'number' && parsed.amount > buyerPendingTotal) reason = 'Төлбөр илүү байна'
+      } else if (buyerХүлээгдэж буйOrders.length > 0) {
+        const buyerХүлээгдэж буйTotal = buyerХүлээгдэж буйOrders.reduce((sum, order) => sum + order.amount, 0)
+        if (typeof parsed.amount === 'number' && parsed.amount < buyerХүлээгдэж буйTotal) reason = 'Төлбөр дутуу байна'
+        else if (typeof parsed.amount === 'number' && parsed.amount > buyerХүлээгдэж буйTotal) reason = 'Төлбөр илүү байна'
       }
 
-      reviewEvents.push({
+      шалгахEvents.push({
         id: makeId('PAYMENT-REVIEW'),
         ...baseEvent,
         reason,
@@ -861,22 +861,22 @@ export default function LiveShopManagerDemo() {
 
     if (paidOrderIdsWithPhone.size > 0) {
       setOrders(orders.map((order) => {
-        if (!paidOrderIdsWithPhone.has(order.id) || order.status !== 'Pending') return order
-        return { ...order, status: 'Paid', paidAt: now, phone: paidOrderIdsWithPhone.get(order.id) || order.phone }
+        if (!paidOrderIdsWithPhone.has(order.id) || order.status !== 'Хүлээгдэж буй') return order
+        return { ...order, status: 'Төлсөн', paidAt: now, phone: paidOrderIdsWithPhone.get(order.id) || order.phone }
       }))
     }
     if (successEvents.length > 0) setSuccessfulPaymentEvents([...successEvents, ...successfulPaymentEvents])
-    if (reviewEvents.length > 0) setPaymentReviewEvents([...reviewEvents, ...paymentReviewEvents])
+    if (шалгахEvents.length > 0) setPaymentШалгахEvents([...шалгахEvents, ...paymentШалгахEvents])
     setPaymentPaste('')
   }
 
   function exportCsv() {
     if (paidOrders.length === 0) {
-      alert('Paid захиалга алга байна.')
+      alert('Төлсөн захиалга алга байна.')
       return
     }
 
-    const header = ['Order ID', 'Buyer', 'Phone', 'Product Code', 'Product Name', 'Color', 'Size', 'Quantity', 'Amount', 'Paid At']
+    const header = ['Order ID', 'Buyer', 'Phone', 'Product Code', 'Product Name', 'Color', 'Size', 'Quantity', 'Amount', 'Төлсөн At']
     const rows = paidOrders.map((order) => [
       order.id,
       order.buyerDisplayName,
@@ -904,7 +904,7 @@ export default function LiveShopManagerDemo() {
     setActiveProductCode('A12')
     setOrders([])
     setUnclearComments([])
-    setPaymentReviewEvents([])
+    setPaymentШалгахEvents([])
     setSuccessfulPaymentEvents([])
     setCommentPaste('Болор: A12 хар M авъя')
     setPaymentPaste('89000 Болор A12 99112233')
@@ -1209,9 +1209,9 @@ export default function LiveShopManagerDemo() {
 
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Pending захиалга</h2>
+            <h2 className="text-2xl font-black">Хүлээгдэж буй захиалга</h2>
             <div className="mt-4 space-y-3">
-              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Pending захиалга алга.</p>}
+              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Хүлээгдэж буй захиалга алга.</p>}
               {pendingOrders.map((order) => (
                 <div key={order.id} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -1222,7 +1222,7 @@ export default function LiveShopManagerDemo() {
                       <p className="text-xs text-slate-500">Дуусах: {dateTime(order.expiresAt)}</p>
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
-                      <button onClick={() => markPaid(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Paid болгох</button>
+                      <button onClick={() => markТөлсөн(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Төлсөн болгох</button>
                       <button onClick={() => cancelOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
                     </div>
                   </div>
@@ -1232,7 +1232,7 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Payment event наах</h2>
+            <h2 className="text-2xl font-black">Төлбөрийн мэдээлэл наах</h2>
             <p className="mt-1 text-sm text-slate-500">Demo-д Auto payment paste ашиглаж байна.</p>
             <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
             <button onClick={parsePaymentEvents} className="mt-3 w-full rounded-2xl bg-violet-600 px-5 py-4 text-lg font-bold text-white">Payment тулгах</button>
@@ -1243,8 +1243,8 @@ export default function LiveShopManagerDemo() {
                 <p className="text-3xl font-black">{successfulPaymentEvents.length}</p>
               </div>
               <div className="rounded-2xl bg-amber-50 p-4">
-                <p className="font-black">Payment Review</p>
-                <p className="text-3xl font-black">{paymentReviewEvents.length}</p>
+                <p className="font-black">Төлбөр шалгах шаардлагатай</p>
+                <p className="text-3xl font-black">{paymentШалгахEvents.length}</p>
               </div>
             </div>
             <div className="mt-4 space-y-3">
@@ -1263,7 +1263,7 @@ export default function LiveShopManagerDemo() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-2xl font-black">Packing / Delivery List</h2>
-              <p className="text-sm text-slate-500">Зөвхөн Paid захиалга харагдана.</p>
+              <p className="text-sm text-slate-500">Зөвхөн Төлсөн захиалга харагдана.</p>
             </div>
             <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
           </div>
@@ -1279,7 +1279,7 @@ export default function LiveShopManagerDemo() {
                   <p>Сайз: <b>{order.size}</b></p>
                   <p>Тоо: <b>{order.quantity}</b></p>
                   <p>Дүн: <b>{money(order.amount)}</b></p>
-                  <p className="sm:col-span-2">Paid at: <b>{dateTime(order.paidAt)}</b></p>
+                  <p className="sm:col-span-2">Төлсөн at: <b>{dateTime(order.paidAt)}</b></p>
                 </div>
               </div>
             ))}
@@ -1288,9 +1288,9 @@ export default function LiveShopManagerDemo() {
 
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Review</h2>
+            <h2 className="text-2xl font-black">Шалгах</h2>
             <div className="mt-4 space-y-3">
-              {unclearComments.length === 0 && <p className="text-slate-500">Review коммент алга.</p>}
+              {unclearComments.length === 0 && <p className="text-slate-500">Шалгах коммент алга.</p>}
               {unclearComments.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-amber-50 p-4">
                   <p className="font-bold">{item.text}</p>
@@ -1301,10 +1301,10 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Payment Review</h2>
+            <h2 className="text-2xl font-black">Төлбөр шалгах шаардлагатай</h2>
             <div className="mt-4 space-y-3">
-              {paymentReviewEvents.length === 0 && <p className="text-slate-500">Payment review алга.</p>}
-              {paymentReviewEvents.map((item) => (
+              {paymentШалгахEvents.length === 0 && <p className="text-slate-500">Төлбөр шалгах шаардлагатай алга.</p>}
+              {paymentШалгахEvents.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-rose-50 p-4">
                   <p className="font-bold">{item.rawText}</p>
                   <p className="text-sm text-rose-800">{item.reason}</p>
@@ -1319,7 +1319,7 @@ export default function LiveShopManagerDemo() {
             <p className="text-2xl font-black">Basic</p>
             <p className="mt-2 text-3xl font-black">99,000₮ / сар</p>
             <ul className="mt-4 space-y-2 text-slate-700">
-              <li>- Manual Paid товч</li>
+              <li>- Manual Төлсөн товч</li>
               <li>- Stock удирдлага</li>
               <li>- CSV Packing list</li>
             </ul>
@@ -1342,12 +1342,12 @@ export default function LiveShopManagerDemo() {
 2. Коммент наах:
    Болор: A12 хар M авъя
    Болор: C01 цагаан 38 авъя
-3. Payment event наах:
+3. Төлбөрийн мэдээлэл наах:
    239000 Болор 99112233
-4. 2 pending захиалга зэрэг Paid болно
+4. 2 pending захиалга зэрэг Төлсөн болно
 5. Packing List-д A12 болон C01 хоёулаа харагдана
 6. CSV татах товчийг дарна`}</pre>
-          <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Pending захиалга stock-ийг аль хэдийн reserve хийдэг. Paid болгоход stock дахин хасахгүй.</p>
+          <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга stock-ийг аль хэдийн reserve хийдэг. Төлсөн болгоход stock дахин хасахгүй.</p>
         </section>
 
         <section className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
