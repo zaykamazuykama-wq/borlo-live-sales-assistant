@@ -1061,6 +1061,29 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
+        <section className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm">
+          <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+            <div>
+              <p className="text-sm font-bold uppercase text-amber-300">Холбогдох сувгууд</p>
+              <h2 className="mt-2 text-2xl font-black">Demo авахад ойрхон байна</h2>
+              <p className="mt-3 text-slate-300">
+                Facebook page эсвэл live хаягаа явуулбал таны одоогийн захиалга авах урсгалд Borlo хэрхэн таарахыг шалгаж өгнө.
+              </p>
+              <p className="mt-3 text-sm text-slate-400">
+                Одоогоор эдгээр нь demo товчнууд — real chatbot/API холболт дараагийн шатанд нэмэгдэнэ.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-5">
+              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Facebook</a>
+              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Instagram</a>
+              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">TikTok</a>
+              <a href="#" className="rounded-2xl bg-amber-300 px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Messenger</a>
+              <a href="#" className="rounded-2xl bg-white px-4 py-3 text-center font-bold text-slate-950 shadow active:scale-95">Telegram</a>
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
