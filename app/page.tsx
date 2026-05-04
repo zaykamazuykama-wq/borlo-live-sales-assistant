@@ -482,6 +482,7 @@ export default function LiveShopManagerDemo() {
   const [copyStatus, setCopyStatus] = useState('')
   const [paymentRequestCopyStatus, setPaymentRequestCopyStatus] = useState('')
   const [demoResetFeedback, setDemoResetFeedback] = useState('')
+  const [packingListCopyStatus, setPackingListCopyStatus] = useState('')
   const [hydrated, setHydrated] = useState(false)
   const [products, setБарааs] = useState<Бараа[]>(DEFAULT_PRODUCTS)
   const [activeБарааCode, setActiveБарааCode] = useState('A12')
@@ -1355,8 +1356,45 @@ export default function LiveShopManagerDemo() {
               <h2 className="text-2xl font-black">Packing / Delivery List</h2>
               <p className="text-sm text-slate-500">Зөвхөн Төлсөн захиалга харагдана.</p>
             </div>
-            <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
+            <div className="flex gap-2">
+              <button onClick={() => {
+                if (paidOrders.length === 0) {
+                  setPackingListCopyStatus('Хуулах баглаа боодлын жагсаалт алга');
+                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
+                  return;
+                }
+                const packingListHeader = 'Баглаа боодлын жагсаалт';
+                const packingListItems = paidOrders.map((order, index) => {
+                  const itemParts = [
+                    `${index + 1}. ${order.buyerDisplayName}`,
+                  ];
+                  if (order.phone) itemParts[0] += ` ${order.phone}`;
+                  itemParts.push(` ${order.productCode} - ${order.productName}`);
+                  if (order.color && order.color !== DEFAULT_COLOR) itemParts.push(order.color);
+                  if (order.size && order.size !== 'Нэг размер') itemParts.push(order.size);
+                  itemParts.push(`x${order.quantity}`);
+                  itemParts.push(`Дүн: ${money(order.amount)}`);
+                  return itemParts.join(' ');
+                });
+                const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
+
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(packingListText);
+                  setPackingListCopyStatus('Баглаа боодлын жагсаалт хуулагдлаа');
+                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
+                } else {
+                  alert('Clipboard API is not available.');
+                }
+              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглаа боодлын жагсаалт хуулах</button>
+              <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
+            </div>
           </div>
+          {packingListCopyStatus && (
+            <p className="rounded-2xl bg-emerald-50 p-2 text-center text-sm font-bold text-emerald-700 mt-3">
+              {packingListCopyStatus}
+            </p>
+          )}
+
           <div className="mt-4 space-y-3">
             {paidOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Paid болсон захиалга баглаа боодлын жагсаалт руу орно.</p>}
             {paidOrders.map((order) => (
