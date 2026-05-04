@@ -33,7 +33,7 @@ type Бараа = {
   variants: БарааVariant[]
 }
 
-type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Цуцлахled'
+type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
 
 type Order = {
   id: string
@@ -47,9 +47,9 @@ type Order = {
   status: OrderStatus
   sourceCommentText: string
   createdAt: number
-  хугацаа дууснаAt: number
+  expiresAt: number
   paidAt?: number
-  цуцлахledAt?: number
+  cancelledAt?: number
   expiredAt?: number
   phone?: string
 }
@@ -592,11 +592,11 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      const expiredХүлээгдэж буйOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.хугацаа дууснаAt <= now)
-      if (expiredХүлээгдэж буйOrders.length === 0) return
+      const expiredPendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now)
+      if (expiredPendingOrders.length === 0) return
 
       const releaseByVariant = new Map<string, number>()
-      expiredХүлээгдэж буйOrders.forEach((order) => {
+      expiredPendingOrders.forEach((order) => {
         const key = variantKey(order.productCode, order.color, order.size)
         releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
       })
@@ -611,7 +611,7 @@ export default function LiveShopManagerDemo() {
         })),
       )
 
-      const expiredIds = new Set(expiredХүлээгдэж буйOrders.map((order) => order.id))
+      const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
       setOrders((currentOrders) =>
         currentOrders.map((order) =>
           expiredIds.has(order.id) && order.status === 'Хүлээгдэж буй'
@@ -726,7 +726,7 @@ export default function LiveShopManagerDemo() {
         status: 'Хүлээгдэж буй',
         sourceCommentText: line,
         createdAt: now,
-        хугацаа дууснаAt: now + TEN_MINUTES,
+        expiresAt: now + TEN_MINUTES,
       })
     })
 
@@ -742,7 +742,7 @@ export default function LiveShopManagerDemo() {
     setCommentPaste('')
   }
 
-  function markТөлсөн(orderId: string, phone?: string) {
+  function markPaid(orderId: string, phone?: string) {
     const now = Date.now()
     setOrders((currentOrders) =>
       currentOrders.map((order) =>
@@ -753,7 +753,7 @@ export default function LiveShopManagerDemo() {
     )
   }
 
-  function цуцлахOrder(orderId: string) {
+  function cancelOrder(orderId: string) {
     const now = Date.now()
     const order = orders.find((item) => item.id === orderId)
     if (!order || order.status !== 'Хүлээгдэж буй') return
@@ -763,7 +763,7 @@ export default function LiveShopManagerDemo() {
     ))
 
     setOrders(orders.map((item) =>
-      item.id === orderId ? { ...item, status: 'Цуцлахled', цуцлахledAt: now } : item,
+      item.id === orderId ? { ...item, status: 'Cancelled', cancelledAt: now } : item,
     ))
   }
 
@@ -1253,11 +1253,11 @@ export default function LiveShopManagerDemo() {
                       <p className="text-xl font-black">{order.id} • {order.buyerDisplayName}</p>
                       <p className="text-slate-600">{order.productCode} {order.productName} • {order.color} / {order.size} × {order.quantity}</p>
                       <p className="font-bold">{money(order.amount)}</p>
-                      <p className="text-xs text-slate-500">Дуусах: {dateTime(order.хугацаа дууснаAt)}</p>
+                      <p className="text-xs text-slate-500">Дуусах: {dateTime(order.expiresAt)}</p>
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
-                      <button onClick={() => markТөлсөн(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Төлсөн болгох</button>
-                      <button onClick={() => цуцлахOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
+                      <button onClick={() => markPaid(order.id)} className="rounded-2xl bg-emerald-600 px-4 py-3 font-bold text-white">Төлсөн болгох</button>
+                      <button onClick={() => cancelOrder(order.id)} className="rounded-2xl bg-rose-600 px-4 py-3 font-bold text-white">Цуцлах</button>
                     </div>
                   </div>
                 </div>
