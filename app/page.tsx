@@ -908,9 +908,17 @@ export default function LiveShopManagerDemo() {
                 Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй
               </p>
             </div>
-            <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
-              Демо сэргээх
-            </button>
+            <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+              <a
+                href="#trial"
+                className="rounded-2xl bg-amber-300 px-5 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
+              >
+                Анхны 2 live үнэгүй турших
+              </a>
+              <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
+                Демо сэргээх
+              </button>
+            </div>
           </div>
         </section>
 
