@@ -2,7 +2,21 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-type SizeTemplate = 'clothing' | 'one-size' | 'shoes' | 'european' | 'custom'
+type SizeTemplate =
+  | 'women-clothing'
+  | 'men-clothing'
+  | 'women-shoes'
+  | 'men-shoes'
+  | 'kids-shoes'
+  | 'kids-clothing'
+  | 'baby-clothing'
+  | 'pants'
+  | 'tops'
+  | 'european'
+  | 'one-size'
+  | 'custom'
+  | 'clothing'
+  | 'shoes'
 
 type ProductVariant = {
   color: string
@@ -63,12 +77,53 @@ type PaymentEvent = {
 const DEFAULT_COLOR = 'Үндсэн өнгө'
 
 const SIZE_TEMPLATES: Record<SizeTemplate, string[]> = {
-  clothing: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
-  shoes: ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45'],
-  european: ['34', '36', '38', '40', '42', '44', '46', '48', '50', '52'],
+  'women-clothing': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
+  'men-clothing': ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
+  'women-shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
+  'men-shoes': ['39', '40', '41', '42', '43', '44', '45', '46'],
+  'kids-shoes': ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35'],
+  'kids-clothing': ['80', '90', '100', '110', '120', '130', '140', '150', '160'],
+  'baby-clothing': ['0-3сар', '3-6сар', '6-12сар', '12-18сар', '18-24сар'],
+  pants: ['26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '38', '40'],
+  tops: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
+  european: ['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54', '56', '58', '60'],
   'one-size': ['Нэг размер'],
   custom: [],
+  clothing: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
+  shoes: ['35', '36', '37', '38', '39', '40', '41', '42'],
 }
+
+const SIZE_TEMPLATE_LABELS: Record<SizeTemplate, string> = {
+  'women-clothing': 'Эмэгтэй хувцас',
+  'men-clothing': 'Эрэгтэй хувцас',
+  'women-shoes': 'Эмэгтэй гутал',
+  'men-shoes': 'Эрэгтэй гутал',
+  'kids-shoes': 'Хүүхдийн гутал',
+  'kids-clothing': 'Хүүхдийн хувцас',
+  'baby-clothing': 'Нярай хувцас',
+  pants: 'Өмдний размер',
+  tops: 'Цамц / дээд хувцас',
+  european: 'Европ размер',
+  'one-size': 'Нэг размер',
+  custom: 'Custom size',
+  clothing: 'Эмэгтэй хувцас',
+  shoes: 'Эмэгтэй гутал',
+}
+
+const SELLER_SIZE_TEMPLATE_OPTIONS: SizeTemplate[] = [
+  'women-clothing',
+  'men-clothing',
+  'women-shoes',
+  'men-shoes',
+  'kids-shoes',
+  'kids-clothing',
+  'baby-clothing',
+  'pants',
+  'tops',
+  'european',
+  'one-size',
+  'custom',
+]
 
 const SUPPORTED_COLORS = [
   'Хар',
@@ -92,7 +147,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     code: 'A12',
     name: 'Даашинз',
     price: 89000,
-    sizeTemplate: 'clothing',
+    sizeTemplate: 'women-clothing',
     colors: ['Хар', 'Улаан'],
     variants: [
       { color: 'Хар', size: 'S', stock: 1 },
@@ -115,7 +170,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     code: 'C01',
     name: 'Эмэгтэй гутал',
     price: 150000,
-    sizeTemplate: 'shoes',
+    sizeTemplate: 'women-shoes',
     colors: ['Цагаан', 'Хар'],
     variants: [
       { color: 'Цагаан', size: '37', stock: 1 },
@@ -137,6 +192,30 @@ const DEFAULT_PRODUCTS: Product[] = [
       { color: 'Хар', size: '40', stock: 1 },
       { color: 'Хар', size: '42', stock: 2 },
       { color: 'Саарал', size: '44', stock: 1 },
+    ],
+  },
+  {
+    code: 'E01',
+    name: 'Хүүхдийн гутал',
+    price: 79000,
+    sizeTemplate: 'kids-shoes',
+    colors: ['Цагаан'],
+    variants: [
+      { color: 'Цагаан', size: '28', stock: 1 },
+      { color: 'Цагаан', size: '29', stock: 2 },
+      { color: 'Цагаан', size: '30', stock: 1 },
+    ],
+  },
+  {
+    code: 'F01',
+    name: 'Эрэгтэй өмд',
+    price: 99000,
+    sizeTemplate: 'pants',
+    colors: ['Хар'],
+    variants: [
+      { color: 'Хар', size: '30', stock: 1 },
+      { color: 'Хар', size: '32', stock: 2 },
+      { color: 'Хар', size: '34', stock: 1 },
     ],
   },
 ]
@@ -197,8 +276,14 @@ function findProductInText(text: string, products: Product[]) {
   return products.find((product) => productCodeRegex(product.code).test(text))
 }
 
+function normalizeSizeTemplate(template?: SizeTemplate): SizeTemplate {
+  if (template === 'clothing') return 'women-clothing'
+  if (template === 'shoes') return 'women-shoes'
+  return template || 'one-size'
+}
+
 function normalizeProduct(product: Product & { stock?: number; sizeTemplate?: SizeTemplate }): Product {
-  const sizeTemplate = product.sizeTemplate || 'one-size'
+  const sizeTemplate = normalizeSizeTemplate(product.sizeTemplate)
   const colors = product.colors?.length ? product.colors : [DEFAULT_COLOR]
   const variants = product.variants?.length
     ? product.variants
@@ -251,13 +336,20 @@ function detectColor(text: string, product: Product) {
   return productColor ? { color: productColor } : { reason: 'Ийм өнгө алга байна' }
 }
 
+function sizeRegex(size: string) {
+  return new RegExp(`(^|[^\p{L}\p{N}-])${size.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\p{L}\p{N}-]|$)`, 'iu')
+}
+
 function detectSize(text: string, product: Product) {
   const sizes = productSizes(product)
   if (sizes.length === 1) return { size: sizes[0] }
 
-  const tokens: string[] = text.toLowerCase().match(/[\p{L}\p{N}]+/gu) || []
-  const detected = sizes.find((size) => tokens.includes(size.toLowerCase()))
-  return detected ? { size: detected } : { reason: 'Сайз тодорхойгүй байна' }
+  const detected = [...sizes].sort((a, b) => b.length - a.length).find((size) => sizeRegex(size).test(text))
+  if (detected) return { size: detected }
+
+  const allKnownSizes = Array.from(new Set(Object.values(SIZE_TEMPLATES).flat())).sort((a, b) => b.length - a.length)
+  const knownButUnavailable = allKnownSizes.find((size) => sizeRegex(size).test(text))
+  return knownButUnavailable ? { reason: 'Ийм variant алга байна' } : { reason: 'Сайз тодорхойгүй байна' }
 }
 
 function parseColorsInput(value: string) {
@@ -374,7 +466,7 @@ export default function LiveShopManagerDemo() {
     code: '',
     name: '',
     price: '',
-    sizeTemplate: 'clothing' as SizeTemplate,
+    sizeTemplate: 'women-clothing' as SizeTemplate,
     colors: '',
     variantStock: '',
   })
@@ -480,7 +572,7 @@ export default function LiveShopManagerDemo() {
 
     setProducts([...products, { code, name, price, sizeTemplate: newProduct.sizeTemplate, colors, variants }])
     setActiveProductCode(code)
-    setNewProduct({ code: '', name: '', price: '', sizeTemplate: 'clothing', colors: '', variantStock: '' })
+    setNewProduct({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', colors: '', variantStock: '' })
   }
 
   function parseComments() {
@@ -792,7 +884,7 @@ export default function LiveShopManagerDemo() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-xl font-black">{product.code} — {product.name}</p>
-                      <p className="text-slate-600">{money(product.price)} • stock {totalStock(product)} • {product.sizeTemplate}</p>
+                      <p className="text-slate-600">{money(product.price)} • stock {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
                       <p className="mt-1 text-sm text-slate-500">Өнгө: {product.colors.join(', ')}</p>
                       <p className="mt-2 text-xs text-slate-500">
                         {product.variants.map((variant) => `${variant.color}/${variant.size}: ${variant.stock}`).join(' • ')}
@@ -810,11 +902,9 @@ export default function LiveShopManagerDemo() {
               <input className="rounded-2xl border p-4" placeholder="Нэр" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} />
               <input className="rounded-2xl border p-4" placeholder="Үнэ" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
               <select className="rounded-2xl border p-4" value={newProduct.sizeTemplate} onChange={(e) => setNewProduct({ ...newProduct, sizeTemplate: e.target.value as SizeTemplate })}>
-                <option value="one-size">Нэг размер</option>
-                <option value="clothing">Хувцас size</option>
-                <option value="shoes">Гутлын размер</option>
-                <option value="european">Европ размер</option>
-                <option value="custom">Custom size</option>
+                {SELLER_SIZE_TEMPLATE_OPTIONS.map((template) => (
+                  <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
+                ))}
               </select>
               <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newProduct.colors} onChange={(e) => setNewProduct({ ...newProduct, colors: e.target.value })} />
               <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Variant stock: Хар/S:1, Хар/M:2, Улаан/L:2" value={newProduct.variantStock} onChange={(e) => setNewProduct({ ...newProduct, variantStock: e.target.value })} />
@@ -824,7 +914,7 @@ export default function LiveShopManagerDemo() {
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Коммент наах</h2>
-            <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • D01 хар 42 авъя</p>
+            <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
             <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
             <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Захиалга үүсгэх</button>
           </div>
