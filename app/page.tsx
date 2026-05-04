@@ -1117,9 +1117,16 @@ export default function LiveShopManagerDemo() {
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(
-                    `Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна.\n\nFacebook/live хаяг: ${trialLead.facebook || '[энд бичнэ]'}\nУтас: ${trialLead.phone || '[энд бичнэ]'}\nГол зардаг бараа: ${trialLead.product || '[энд бичнэ]'}\nСард хийх live: ${trialLead.liveCount || '[энд бичнэ]'}\nСонирхож буй хувилбар: ${trialLead.plan}`
-                  )
+                  const demoRequestText = [
+                    'Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна.',
+                    '',
+                    `Facebook/live хаяг: ${trialLead.facebook || '[энд бичнэ]'} `,
+                    `Утас: ${trialLead.phone || '[энд бичнэ]'} `,
+                    `Гол зардаг бараа: ${trialLead.product || '[энд бичнэ]'} `,
+                    `Сард хийх live: ${trialLead.liveCount || '[энд бичнэ]'} `,
+                    `Сонирхож буй хувилбар: ${trialLead.plan} `,
+                  ].join('\n')
+                  navigator.clipboard.writeText(demoRequestText)
                   setCopyStatus('Хууллаа — Messenger/Telegram рүү paste хийгээрэй')
                   window.setTimeout(() => setCopyStatus(''), 2500)
                 }}
@@ -1131,7 +1138,7 @@ export default function LiveShopManagerDemo() {
                 <p className="rounded-2xl bg-emerald-50 p-3 text-center text-sm font-bold text-emerald-700 sm:col-span-2">
                   {copyStatus}
                 </p>
-              )
+              )}
             </div>
           </div>
         </section>
