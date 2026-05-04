@@ -492,7 +492,7 @@ export default function LiveShopManagerDemo() {
     mn: {
       mainHeading: "Лайв Захиалга Тулгагч",
       subtitle: "Шууд борлуулалтын туслах / Live Sales Assistant",
-      flow: "Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → CSV",
+      flow: "Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт",
       trialBadge: "Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй",
       demoResetButton: "Demo сэргээх",
       pendingCount: "Хүлээгдэж буй",
@@ -919,7 +919,7 @@ export default function LiveShopManagerDemo() {
               <p className="text-sm font-semibold text-amber-300">Borlo</p>
               <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
               <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
-              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → CSV</p>
+              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт</p>
               <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
                 Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй
               </p>
