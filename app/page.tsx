@@ -843,7 +843,7 @@ export default function LiveShopManagerDemo() {
               <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах / Live Sales Assistant</p>
               <p className="mt-3 max-w-2xl text-slate-200">Comment → Order → Payment status → Stock → Packing list → CSV export</p>
               <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
-                Demo хувилбар — Facebook/QPay real холболт ороогүй
+                Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй
               </p>
             </div>
             <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
