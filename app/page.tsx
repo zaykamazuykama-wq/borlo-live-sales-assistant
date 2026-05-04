@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-type SizeTemplate =
+type РазмерTemplate =
   | 'women-clothing'
   | 'men-clothing'
   | 'women-shoes'
@@ -18,19 +18,19 @@ type SizeTemplate =
   | 'clothing'
   | 'shoes'
 
-type ProductVariant = {
+type БарааVariant = {
   color: string
   size: string
-  stock: number
+  үлдэгдэл: number
 }
 
-type Product = {
+type Бараа = {
   code: string
   name: string
   price: number
-  sizeTemplate: SizeTemplate
+  sizeTemplate: РазмерTemplate
   colors: string[]
-  variants: ProductVariant[]
+  variants: БарааVariant[]
 }
 
 type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
@@ -76,7 +76,7 @@ type PaymentEvent = {
 
 const DEFAULT_COLOR = 'Үндсэн өнгө'
 
-const SIZE_TEMPLATES: Record<SizeTemplate, string[]> = {
+const SIZE_TEMPLATES: Record<РазмерTemplate, string[]> = {
   'women-clothing': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
   'men-clothing': ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
   'women-shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
@@ -93,7 +93,7 @@ const SIZE_TEMPLATES: Record<SizeTemplate, string[]> = {
   shoes: ['35', '36', '37', '38', '39', '40', '41', '42'],
 }
 
-const SIZE_TEMPLATE_LABELS: Record<SizeTemplate, string> = {
+const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
   'women-clothing': 'Эмэгтэй хувцас',
   'men-clothing': 'Эрэгтэй хувцас',
   'women-shoes': 'Эмэгтэй гутал',
@@ -105,12 +105,12 @@ const SIZE_TEMPLATE_LABELS: Record<SizeTemplate, string> = {
   tops: 'Цамц / дээд хувцас',
   european: 'Европ размер',
   'one-size': 'Нэг размер',
-  custom: 'Custom size',
+  custom: 'Өөрийн размер',
   clothing: 'Эмэгтэй хувцас',
   shoes: 'Эмэгтэй гутал',
 }
 
-const SELLER_SIZE_TEMPLATE_OPTIONS: SizeTemplate[] = [
+const SELLER_SIZE_TEMPLATE_OPTIONS: РазмерTemplate[] = [
   'women-clothing',
   'men-clothing',
   'women-shoes',
@@ -142,7 +142,7 @@ const SUPPORTED_COLORS = [
   'Мөнгөлөг',
 ]
 
-const DEFAULT_PRODUCTS: Product[] = [
+const DEFAULT_PRODUCTS: Бараа[] = [
   {
     code: 'A12',
     name: 'Даашинз',
@@ -150,12 +150,12 @@ const DEFAULT_PRODUCTS: Product[] = [
     sizeTemplate: 'women-clothing',
     colors: ['Хар', 'Улаан'],
     variants: [
-      { color: 'Хар', size: 'S', stock: 1 },
-      { color: 'Хар', size: 'M', stock: 2 },
-      { color: 'Хар', size: 'L', stock: 1 },
-      { color: 'Хар', size: 'XL', stock: 1 },
-      { color: 'Улаан', size: 'M', stock: 1 },
-      { color: 'Улаан', size: 'L', stock: 2 },
+      { color: 'Хар', size: 'S', үлдэгдэл: 1 },
+      { color: 'Хар', size: 'M', үлдэгдэл: 2 },
+      { color: 'Хар', size: 'L', үлдэгдэл: 1 },
+      { color: 'Хар', size: 'XL', үлдэгдэл: 1 },
+      { color: 'Улаан', size: 'M', үлдэгдэл: 1 },
+      { color: 'Улаан', size: 'L', үлдэгдэл: 2 },
     ],
   },
   {
@@ -164,7 +164,7 @@ const DEFAULT_PRODUCTS: Product[] = [
     price: 120000,
     sizeTemplate: 'one-size',
     colors: ['Хар'],
-    variants: [{ color: 'Хар', size: 'Нэг размер', stock: 3 }],
+    variants: [{ color: 'Хар', size: 'Нэг размер', үлдэгдэл: 3 }],
   },
   {
     code: 'C01',
@@ -173,13 +173,13 @@ const DEFAULT_PRODUCTS: Product[] = [
     sizeTemplate: 'women-shoes',
     colors: ['Цагаан', 'Хар'],
     variants: [
-      { color: 'Цагаан', size: '37', stock: 1 },
-      { color: 'Цагаан', size: '38', stock: 2 },
-      { color: 'Цагаан', size: '42', stock: 1 },
-      { color: 'Хар', size: '38', stock: 1 },
-      { color: 'Хар', size: '39', stock: 2 },
-      { color: 'Хар', size: '40', stock: 1 },
-      { color: 'Хар', size: '41', stock: 1 },
+      { color: 'Цагаан', size: '37', үлдэгдэл: 1 },
+      { color: 'Цагаан', size: '38', үлдэгдэл: 2 },
+      { color: 'Цагаан', size: '42', үлдэгдэл: 1 },
+      { color: 'Хар', size: '38', үлдэгдэл: 1 },
+      { color: 'Хар', size: '39', үлдэгдэл: 2 },
+      { color: 'Хар', size: '40', үлдэгдэл: 1 },
+      { color: 'Хар', size: '41', үлдэгдэл: 1 },
     ],
   },
   {
@@ -189,9 +189,9 @@ const DEFAULT_PRODUCTS: Product[] = [
     sizeTemplate: 'european',
     colors: ['Хар', 'Саарал'],
     variants: [
-      { color: 'Хар', size: '40', stock: 1 },
-      { color: 'Хар', size: '42', stock: 2 },
-      { color: 'Саарал', size: '44', stock: 1 },
+      { color: 'Хар', size: '40', үлдэгдэл: 1 },
+      { color: 'Хар', size: '42', үлдэгдэл: 2 },
+      { color: 'Саарал', size: '44', үлдэгдэл: 1 },
     ],
   },
   {
@@ -201,9 +201,9 @@ const DEFAULT_PRODUCTS: Product[] = [
     sizeTemplate: 'kids-shoes',
     colors: ['Цагаан'],
     variants: [
-      { color: 'Цагаан', size: '28', stock: 1 },
-      { color: 'Цагаан', size: '29', stock: 2 },
-      { color: 'Цагаан', size: '30', stock: 1 },
+      { color: 'Цагаан', size: '28', үлдэгдэл: 1 },
+      { color: 'Цагаан', size: '29', үлдэгдэл: 2 },
+      { color: 'Цагаан', size: '30', үлдэгдэл: 1 },
     ],
   },
   {
@@ -213,9 +213,9 @@ const DEFAULT_PRODUCTS: Product[] = [
     sizeTemplate: 'pants',
     colors: ['Хар'],
     variants: [
-      { color: 'Хар', size: '30', stock: 1 },
-      { color: 'Хар', size: '32', stock: 2 },
-      { color: 'Хар', size: '34', stock: 1 },
+      { color: 'Хар', size: '30', үлдэгдэл: 1 },
+      { color: 'Хар', size: '32', үлдэгдэл: 2 },
+      { color: 'Хар', size: '34', үлдэгдэл: 1 },
     ],
   },
 ]
@@ -230,7 +230,7 @@ const SOCIAL_LINKS = {
 
 const STORAGE_KEYS = {
   products: 'live-shop-products',
-  activeProductCode: 'live-shop-active-product-code',
+  activeБарааCode: 'live-shop-active-product-code',
   orders: 'live-shop-orders',
   unclearComments: 'live-shop-unclear-comments',
   paymentШалгахEvents: 'live-shop-payment-шалгах-events',
@@ -280,31 +280,31 @@ function productCodeRegex(code: string) {
   return new RegExp(`(^|[^a-zA-Z0-9])${code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-zA-Z0-9]|$)`, 'i')
 }
 
-function findProductInText(text: string, products: Product[]) {
+function findБарааInText(text: string, products: Бараа[]) {
   return products.find((product) => productCodeRegex(product.code).test(text))
 }
 
-function normalizeSizeTemplate(template?: SizeTemplate): SizeTemplate {
+function normalizeРазмерTemplate(template?: РазмерTemplate): РазмерTemplate {
   if (template === 'clothing') return 'women-clothing'
   if (template === 'shoes') return 'women-shoes'
   return template || 'one-size'
 }
 
-function normalizeProduct(product: Product & { stock?: number; sizeTemplate?: SizeTemplate }): Product {
-  const sizeTemplate = normalizeSizeTemplate(product.sizeTemplate)
+function normalizeБараа(product: Бараа & { үлдэгдэл?: number; sizeTemplate?: РазмерTemplate }): Бараа {
+  const sizeTemplate = normalizeРазмерTemplate(product.sizeTemplate)
   const colors = product.colors?.length ? product.colors : [DEFAULT_COLOR]
   const variants = product.variants?.length
     ? product.variants
-    : [{ color: colors[0], size: SIZE_TEMPLATES[sizeTemplate][0] || 'Нэг размер', stock: product.stock || 0 }]
+    : [{ color: colors[0], size: SIZE_TEMPLATES[sizeTemplate][0] || 'Нэг размер', үлдэгдэл: product.үлдэгдэл || 0 }]
 
   return { ...product, sizeTemplate, colors, variants }
 }
 
-function totalStock(product: Product) {
-  return product.variants.reduce((sum, variant) => sum + variant.stock, 0)
+function totalStock(product: Бараа) {
+  return product.variants.reduce((sum, variant) => sum + variant.үлдэгдэл, 0)
 }
 
-function productSizes(product: Product) {
+function productРазмерs(product: Бараа) {
   if (product.sizeTemplate !== 'custom') return SIZE_TEMPLATES[product.sizeTemplate]
   return Array.from(new Set(product.variants.map((variant) => variant.size)))
 }
@@ -313,59 +313,59 @@ function variantKey(productCode: string, color: string, size: string) {
   return `${productCode}||${color}||${size}`
 }
 
-function findVariant(product: Product, color: string, size: string) {
+function findVariant(product: Бараа, color: string, size: string) {
   return product.variants.find((variant) => variant.color === color && variant.size === size)
 }
 
-function updateVariantStock(product: Product, color: string, size: string, delta: number): Product {
+function updateVariantStock(product: Бараа, color: string, size: string, delta: number): Бараа {
   return {
     ...product,
     variants: product.variants.map((variant) =>
-      variant.color === color && variant.size === size ? { ...variant, stock: variant.stock + delta } : variant,
+      variant.color === color && variant.size === size ? { ...variant, үлдэгдэл: variant.үлдэгдэл + delta } : variant,
     ),
   }
 }
 
-function findKnownColorInText(text: string) {
+function findKnownӨнгөInText(text: string) {
   const lower = text.toLowerCase()
   return [...SUPPORTED_COLORS]
     .sort((a, b) => b.length - a.length)
     .find((color) => new RegExp(`(^|[^\p{L}])${color.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\p{L}]|$)`, 'u').test(lower))
 }
 
-function detectColor(text: string, product: Product) {
+function detectӨнгө(text: string, product: Бараа) {
   const colors = product.colors.length ? product.colors : [DEFAULT_COLOR]
   if (colors.length === 1) return { color: colors[0] }
 
-  const detected = findKnownColorInText(text)
+  const detected = findKnownӨнгөInText(text)
   if (!detected) return { reason: 'Өнгө тодорхойгүй байна' }
 
-  const productColor = colors.find((color) => color.toLowerCase() === detected.toLowerCase())
-  return productColor ? { color: productColor } : { reason: 'Ийм өнгө алга байна' }
+  const productӨнгө = colors.find((color) => color.toLowerCase() === detected.toLowerCase())
+  return productӨнгө ? { color: productӨнгө } : { reason: 'Ийм өнгө алга байна' }
 }
 
 function sizeRegex(size: string) {
   return new RegExp(`(^|[^\p{L}\p{N}-])${size.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^\p{L}\p{N}-]|$)`, 'iu')
 }
 
-function detectSize(text: string, product: Product) {
-  const sizes = productSizes(product)
+function detectРазмер(text: string, product: Бараа) {
+  const sizes = productРазмерs(product)
   if (sizes.length === 1) return { size: sizes[0] }
 
   const detected = [...sizes].sort((a, b) => b.length - a.length).find((size) => sizeRegex(size).test(text))
   if (detected) return { size: detected }
 
-  const allKnownSizes = Array.from(new Set(Object.values(SIZE_TEMPLATES).flat())).sort((a, b) => b.length - a.length)
-  const knownButUnavailable = allKnownSizes.find((size) => sizeRegex(size).test(text))
+  const allKnownРазмерs = Array.from(new Set(Object.values(SIZE_TEMPLATES).flat())).sort((a, b) => b.length - a.length)
+  const knownButUnavailable = allKnownРазмерs.find((size) => sizeRegex(size).test(text))
   return knownButUnavailable ? { reason: 'Ийм variant алга байна' } : { reason: 'Сайз тодорхойгүй байна' }
 }
 
-function parseColorsInput(value: string) {
+function parseӨнгөsInput(value: string) {
   const colors = value.split(',').map((color) => color.trim()).filter(Boolean)
   return colors.length > 0 ? colors : [DEFAULT_COLOR]
 }
 
-function parseVariantStockInput(value: string, colors: string[], template: SizeTemplate) {
+function parseVariantStockInput(value: string, colors: string[], template: РазмерTemplate) {
   return value
     .split(',')
     .map((part) => part.trim())
@@ -374,16 +374,16 @@ function parseVariantStockInput(value: string, colors: string[], template: SizeT
       const match = part.match(/^(.+?)\s*\/\s*(.+?)\s*:\s*(\d+)$/)
       if (!match) return undefined
       const color = colors.find((item) => item.toLowerCase() === match[1].trim().toLowerCase()) || match[1].trim()
-      const rawSize = match[2].trim()
-      const size = SIZE_TEMPLATES[template].find((item) => item.toLowerCase() === rawSize.toLowerCase()) || rawSize
-      return { color, size, stock: Number(match[3]) }
+      const rawРазмер = match[2].trim()
+      const size = SIZE_TEMPLATES[template].find((item) => item.toLowerCase() === rawРазмер.toLowerCase()) || rawРазмер
+      return { color, size, үлдэгдэл: Number(match[3]) }
     })
-    .filter((variant): variant is ProductVariant =>
+    .filter((variant): variant is БарааVariant =>
       Boolean(variant && colors.includes(variant.color) && (template === 'custom' || SIZE_TEMPLATES[template].includes(variant.size))),
     )
 }
 
-function extractQuantity(text: string, productCode?: string) {
+function extractТоо ширхэг(text: string, productCode?: string) {
   let cleaned = text
   if (productCode) {
     cleaned = cleaned.replace(new RegExp(productCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), ' ')
@@ -470,19 +470,19 @@ export default function LiveShopManagerDemo() {
   })
   const [copyStatus, setCopyStatus] = useState('')
   const [hydrated, setHydrated] = useState(false)
-  const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS)
-  const [activeProductCode, setActiveProductCode] = useState('A12')
+  const [products, setБарааs] = useState<Бараа[]>(DEFAULT_PRODUCTS)
+  const [activeБарааCode, setActiveБарааCode] = useState('A12')
   const [orders, setOrders] = useState<Order[]>([])
   const [unclearComments, setUnclearComments] = useState<ШалгахItem[]>([])
   const [paymentШалгахEvents, setPaymentШалгахEvents] = useState<PaymentEvent[]>([])
   const [successfulPaymentEvents, setSuccessfulPaymentEvents] = useState<PaymentEvent[]>([])
   const [commentPaste, setCommentPaste] = useState('Болор: A12 хар M авъя\nСараа: A12 улаан L 2ш\nНомин: C01 цагаан 38 авъя')
   const [paymentPaste, setPaymentPaste] = useState('89000 Болор A12 99112233')
-  const [newProduct, setNewProduct] = useState({
+  const [newБараа, setNewБараа] = useState({
     code: '',
     name: '',
     price: '',
-    sizeTemplate: 'women-clothing' as SizeTemplate,
+    sizeTemplate: 'women-clothing' as РазмерTemplate,
     colors: '',
     variantStock: '',
   })
@@ -531,7 +531,7 @@ export default function LiveShopManagerDemo() {
       liveNav: "Live",
       ordersNav: "Orders",
       paymentsNav: "Payments",
-      productsNav: "Products",
+      productsNav: "Барааs",
       packingNav: "Packing List",
       insightsNav: "Insights",
       sellerLeadTitle: "Request a Trial",
@@ -550,8 +550,8 @@ export default function LiveShopManagerDemo() {
   };
 
   useEffect(() => {
-    setProducts(safeParse<Product[]>(localStorage.getItem(STORAGE_KEYS.products), DEFAULT_PRODUCTS).map(normalizeProduct))
-    setActiveProductCode(localStorage.getItem(STORAGE_KEYS.activeProductCode) || 'A12')
+    setБарааs(safeParse<Бараа[]>(localStorage.getItem(STORAGE_KEYS.products), DEFAULT_PRODUCTS).map(normalizeБараа))
+    setActiveБарааCode(localStorage.getItem(STORAGE_KEYS.activeБарааCode) || 'A12')
     setOrders(safeParse<Order[]>(localStorage.getItem(STORAGE_KEYS.orders), []))
     setUnclearComments(safeParse<ШалгахItem[]>(localStorage.getItem(STORAGE_KEYS.unclearComments), []))
     setPaymentШалгахEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentШалгахEvents), []))
@@ -566,8 +566,8 @@ export default function LiveShopManagerDemo() {
 
   useEffect(() => {
     if (!hydrated) return
-    localStorage.setItem(STORAGE_KEYS.activeProductCode, activeProductCode)
-  }, [activeProductCode, hydrated])
+    localStorage.setItem(STORAGE_KEYS.activeБарааCode, activeБарааCode)
+  }, [activeБарааCode, hydrated])
 
   useEffect(() => {
     if (!hydrated) return
@@ -601,12 +601,12 @@ export default function LiveShopManagerDemo() {
         releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
       })
 
-      setProducts((currentProducts) =>
-        currentProducts.map((product) => ({
+      setБарааs((currentБарааs) =>
+        currentБарааs.map((product) => ({
           ...product,
           variants: product.variants.map((variant) => ({
             ...variant,
-            stock: variant.stock + (releaseByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
+            үлдэгдэл: variant.үлдэгдэл + (releaseByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
           })),
         })),
       )
@@ -624,22 +624,22 @@ export default function LiveShopManagerDemo() {
     return () => clearInterval(interval)
   }, [orders])
 
-  const activeProduct = products.find((product) => product.code === activeProductCode) || products[0]
+  const activeБараа = products.find((product) => product.code === activeБарааCode) || products[0]
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
 
   const maxOrderNumber = useMemo(() => Math.max(0, ...orders.map((order) => orderNumber(order.id))), [orders])
 
-  function addProduct() {
-    const code = newProduct.code.trim().toUpperCase()
-    const name = newProduct.name.trim()
-    const price = Number(newProduct.price)
-    const colors = parseColorsInput(newProduct.colors)
-    const variants = parseVariantStockInput(newProduct.variantStock, colors, newProduct.sizeTemplate)
+  function addБараа() {
+    const code = newБараа.code.trim().toUpperCase()
+    const name = newБараа.name.trim()
+    const price = Number(newБараа.price)
+    const colors = parseӨнгөsInput(newБараа.colors)
+    const variants = parseVariantStockInput(newБараа.variantStock, colors, newБараа.sizeTemplate)
 
     if (!code || !name || price <= 0 || variants.length === 0) {
-      alert('Бүтээгдэхүүний мэдээлэл болон variant stock-оо зөв бөглөнө үү.')
+      alert('Бүтээгдэхүүний мэдээлэл болон variant үлдэгдэл-оо зөв бөглөнө үү.')
       return
     }
 
@@ -648,9 +648,9 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    setProducts([...products, { code, name, price, sizeTemplate: newProduct.sizeTemplate, colors, variants }])
-    setActiveProductCode(code)
-    setNewProduct({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', colors: '', variantStock: '' })
+    setБарааs([...products, { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants }])
+    setActiveБарааCode(code)
+    setNewБараа({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', colors: '', variantStock: '' })
   }
 
   function parseComments() {
@@ -659,7 +659,7 @@ export default function LiveShopManagerDemo() {
 
     const availableStockByVariant = new Map(
       products.flatMap((product) =>
-        product.variants.map((variant) => [variantKey(product.code, variant.color, variant.size), variant.stock] as const),
+        product.variants.map((variant) => [variantKey(product.code, variant.color, variant.size), variant.үлдэгдэл] as const),
       ),
     )
     const newOrders: Order[] = []
@@ -668,8 +668,8 @@ export default function LiveShopManagerDemo() {
     const now = Date.now()
 
     lines.forEach((line) => {
-      const codedProduct = findProductInText(line, products)
-      const product = codedProduct || (hasBuyKeyword(line) ? activeProduct : undefined)
+      const codedБараа = findБарааInText(line, products)
+      const product = codedБараа || (hasBuyKeyword(line) ? activeБараа : undefined)
 
       if (!product) {
         newШалгахs.push({
@@ -681,13 +681,13 @@ export default function LiveShopManagerDemo() {
         return
       }
 
-      const colorResult = detectColor(line, product)
+      const colorResult = detectӨнгө(line, product)
       if (!colorResult.color) {
         newШалгахs.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: colorResult.reason || 'Өнгө тодорхойгүй байна', createdAt: now })
         return
       }
 
-      const sizeResult = detectSize(line, product)
+      const sizeResult = detectРазмер(line, product)
       if (!sizeResult.size) {
         newШалгахs.push({ id: makeId('COMMENT-REVIEW'), text: line, reason: sizeResult.reason || 'Сайз тодорхойгүй байна', createdAt: now })
         return
@@ -699,7 +699,7 @@ export default function LiveShopManagerDemo() {
         return
       }
 
-      const quantity = extractQuantity(line, product.code)
+      const quantity = extractТоо ширхэг(line, product.code)
       const key = variantKey(product.code, colorResult.color, sizeResult.size)
       const available = availableStockByVariant.get(key) || 0
 
@@ -730,11 +730,11 @@ export default function LiveShopManagerDemo() {
       })
     })
 
-    setProducts(products.map((product) => ({
+    setБарааs(products.map((product) => ({
       ...product,
       variants: product.variants.map((variant) => ({
         ...variant,
-        stock: availableStockByVariant.get(variantKey(product.code, variant.color, variant.size)) ?? variant.stock,
+        үлдэгдэл: availableStockByVariant.get(variantKey(product.code, variant.color, variant.size)) ?? variant.үлдэгдэл,
       })),
     })))
     if (newOrders.length > 0) setOrders([...orders, ...newOrders])
@@ -758,7 +758,7 @@ export default function LiveShopManagerDemo() {
     const order = orders.find((item) => item.id === orderId)
     if (!order || order.status !== 'Хүлээгдэж буй') return
 
-    setProducts(products.map((product) =>
+    setБарааs(products.map((product) =>
       product.code === order.productCode ? updateVariantStock(product, order.color, order.size, order.quantity) : product,
     ))
 
@@ -876,7 +876,7 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    const header = ['Order ID', 'Buyer', 'Phone', 'Product Code', 'Product Name', 'Color', 'Size', 'Quantity', 'Amount', 'Төлсөн At']
+    const header = ['Order ID', 'Buyer', 'Phone', 'Бараа Code', 'Бараа Name', 'Өнгө', 'Размер', 'Тоо ширхэг', 'Amount', 'Төлсөн At']
     const rows = paidOrders.map((order) => [
       order.id,
       order.buyerDisplayName,
@@ -900,8 +900,8 @@ export default function LiveShopManagerDemo() {
   }
 
   function resetDemo() {
-    setProducts(DEFAULT_PRODUCTS)
-    setActiveProductCode('A12')
+    setБарааs(DEFAULT_PRODUCTS)
+    setActiveБарааCode('A12')
     setOrders([])
     setUnclearComments([])
     setPaymentШалгахEvents([])
@@ -1003,14 +1003,14 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        {activeProduct && (
+        {activeБараа && (
           <section id="live" className="rounded-3xl border-2 border-emerald-300 bg-emerald-50 p-5 shadow-sm">
-            <p className="text-sm font-bold uppercase text-emerald-700">Active product</p>
+            <p className="text-sm font-bold uppercase text-emerald-700">Идэвхтэй бараа</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-4">
-              <div><p className="text-xs text-slate-500">Код</p><p className="text-2xl font-black">{activeProduct.code}</p></div>
-              <div><p className="text-xs text-slate-500">Нэр</p><p className="text-2xl font-black">{activeProduct.name}</p></div>
-              <div><p className="text-xs text-slate-500">Үнэ</p><p className="text-2xl font-black">{money(activeProduct.price)}</p></div>
-              <div><p className="text-xs text-slate-500">Үлдэгдэл</p><p className="text-2xl font-black">{totalStock(activeProduct)}</p></div>
+              <div><p className="text-xs text-slate-500">Код</p><p className="text-2xl font-black">{activeБараа.code}</p></div>
+              <div><p className="text-xs text-slate-500">Нэр</p><p className="text-2xl font-black">{activeБараа.name}</p></div>
+              <div><p className="text-xs text-slate-500">Үнэ</p><p className="text-2xl font-black">{money(activeБараа.price)}</p></div>
+              <div><p className="text-xs text-slate-500">Үлдэгдэл</p><p className="text-2xl font-black">{totalStock(activeБараа)}</p></div>
             </div>
           </section>
         )}
@@ -1171,31 +1171,31 @@ export default function LiveShopManagerDemo() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-xl font-black">{product.code} — {product.name}</p>
-                      <p className="text-slate-600">{money(product.price)} • stock {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
+                      <p className="text-slate-600">{money(product.price)} • үлдэгдэл {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
                       <p className="mt-1 text-sm text-slate-500">Өнгө: {product.colors.join(', ')}</p>
                       <p className="mt-2 text-xs text-slate-500">
-                        {product.variants.map((variant) => `${variant.color}/${variant.size}: ${variant.stock}`).join(' • ')}
+                        {product.variants.map((variant) => `${variant.color}/${variant.size}: ${variant.үлдэгдэл}`).join(' • ')}
                       </p>
                     </div>
-                    <button onClick={() => setActiveProductCode(product.code)} className={`rounded-2xl px-5 py-3 font-bold ${activeProductCode === product.code ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
-                      {activeProductCode === product.code ? 'Active' : 'Active болгох'}
+                    <button onClick={() => setActiveБарааCode(product.code)} className={`rounded-2xl px-5 py-3 font-bold ${activeБарааCode === product.code ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
+                      {activeБарааCode === product.code ? 'Active' : 'Active болгох'}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <input className="rounded-2xl border p-4" placeholder="Код: C03" value={newProduct.code} onChange={(e) => setNewProduct({ ...newProduct, code: e.target.value })} />
-              <input className="rounded-2xl border p-4" placeholder="Нэр" value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} />
-              <input className="rounded-2xl border p-4" placeholder="Үнэ" type="number" value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
-              <select className="rounded-2xl border p-4" value={newProduct.sizeTemplate} onChange={(e) => setNewProduct({ ...newProduct, sizeTemplate: e.target.value as SizeTemplate })}>
+              <input className="rounded-2xl border p-4" placeholder="Код: C03" value={newБараа.code} onChange={(e) => setNewБараа({ ...newБараа, code: e.target.value })} />
+              <input className="rounded-2xl border p-4" placeholder="Нэр" value={newБараа.name} onChange={(e) => setNewБараа({ ...newБараа, name: e.target.value })} />
+              <input className="rounded-2xl border p-4" placeholder="Үнэ" type="number" value={newБараа.price} onChange={(e) => setNewБараа({ ...newБараа, price: e.target.value })} />
+              <select className="rounded-2xl border p-4" value={newБараа.sizeTemplate} onChange={(e) => setNewБараа({ ...newБараа, sizeTemplate: e.target.value as РазмерTemplate })}>
                 {SELLER_SIZE_TEMPLATE_OPTIONS.map((template) => (
                   <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
                 ))}
               </select>
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newProduct.colors} onChange={(e) => setNewProduct({ ...newProduct, colors: e.target.value })} />
-              <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Variant stock: Хар/S:1, Хар/M:2, Улаан/L:2" value={newProduct.variantStock} onChange={(e) => setNewProduct({ ...newProduct, variantStock: e.target.value })} />
-              <button onClick={addProduct} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Бүтээгдэхүүн нэмэх</button>
+              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
+              <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Үлдэгдэл: Хар/S:1, Хар/M:2, Улаан/L:2" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
+              <button onClick={addБараа} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Бүтээгдэхүүн нэмэх</button>
             </div>
           </div>
 
@@ -1347,7 +1347,7 @@ export default function LiveShopManagerDemo() {
 4. 2 pending захиалга зэрэг Төлсөн болно
 5. Packing List-д A12 болон C01 хоёулаа харагдана
 6. CSV татах товчийг дарна`}</pre>
-          <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга stock-ийг аль хэдийн reserve хийдэг. Төлсөн болгоход stock дахин хасахгүй.</p>
+          <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга үлдэгдэл-ийг аль хэдийн reserve хийдэг. Төлсөн болгоход үлдэгдэл дахин хасахгүй.</p>
         </section>
 
         <section className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
