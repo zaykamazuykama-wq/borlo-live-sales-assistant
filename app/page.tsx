@@ -1147,6 +1147,9 @@ export default function LiveShopManagerDemo() {
               <p className="mt-3 text-sm text-slate-400">
                 Одоогоор эдгээр нь туршилтын товчнууд — бодит chatbot/API холболт дараагийн шатанд нэмэгдэнэ.
               </p>
+              <p className="mt-3 rounded-2xl bg-white/10 p-3 text-sm font-semibold text-slate-200">
+                Эхлээд demo хүсэлтийн текстээ хуулж аваад Messenger эсвэл Telegram рүү paste хийгээрэй.
+              </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-5">
