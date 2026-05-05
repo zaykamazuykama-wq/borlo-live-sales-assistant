@@ -235,10 +235,13 @@ const STORAGE_KEYS = {
   unclearComments: 'live-shop-unclear-comments',
   paymentReviewEvents: 'live-shop-payment-шалгах-events',
   successfulPaymentEvents: 'live-shop-successful-payment-events',
+  reservationTimeoutMinutes: 'live-shop-reservation-timeout-minutes',
 }
 
 const BUY_KEYWORDS = ['авъя', 'авя', 'авая', 'авна', 'avya', 'avii', 'awya']
-const TEN_MINUTES = 10 * 60 * 1000
+const DEFAULT_RESERVATION_TIMEOUT_MINUTES = 15
+const RESERVATION_TIMEOUT_OPTIONS = [10, 15, 20, 30, 60, 'custom'] as const
+
 
 function money(value: number) {
   return `${value.toLocaleString('mn-MN')}₮`
@@ -501,6 +504,8 @@ export default function LiveShopManagerDemo() {
     variantStock: '',
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
+  const [reservationTimeoutMinutes, setReservationTimeoutMinutes] = useState(DEFAULT_RESERVATION_TIMEOUT_MINUTES)
+  const [customReservationTimeout, setCustomReservationTimeout] = useState(String(DEFAULT_RESERVATION_TIMEOUT_MINUTES))
 
   const LANG_TEXT = {
     mn: {
@@ -570,6 +575,10 @@ export default function LiveShopManagerDemo() {
     setUnclearComments(safeParse<ШалгахItem[]>(localStorage.getItem(STORAGE_KEYS.unclearComments), []))
     setPaymentReviewEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentReviewEvents), []))
     setSuccessfulPaymentEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.successfulPaymentEvents), []))
+    const savedTimeout = Number(localStorage.getItem(STORAGE_KEYS.reservationTimeoutMinutes))
+    const initialTimeout = Number.isFinite(savedTimeout) && savedTimeout > 0 ? savedTimeout : DEFAULT_RESERVATION_TIMEOUT_MINUTES
+    setReservationTimeoutMinutes(initialTimeout)
+    setCustomReservationTimeout(String(initialTimeout))
     setHydrated(true)
   }, [])
 
@@ -602,6 +611,11 @@ export default function LiveShopManagerDemo() {
     if (!hydrated) return
     localStorage.setItem(STORAGE_KEYS.successfulPaymentEvents, JSON.stringify(successfulPaymentEvents))
   }, [hydrated, successfulPaymentEvents])
+
+  useEffect(() => {
+    if (!hydrated) return
+    localStorage.setItem(STORAGE_KEYS.reservationTimeoutMinutes, String(reservationTimeoutMinutes))
+  }, [hydrated, reservationTimeoutMinutes])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -824,6 +838,49 @@ export default function LiveShopManagerDemo() {
 
   const maxOrderNumber = useMemo(() => Math.max(0, ...orders.map((order) => orderNumber(order.id))), [orders])
 
+  function setReservationTimeoutFromInput(value: string) {
+    if (value === 'custom') {
+      const parsed = Number(customReservationTimeout)
+      setReservationTimeoutMinutes(Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_RESERVATION_TIMEOUT_MINUTES)
+      return
+    }
+
+    const parsed = Number(value)
+    if (!Number.isFinite(parsed) || parsed <= 0) return
+    setReservationTimeoutMinutes(parsed)
+    setCustomReservationTimeout(String(parsed))
+  }
+
+  function extendReservation(orderId: string, minutes: number) {
+    setOrders((currentOrders) =>
+      currentOrders.map((order) =>
+        order.id === orderId && order.status === 'Хүлээгдэж буй'
+          ? { ...order, expiresAt: order.expiresAt + minutes * 60 * 1000 }
+          : order,
+      ),
+    )
+  }
+
+  function releasePendingOrder(order: Order) {
+    if (order.status !== 'Хүлээгдэж буй') return
+    const confirmed = window.confirm(`${order.id} захиалгын нөөцийг суллах уу?`)
+    if (!confirmed) return
+
+    setOrders((currentOrders) =>
+      currentOrders.map((item) =>
+        item.id === order.id ? { ...item, status: 'Cancelled', cancelledAt: Date.now() } : item,
+      ),
+    )
+
+    setБарааs((currentProducts) =>
+      currentProducts.map((product) =>
+        product.code === order.productCode
+          ? updateVariantStock(product, order.color, order.size, order.quantity)
+          : product,
+      ),
+    )
+  }
+
   function addБараа() {
     const code = newБараа.code.trim().toUpperCase()
     const name = newБараа.name.trim()
@@ -919,7 +976,7 @@ export default function LiveShopManagerDemo() {
         status: 'Хүлээгдэж буй',
         sourceCommentText: line,
         createdAt: now,
-        expiresAt: now + TEN_MINUTES,
+        expiresAt: now + reservationTimeoutMinutes * 60 * 1000,
       })
     })
 
@@ -1554,6 +1611,46 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
+        <section id="reservation-settings" className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-2xl font-black">Захиалгын хугацаа</h2>
+              <p className="text-sm text-slate-500">
+                Pending захиалга хэдэн минут нөөцтэй байхыг сонгоно. Шинэ захиалгад энэ тохиргоо үйлчилнэ.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                className="rounded-2xl border px-3 py-2 text-sm"
+                value={RESERVATION_TIMEOUT_OPTIONS.includes(reservationTimeoutMinutes as any) ? reservationTimeoutMinutes : 'custom'}
+                onChange={(event) => setReservationTimeoutFromInput(event.target.value)}
+              >
+                <option value={10}>10 минут</option>
+                <option value={15}>15 минут</option>
+                <option value={20}>20 минут</option>
+                <option value={30}>30 минут</option>
+                <option value={60}>60 минут</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              <input
+                className="w-28 rounded-2xl border px-3 py-2 text-sm"
+                type="number"
+                min="1"
+                value={customReservationTimeout}
+                onChange={(event) => setCustomReservationTimeout(event.target.value)}
+                onBlur={() => setReservationTimeoutFromInput('custom')}
+                placeholder="Минут"
+              />
+
+              <span className="rounded-2xl bg-slate-100 px-3 py-2 text-sm font-bold">
+                Одоо: {reservationTimeoutMinutes} минут
+              </span>
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
@@ -1612,6 +1709,38 @@ export default function LiveShopManagerDemo() {
                       <p className="text-slate-600">{order.productCode} {order.productName} • {order.color} / {order.size} × {order.quantity}</p>
                       <p className="font-bold">{money(order.amount)}</p>
                       <p className="text-xs text-slate-500">Захиалсан: {new Date(order.createdAt).toLocaleTimeString('mn-MN', {hour: '2-digit', minute:'2-digit'})} • Дуусах: {dateTime(order.expiresAt)}</p>
+                      {order.status === 'Хүлээгдэж буй' && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button
+                            className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-bold hover:bg-slate-200"
+                            type="button"
+                            onClick={() => extendReservation(order.id, 10)}
+                          >
+                            +10 мин
+                          </button>
+                          <button
+                            className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-bold hover:bg-slate-200"
+                            type="button"
+                            onClick={() => extendReservation(order.id, 15)}
+                          >
+                            +15 мин
+                          </button>
+                          <button
+                            className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-bold hover:bg-slate-200"
+                            type="button"
+                            onClick={() => extendReservation(order.id, 30)}
+                          >
+                            +30 мин
+                          </button>
+                          <button
+                            className="rounded-2xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100"
+                            type="button"
+                            onClick={() => releasePendingOrder(order)}
+                          >
+                            Суллах
+                          </button>
+                        </div>
+                      )}
                     </div>
                     <div className="grid gap-2 sm:min-w-36">
                       <button onClick={() => {
