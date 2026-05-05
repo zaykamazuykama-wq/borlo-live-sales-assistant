@@ -643,6 +643,166 @@ export default function LiveShopManagerDemo() {
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
 
+  // Demand insights using May 4 final integrated product spec formula:
+  // Demand score = (comment mentions * 1)
+  //               + (successful orders * 3)
+  //               + (paid orders * 5)
+  //               + (out-of-stock requests * 4)
+  //               + (review/unmatched interests * 1)
+  const {
+    productInsights,
+    variantInsights,
+    todayMetrics,
+    outOfStockList,
+    restockSuggestions,
+    nextLiveSuggestions,
+    lowStockWarnings,
+  } = useMemo(() => {
+    const productMetrics: Record<string, any> = {}
+    const variantMetrics: Record<string, any> = {}
+
+    products.forEach((product) => {
+      productMetrics[product.code] = {
+        productName: product.name,
+        commentMentions: 0,
+        successfulOrders: 0,
+        paidOrders: 0,
+        outOfStockRequests: 0,
+        reviewCount: 0,
+        availableStock: totalStock(product),
+      }
+
+      product.variants.forEach((variant) => {
+        const key = variantKey(product.code, variant.color, variant.size)
+        variantMetrics[key] = {
+          productCode: product.code,
+          productName: product.name,
+          color: variant.color,
+          size: variant.size,
+          commentMentions: 0,
+          successfulOrders: 0,
+          paidOrders: 0,
+          outOfStockRequests: 0,
+          reviewCount: 0,
+          availableStock: variant.үлдэгдэл,
+        }
+      })
+    })
+
+    orders.forEach((order) => {
+      const productMetric = productMetrics[order.productCode]
+      if (!productMetric) return
+
+      productMetric.commentMentions += 1
+      productMetric.successfulOrders += 1
+
+      if (order.status === 'Төлсөн') {
+        productMetric.paidOrders += 1
+      }
+
+      const key = variantKey(order.productCode, order.color, order.size)
+      const variantMetric = variantMetrics[key]
+
+      if (variantMetric) {
+        variantMetric.commentMentions += 1
+        variantMetric.successfulOrders += 1
+
+        if (order.status === 'Төлсөн') {
+          variantMetric.paidOrders += 1
+        }
+      }
+    })
+
+    unclearComments.forEach((item) => {
+      const product = findБарааInText(item.text, products)
+      if (!product) return
+
+      const productMetric = productMetrics[product.code]
+      if (!productMetric) return
+
+      const colorResult = detectӨнгө(item.text, product)
+      const sizeResult = detectРазмер(item.text, product)
+      const key =
+        colorResult.color && sizeResult.size ? variantKey(product.code, colorResult.color, sizeResult.size) : null
+
+      const isOutOfStock = item.reason?.includes('Үлдэгдэл хүрэлцэхгүй')
+
+      if (isOutOfStock) {
+        productMetric.outOfStockRequests += 1
+        if (key && variantMetrics[key]) variantMetrics[key].outOfStockRequests += 1
+      } else {
+        productMetric.reviewCount += 1
+        if (key && variantMetrics[key]) variantMetrics[key].reviewCount += 1
+      }
+    })
+
+    paymentReviewEvents.forEach((item) => {
+      let code = item.productCode?.toUpperCase()
+
+      if (!code && item.orderIds?.length) {
+        const firstOrder = orders.find((order) => order.id === item.orderIds?.[0])
+        code = firstOrder?.productCode
+      }
+
+      if (code && productMetrics[code]) {
+        productMetrics[code].reviewCount += 1
+      }
+    })
+
+    const productInsightsArr = Object.entries(productMetrics)
+      .map(([code, metric]: [string, any]) => ({
+        code,
+        name: metric.productName,
+        ...metric,
+        demandScore:
+          metric.commentMentions * 1 +
+          metric.successfulOrders * 3 +
+          metric.paidOrders * 5 +
+          metric.outOfStockRequests * 4 +
+          metric.reviewCount * 1,
+      }))
+      .sort((a, b) => b.demandScore - a.demandScore)
+
+    const variantInsightsArr = Object.entries(variantMetrics)
+      .map(([key, metric]: [string, any]) => ({
+        key,
+        ...metric,
+        demandScore:
+          metric.commentMentions * 1 +
+          metric.successfulOrders * 3 +
+          metric.paidOrders * 5 +
+          metric.outOfStockRequests * 4 +
+          metric.reviewCount * 1,
+      }))
+      .sort((a, b) => b.demandScore - a.demandScore)
+
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime()
+    const todayOrders = orders.filter((order) => order.createdAt >= todayStart)
+    const todayUnclearComments = unclearComments.filter((item) => item.createdAt >= todayStart)
+    const todayPaymentReviewEvents = paymentReviewEvents.filter((item) => item.createdAt >= todayStart)
+
+    const todayMetrics = {
+      commentMentions: todayOrders.length + todayUnclearComments.length,
+      successfulOrders: todayOrders.length,
+      paidOrders: todayOrders.filter((order) => order.status === 'Төлсөн').length,
+      outOfStockRequests: todayUnclearComments.filter((item) => item.reason?.includes('Үлдэгдэл хүрэлцэхгүй')).length,
+      reviewCount:
+        todayUnclearComments.filter((item) => !item.reason?.includes('Үлдэгдэл хүрэлцэхгүй')).length +
+        todayPaymentReviewEvents.length,
+    }
+
+    return {
+      productInsights: productInsightsArr,
+      variantInsights: variantInsightsArr,
+      todayMetrics,
+      outOfStockList: productInsightsArr.filter((item) => item.outOfStockRequests > 0),
+      restockSuggestions: productInsightsArr.filter((item) => item.availableStock <= 2 && item.demandScore > 0),
+      nextLiveSuggestions: variantInsightsArr.slice(0, 5),
+      lowStockWarnings: variantInsightsArr.filter((item) => item.availableStock <= 1),
+    }
+  }, [products, orders, unclearComments, paymentReviewEvents])
+
+
   const maxOrderNumber = useMemo(() => Math.max(0, ...orders.map((order) => orderNumber(order.id))), [orders])
 
   function addБараа() {
@@ -1222,6 +1382,155 @@ export default function LiveShopManagerDemo() {
               <p className="mt-3 text-xs text-amber-700">
                 Одоогоор demo мэдээлэл — бодит blacklist/database холболт дараагийн шатанд нэмэгдэнэ.
               </p>
+            </div>
+          </div>
+        </section>
+
+
+        <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-2xl font-black">Тайлан</h2>
+
+          <div className="mb-4 rounded-2xl bg-slate-50 p-4">
+            <h3 className="mb-2 text-lg font-black">Өнөөдрийн үзүүлэлт</h3>
+            <div className="grid gap-2 text-center sm:grid-cols-5">
+              <div>
+                <p className="text-sm text-slate-500">Коммент</p>
+                <p className="text-xl font-bold">{todayMetrics.commentMentions}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Захиалга</p>
+                <p className="text-xl font-bold">{todayMetrics.successfulOrders}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Төлсөн</p>
+                <p className="text-xl font-bold">{todayMetrics.paidOrders}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Хүрэлцээгүй</p>
+                <p className="text-xl font-bold">{todayMetrics.outOfStockRequests}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Шалгах</p>
+                <p className="text-xl font-bold">{todayMetrics.reviewCount}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="mb-2 text-lg font-black">Эрэлттэй бараа</h3>
+            <div className="overflow-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="px-2 py-1">Бараа</th>
+                    <th className="px-2 py-1">Коммент</th>
+                    <th className="px-2 py-1">Захиалга</th>
+                    <th className="px-2 py-1">Төлсөн</th>
+                    <th className="px-2 py-1">Хүрэлцээгүй</th>
+                    <th className="px-2 py-1">Шалгах</th>
+                    <th className="px-2 py-1 text-right">Demand</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productInsights.map((item) => (
+                    <tr key={item.code} className="border-b">
+                      <td className="whitespace-nowrap px-2 py-1">{item.code} — {item.name}</td>
+                      <td className="px-2 py-1 text-center">{item.commentMentions}</td>
+                      <td className="px-2 py-1 text-center">{item.successfulOrders}</td>
+                      <td className="px-2 py-1 text-center">{item.paidOrders}</td>
+                      <td className="px-2 py-1 text-center">{item.outOfStockRequests}</td>
+                      <td className="px-2 py-1 text-center">{item.reviewCount}</td>
+                      <td className="px-2 py-1 text-right font-bold">{item.demandScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="mb-2 text-lg font-black">Эрэлттэй variant</h3>
+            <div className="overflow-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="px-2 py-1">Бараа</th>
+                    <th className="px-2 py-1">Өнгө</th>
+                    <th className="px-2 py-1">Сайз</th>
+                    <th className="px-2 py-1">Коммент</th>
+                    <th className="px-2 py-1">Захиалга</th>
+                    <th className="px-2 py-1">Төлсөн</th>
+                    <th className="px-2 py-1">Хүрэлцээгүй</th>
+                    <th className="px-2 py-1">Шалгах</th>
+                    <th className="px-2 py-1 text-right">Demand</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {variantInsights.map((item) => (
+                    <tr key={item.key} className="border-b">
+                      <td className="px-2 py-1">{item.productCode}</td>
+                      <td className="px-2 py-1 text-center">{item.color}</td>
+                      <td className="px-2 py-1 text-center">{item.size}</td>
+                      <td className="px-2 py-1 text-center">{item.commentMentions}</td>
+                      <td className="px-2 py-1 text-center">{item.successfulOrders}</td>
+                      <td className="px-2 py-1 text-center">{item.paidOrders}</td>
+                      <td className="px-2 py-1 text-center">{item.outOfStockRequests}</td>
+                      <td className="px-2 py-1 text-center">{item.reviewCount}</td>
+                      <td className="px-2 py-1 text-right font-bold">{item.demandScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div>
+              <h3 className="mb-2 text-lg font-black">Хүрэлцээгүй эрэлт</h3>
+              <ul className="space-y-2">
+                {outOfStockList.length === 0 && <li className="text-sm text-slate-500">Одоогоор хүрэлцээгүй эрэлт алга.</li>}
+                {outOfStockList.map((item) => (
+                  <li key={item.code} className="rounded-2xl bg-rose-50 p-3 text-rose-800">
+                    {item.code} — {item.name}: {item.outOfStockRequests} удаа
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-lg font-black">Дахин нөөцлөх санал</h3>
+              <ul className="space-y-2">
+                {restockSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор дахин нөөцлөх санал алга.</li>}
+                {restockSuggestions.map((item) => (
+                  <li key={item.code} className="rounded-2xl bg-amber-50 p-3 text-amber-800">
+                    {item.code} — {item.name}: үлдэгдэл {item.availableStock}, Demand {item.demandScore}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-lg font-black">Дараагийн лайвын санал</h3>
+              <ul className="space-y-2">
+                {nextLiveSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор санал алга.</li>}
+                {nextLiveSuggestions.map((item) => (
+                  <li key={item.key} className="rounded-2xl bg-blue-50 p-3 text-blue-800">
+                    {item.productCode} — {item.color}/{item.size}: Demand {item.demandScore}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="mb-2 text-lg font-black">Нөөц дуусах гэж байна</h3>
+              <ul className="space-y-2">
+                {lowStockWarnings.length === 0 && <li className="text-sm text-slate-500">Одоогоор нөөц дуусах гэж буй variant алга.</li>}
+                {lowStockWarnings.map((item) => (
+                  <li key={item.key} className="rounded-2xl bg-amber-100 p-3 text-amber-800">
+                    {item.productCode} — {item.color}/{item.size}: үлдэгдэл {item.availableStock}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
