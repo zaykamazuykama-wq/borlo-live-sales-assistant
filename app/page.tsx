@@ -1269,20 +1269,30 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <p className="text-sm font-bold uppercase text-amber-600">Нэг удаагийн тохиргоо</p>
-          <h2 className="mt-2 text-2xl font-black">Borlo-г ажиллуулах 3 алхам</h2>
-          <p className="mt-2 text-slate-700">Нэг удаа тохируулаад, дараагийн лайв бүрээ Borlo-р цэгцлээрэй.</p>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <h2 className="mt-2 text-2xl font-black">Эхний лайваа эхлүүлэх checklist</h2>
+          <p className="mt-2 font-semibold text-slate-700">Тохиргоо: 3/5 бэлэн (demo явц)</p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {[
-              ['1. Facebook Page-ээ холбоно', 'Лайвын сэтгэгдэл автоматаар орж ирнэ.'],
-              ['2. Gmail орлогын мэдээгээ тохируулна', 'Лайвын төлбөрүүд захиалгатай тулгагдана.'],
+              ['1. Facebook Page-ээ холбоно', 'Лайвын сэтгэгдэл автоматаар орж ирэхэд бэлэн болно.'],
+              ['2. Gmail орлогын мэдээгээ тохируулна', 'Банкны API хэрэггүй. Орлогын мэдэгдлээр төлбөр тулгана.'],
               ['3. Бараа, өнгө, размер, үлдэгдлээ оруулна', 'Захиалга үүсэхэд үлдэгдэл автоматаар хадгалагдана.'],
+              ['4. Лайваа Facebook Page дээрээ эхлүүлнэ', 'Borlo дээр Active Live хайж сонгоно.'],
+              ['5. Лайв дуусгаад тайлангаа харна', 'Төлбөр, баглаа боодол, алдсан эрэлт, дараагийн лайвын зөвлөмж гарна.'],
             ].map((step) => (
               <div key={step[0]} className="rounded-2xl border bg-slate-50 p-4">
                 <p className="font-black">{step[0]}</p>
                 <p className="mt-2 text-sm text-slate-600">{step[1]}</p>
-                <p className="mt-3 text-xs text-slate-500">Нэг удаа тохируулах • холбох • шалгах • заавар үзэх • бэлэн болгох</p>
               </div>
             ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {['Facebook Page холбох', 'Gmail мэдэгдэл тохируулах', 'Бараа нэмэх', 'Active Live хайх', 'Лайв дуусгах'].map((action) => (
+              <button key={action} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">{action}</button>
+            ))}
+          </div>
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+            <p className="font-black text-amber-900">Тохиргоо хийхэд тусламж хэрэгтэй юу?</p>
+            <p className="mt-2 text-sm text-amber-900">Facebook Page болон Gmail орлогын мэдээний тохиргоог нэг удаа хийвэл дараагийн лайв бүр дээр Borlo таны сэтгэгдэл, төлбөр, үлдэгдэл, баглаа боодлыг цэгцэлнэ.</p>
           </div>
         </section>
 
