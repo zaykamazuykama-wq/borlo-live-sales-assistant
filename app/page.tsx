@@ -1286,9 +1286,29 @@ export default function LiveShopManagerDemo() {
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {['Facebook Page холбох', 'Gmail мэдэгдэл тохируулах', 'Бараа нэмэх', 'Active Live хайх', 'Лайв дуусгах'].map((action) => (
-              <button key={action} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">{action}</button>
-            ))}
+            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Facebook Page холбох</a>
+            <a href="#payments" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Gmail мэдэгдэл тохируулах</a>
+            <a href="#products" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Бараа нэмэх</a>
+            <button
+              type="button"
+              onClick={() => {
+                setFacebookConnectionState('live-found')
+                document.getElementById('facebook-live')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
+            >
+              Active Live хайх
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLiveFinished(true)
+                document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
+            >
+              Лайв дуусгах
+            </button>
           </div>
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <p className="font-black text-amber-900">Тохиргоо хийхэд тусламж хэрэгтэй юу?</p>
@@ -1296,7 +1316,7 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white p-5 shadow-sm">
+        <section id="facebook-live" className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Facebook Page Live холболт</h2>
           <p className="mt-2 text-slate-700">Borlo-г нэг удаа Facebook Page-тэйгээ холбоход лайвын сэтгэгдэл автоматаар орж ирнэ. Энэ нь seller trial-ийн үндсэн урсгал.</p>
           <p className="mt-2 rounded-2xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">Setup required: Meta credential энэ demo орчинд холбогдоогүй. Доорх төлөвүүд нь demo simulation.</p>
@@ -1832,7 +1852,7 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-2">
+        <section id="products" className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
             <div className="mt-4 space-y-3">
