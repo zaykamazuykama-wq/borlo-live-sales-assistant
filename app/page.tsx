@@ -679,6 +679,45 @@ export default function LiveShopManagerDemo() {
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
+  const paidPackingOrders = paidOrders
+  const packingGroups = useMemo(() => {
+    const grouped = new Map<string, {
+      productCode: string
+      productName: string
+      color: string
+      size: string
+      totalQuantity: number
+      buyers: Set<string>
+    }>()
+
+    paidPackingOrders.forEach((order) => {
+      const key = `${order.productCode}__${order.color}__${order.size}`
+      if (!grouped.has(key)) {
+        grouped.set(key, {
+          productCode: order.productCode,
+          productName: order.productName,
+          color: order.color,
+          size: order.size,
+          totalQuantity: 0,
+          buyers: new Set<string>(),
+        })
+      }
+      const item = grouped.get(key)!
+      item.totalQuantity += order.quantity
+      item.buyers.add(order.buyerDisplayName)
+    })
+
+    return Array.from(grouped.values())
+  }, [paidPackingOrders])
+
+  const deliveryRows = useMemo(() => paidPackingOrders.map((order) => ({
+    buyer: order.buyerDisplayName,
+    phone: order.phone || '',
+    address: '',
+    paidOrder: `${order.id} (${order.productCode})`,
+    totalAmount: order.amount,
+    status: order.phone ? 'Хүргэлт бэлдэх' : 'Хаяг дутуу',
+  })), [paidPackingOrders])
   const reviewAmount = paymentReviewEvents.reduce((sum, item) => sum + (item.amount || 0), 0)
   const pendingAmount = pendingOrders.reduce((sum, order) => sum + order.amount, 0)
   const paymentStatusCounts = useMemo(() => ({
@@ -1147,7 +1186,18 @@ export default function LiveShopManagerDemo() {
     setPaymentPaste('')
   }
 
-  function exportCsv() {
+  function downloadCsv(filename: string, header: string[], rows: Array<Array<string | number>>) {
+    const csvContent = "\uFEFF" + [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\n")
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = filename
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function exportOrdersCsv() {
     if (paidOrders.length === 0) {
       alert('Төлсөн захиалга алга байна.')
       return
@@ -1164,16 +1214,50 @@ export default function LiveShopManagerDemo() {
       order.size,
       order.quantity,
       order.amount,
-      dateTime(order.paidAt),
+      dateTime(order.paidAt) || '',
     ])
-    const csv = [header, ...rows].map((row) => row.map(csvEscape).join(',')).join('\n')
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'borlo-baglaa-boodol.csv'
-    link.click()
-    URL.revokeObjectURL(url)
+    downloadCsv('borlo-orders.csv', header, rows)
+  }
+
+  function exportPackingCsv() {
+    if (paidPackingOrders.length === 0) {
+      alert('Одоогоор баглах төлсөн захиалга алга.')
+      return
+    }
+    const header = ['Захиалгын дугаар', 'Худалдан авагч', 'Утас', 'Барааны код', 'Барааны нэр', 'Өнгө', 'Размер', 'Тоо', 'Дүн', 'Төлсөн цаг', 'Эх сурвалж коммент']
+    const rows = paidPackingOrders.map((order) => [order.id, order.buyerDisplayName, order.phone || '', order.productCode, order.productName, order.color, order.size, order.quantity, order.amount, dateTime(order.paidAt) || '', order.sourceCommentText || ''])
+    downloadCsv('borlo-packing-list.csv', header, rows)
+  }
+
+  function exportDeliveryCsv() {
+    if (deliveryRows.length === 0) {
+      alert('Одоогоор хүргэлтийн жагсаалт хоосон байна.')
+      return
+    }
+    const header = ['Худалдан авагч', 'Утас', 'Хаяг', 'Төлсөн захиалга', 'Нийт дүн', 'Хүргэлтийн төлөв']
+    const rows = deliveryRows.map((item) => [item.buyer, item.phone, item.address || 'Хаяг оруулаагүй', item.paidOrder, item.totalAmount, item.status])
+    downloadCsv('borlo-delivery-list.csv', header, rows)
+  }
+
+  function exportPaymentReconciliationCsv() {
+    const events = [...successfulPaymentEvents, ...paymentReviewEvents]
+    if (events.length === 0) {
+      alert('Төлбөрийн тулгалтын мэдээлэл алга.')
+      return
+    }
+    const header = ['Төлөв', 'Дүн', 'Тайлбар', 'Order ID', 'Order IDs', 'Эх текст']
+    const rows = events.map((item) => [item.status || '', item.amount || '', item.reason || '', item.orderId || '', item.orderIds?.join('|') || '', item.rawText || ''])
+    downloadCsv('borlo-payment-reconciliation.csv', header, rows)
+  }
+
+  function exportDemandSummaryCsv() {
+    if (variantInsights.length === 0) {
+      alert('Эрэлтийн тайлангийн мэдээлэл алга.')
+      return
+    }
+    const header = ['Барааны код', 'Барааны нэр', 'Өнгө', 'Размер', 'Төлсөн захиалга', 'Эрэлт оноо', 'Үлдэгдэл']
+    const rows = variantInsights.map((item) => [item.productCode, item.productName, item.color, item.size, item.paidOrders, item.demandScore, item.availableStock])
+    downloadCsv('borlo-demand-summary.csv', header, rows)
   }
 
   function resetDemo() {
@@ -1267,7 +1351,7 @@ export default function LiveShopManagerDemo() {
               <div className="rounded-3xl border bg-slate-50 p-4">
                 <p className="text-lg font-black">Лайв дууссаны дараа</p>
                 <p className="mt-2 text-sm text-slate-600">
-                  Төлөгдсөн захиалгууд баглаа боодлын жагсаалт дээр гарч, CSV татахад бэлэн болно.
+                  Төлөгдсөн захиалгууд баглаа боодлын жагсаалт дээр гарч, Захиалга CSV татахад бэлэн болно.
                 </p>
               </div>
             </div>
@@ -1951,6 +2035,32 @@ export default function LiveShopManagerDemo() {
           <div className="mt-3 grid gap-2 sm:grid-cols-5">
             {['Bank statement confirmed', 'Gmail notice missed', 'Late payment found', 'Review resolved', 'Still unmatched'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
           </div>
+
+          <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
+            <h3 className="text-lg font-black">Баглах товч нэгтгэл</h3>
+            <div className="mt-2 space-y-2 text-sm">
+              {packingGroups.map((item) => (
+                <p key={`${item.productCode}-${item.color}-${item.size}`}>{item.productCode} / {item.productName} / {item.color} / {item.size} — {item.totalQuantity} ширхэг — {item.buyers.size} худалдан авагч</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border bg-white p-4">
+            <h3 className="text-lg font-black">Хүргэлтийн жагсаалт</h3>
+            {deliveryRows.length === 0 && <p className="mt-2 text-slate-500">Одоогоор хүргэлтийн жагсаалт хоосон байна.</p>}
+            <div className="mt-3 space-y-2">
+              {deliveryRows.map((item) => (
+                <div key={`${item.paidOrder}-${item.buyer}`} className="rounded-xl border p-3 text-sm">
+                  <p>Худалдан авагч: <b>{item.buyer}</b></p>
+                  <p>Утас: <b>{item.phone || '-'}</b></p>
+                  <p>Төлсөн захиалга: <b>{item.paidOrder}</b></p>
+                  <p>Нийт дүн: <b>{money(item.totalAmount)}</b></p>
+                  <p>Хаяг: <b>{item.address || 'Хаяг оруулаагүй'}</b></p>
+                  <p>Төлөв: <b>{item.phone ? 'Хүргэлт бэлдэх' : 'Хаяг дутуу'}</b></p>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section className="grid gap-5 lg:grid-cols-2">
@@ -2053,7 +2163,7 @@ export default function LiveShopManagerDemo() {
               </div>
             </div>
             <div className="mt-4 space-y-3">
-              {successfulPaymentEvents.length === 0 && <p className="text-sm text-slate-500">Амжилттай payment log алга.</p>}
+              {successfulPaymentEvents.length === 0 && <p className="text-sm text-slate-500">Төлбөрийн тулгалтын мэдээлэл алга.</p>}
               {successfulPaymentEvents.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-emerald-50 p-4">
                   <p className="font-bold text-emerald-900">{getPaymentStatusLabel(item.status)} • {item.reason || `✅ ${item.orderId || item.orderIds?.join(', ')} төлөгдлөө — ${money(item.amount || 0)}`}</p>
@@ -2067,8 +2177,8 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-black">Packing / Delivery List</h2>
-              <p className="text-sm text-slate-500">Зөвхөн Төлсөн захиалга харагдана.</p>
+              <h2 className="text-2xl font-black">Баглах захиалга</h2>
+              <p className="text-sm text-slate-500">Зөвхөн төлсөн, баглахад бэлэн захиалга харагдана.</p>
             </div>
             <div className="flex gap-2">
               <button onClick={() => {
@@ -2077,19 +2187,8 @@ export default function LiveShopManagerDemo() {
                   window.setTimeout(() => setPackingListCopyStatus(''), 2500);
                   return;
                 }
-                const packingListHeader = 'Баглаа боодлын жагсаалт';
-                const packingListItems = paidOrders.map((order, index) => {
-                  const itemParts = [
-                    `${index + 1}. ${order.buyerDisplayName}`,
-                  ];
-                  if (order.phone) itemParts[0] += ` ${order.phone}`;
-                  itemParts.push(` ${order.productCode} - ${order.productName}`);
-                  if (order.color && order.color !== DEFAULT_COLOR) itemParts.push(order.color);
-                  if (order.size && order.size !== 'Нэг размер') itemParts.push(order.size);
-                  itemParts.push(`x${order.quantity}`);
-                  itemParts.push(`Дүн: ${money(order.amount)}`);
-                  return itemParts.join(' ');
-                });
+                const packingListHeader = 'Баглах жагсаалт:';
+                const packingListItems = packingGroups.map((item) => `${item.productCode} ${item.productName} / ${item.color} / ${item.size} — ${item.totalQuantity}ш`);
                 const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
 
                 if (navigator.clipboard) {
@@ -2099,7 +2198,7 @@ export default function LiveShopManagerDemo() {
                 } else {
                   alert('Clipboard API is not available.');
                 }
-              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглаа боодлын жагсаалт хуулах</button>
+              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
               <div className="flex gap-2">
               <button onClick={() => {
                 if (paidOrders.length === 0) {
@@ -2107,19 +2206,8 @@ export default function LiveShopManagerDemo() {
                   window.setTimeout(() => setPackingListCopyStatus(''), 2500);
                   return;
                 }
-                const packingListHeader = 'Баглаа боодлын жагсаалт';
-                const packingListItems = paidOrders.map((order, index) => {
-                  const itemParts = [
-                    `${index + 1}. ${order.buyerDisplayName}`,
-                  ];
-                  if (order.phone) itemParts[0] += ` ${order.phone}`;
-                  itemParts.push(` ${order.productCode} - ${order.productName}`);
-                  if (order.color && order.color !== DEFAULT_COLOR) itemParts.push(order.color);
-                  if (order.size && order.size !== 'Нэг размер') itemParts.push(order.size);
-                  itemParts.push(`x${order.quantity}`);
-                  itemParts.push(`Дүн: ${money(order.amount)}`);
-                  return itemParts.join(' ');
-                });
+                const packingListHeader = 'Баглах жагсаалт:';
+                const packingListItems = packingGroups.map((item) => `${item.productCode} ${item.productName} / ${item.color} / ${item.size} — ${item.totalQuantity}ш`);
                 const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
 
                 if (navigator.clipboard) {
@@ -2129,8 +2217,8 @@ export default function LiveShopManagerDemo() {
                 } else {
                   alert('Clipboard API is not available.');
                 }
-              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглаа боодлын жагсаалт хуулах</button>
-              <button onClick={exportCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
+              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
+              <button onClick={exportOrdersCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
             </div>
             </div>
           </div>
@@ -2141,21 +2229,49 @@ export default function LiveShopManagerDemo() {
           )}
 
           <div className="mt-4 space-y-3">
-            {paidOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Paid болсон захиалга баглаа боодлын жагсаалт руу орно.</p>}
-            {paidOrders.map((order) => (
+            {paidPackingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Одоогоор баглах төлсөн захиалга алга.</p>}
+            {paidPackingOrders.map((order) => (
               <div key={order.id} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                <p className="text-xl font-black">{order.id} • {order.buyerDisplayName}</p>
+                <p className="text-xl font-black">Төлсөн захиалга: {order.id}</p>
+                <p className="text-sm text-slate-700">Худалдан авагч: <b>{order.buyerDisplayName}</b></p>
                 <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2 lg:grid-cols-4">
                   <p>Утас: <b>{order.phone || '-'}</b></p>
                   <p>Бараа: <b>{order.productCode} {order.productName}</b></p>
                   <p>Өнгө: <b>{order.color}</b></p>
-                  <p>Сайз: <b>{order.size}</b></p>
+                  <p>Размер: <b>{order.size}</b></p>
                   <p>Тоо: <b>{order.quantity}</b></p>
                   <p>Дүн: <b>{money(order.amount)}</b></p>
-                  <p className="sm:col-span-2">Төлсөн at: <b>{dateTime(order.paidAt)}</b></p>
+                  <p className="sm:col-span-2">Төлсөн цаг: <b>{dateTime(order.paidAt)}</b></p>
+                  <p className="sm:col-span-2">Эх сурвалж: <b>{order.sourceCommentText || '-'}</b></p>
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
+            <h3 className="text-lg font-black">Баглах товч нэгтгэл</h3>
+            <div className="mt-2 space-y-2 text-sm">
+              {packingGroups.map((item) => (
+                <p key={`${item.productCode}-${item.color}-${item.size}`}>{item.productCode} / {item.productName} / {item.color} / {item.size} — {item.totalQuantity} ширхэг — {item.buyers.size} худалдан авагч</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border bg-white p-4">
+            <h3 className="text-lg font-black">Хүргэлтийн жагсаалт</h3>
+            {deliveryRows.length === 0 && <p className="mt-2 text-slate-500">Одоогоор хүргэлтийн жагсаалт хоосон байна.</p>}
+            <div className="mt-3 space-y-2">
+              {deliveryRows.map((item) => (
+                <div key={`${item.paidOrder}-${item.buyer}`} className="rounded-xl border p-3 text-sm">
+                  <p>Худалдан авагч: <b>{item.buyer}</b></p>
+                  <p>Утас: <b>{item.phone || '-'}</b></p>
+                  <p>Төлсөн захиалга: <b>{item.paidOrder}</b></p>
+                  <p>Нийт дүн: <b>{money(item.totalAmount)}</b></p>
+                  <p>Хаяг: <b>{item.address || 'Хаяг оруулаагүй'}</b></p>
+                  <p>Төлөв: <b>{item.phone ? 'Хүргэлт бэлдэх' : 'Хаяг дутуу'}</b></p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -2181,6 +2297,32 @@ export default function LiveShopManagerDemo() {
                 <div key={item.id} className="rounded-2xl bg-rose-50 p-4">
                   <p className="font-bold">{item.rawText}</p>
                   <p className="text-sm inline-flex rounded-full bg-rose-200 px-3 py-1 font-bold text-rose-800">{getPaymentReviewReasonLabel(item.reason || '', item)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
+            <h3 className="text-lg font-black">Баглах товч нэгтгэл</h3>
+            <div className="mt-2 space-y-2 text-sm">
+              {packingGroups.map((item) => (
+                <p key={`${item.productCode}-${item.color}-${item.size}`}>{item.productCode} / {item.productName} / {item.color} / {item.size} — {item.totalQuantity} ширхэг — {item.buyers.size} худалдан авагч</p>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border bg-white p-4">
+            <h3 className="text-lg font-black">Хүргэлтийн жагсаалт</h3>
+            {deliveryRows.length === 0 && <p className="mt-2 text-slate-500">Одоогоор хүргэлтийн жагсаалт хоосон байна.</p>}
+            <div className="mt-3 space-y-2">
+              {deliveryRows.map((item) => (
+                <div key={`${item.paidOrder}-${item.buyer}`} className="rounded-xl border p-3 text-sm">
+                  <p>Худалдан авагч: <b>{item.buyer}</b></p>
+                  <p>Утас: <b>{item.phone || '-'}</b></p>
+                  <p>Төлсөн захиалга: <b>{item.paidOrder}</b></p>
+                  <p>Нийт дүн: <b>{money(item.totalAmount)}</b></p>
+                  <p>Хаяг: <b>{item.address || 'Хаяг оруулаагүй'}</b></p>
+                  <p>Төлөв: <b>{item.phone ? 'Хүргэлт бэлдэх' : 'Хаяг дутуу'}</b></p>
                 </div>
               ))}
             </div>
@@ -2238,7 +2380,7 @@ export default function LiveShopManagerDemo() {
               <div className="grid gap-3 lg:grid-cols-2">
                 <div className="rounded-2xl border p-4"><p className="font-black">A. Sales Summary</p><p className="text-sm">total comments: {todayMetrics.commentMentions} • detected order comments: {orders.length} • total orders: {orders.length} • total order amount: {money(orders.reduce((s,o)=>s+o.amount,0))} • paid amount: {money(revenue)} • pending amount: {money(pendingAmount)} • review amount: {money(reviewAmount)}</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">B. Payment Reconciliation</p><p className="text-sm">matched: {paymentStatusCounts.matched} • combined matched: {paymentStatusCounts.combinedMatched} • underpaid: {paymentStatusCounts.underpaid} • overpaid: {paymentStatusCounts.overpaid} • ambiguous: {paymentStatusCounts.ambiguous} • no match: {paymentStatusCounts.noMatch} • late payments: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Actions: Review payments • Upload bank statement • Export reconciliation CSV</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">C. Packing Summary</p><p className="text-sm">paid orders to pack: {paidOrders.length} • delivery orders • pickup orders • priority orders</p><p className="mt-2 text-sm">Exports: Packing list CSV • Delivery list CSV • Packing list PDF placeholder</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">C. Packing Summary</p><p className="text-sm">paid orders to pack: {paidOrders.length} • delivery orders • pickup orders • priority orders</p><p className="mt-2 text-sm">Exports: Захиалга CSV татах • Баглах жагсаалт CSV татах • Хүргэлтийн жагсаалт CSV татах • PDF тайлан — дараагийн хувилбар</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">D/E. Product & Missed Demand</p><p className="text-sm">demand by product/color/size • remaining stock • sold-out variants • comments requesting sold-out variants • estimated missed revenue</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">high requested/paid quantity, low remaining stock, out-of-stock demand, review demand • busiest comment period • busiest order period • comment-to-order conversion • order-to-paid conversion</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">G/I. Хэрэглэгчийн follow-up ба Export Center</p><p className="text-sm">paid/pending/review customers • repeat buyers • no-show placeholder • sales summary PDF placeholder • orders CSV • payment reconciliation CSV • packing/delivery/product demand/out-of-stock/customer follow-up CSV</p></div>
