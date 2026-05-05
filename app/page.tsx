@@ -737,13 +737,32 @@ export default function LiveShopManagerDemo() {
     })
 
     paymentReviewEvents.forEach((item) => {
-      let code = item.productCode?.toUpperCase()
+      const relatedOrderIds = [
+        ...(item.orderIds || []),
+        ...(item.orderId ? [item.orderId] : []),
+      ]
 
-      if (!code && item.orderIds?.length) {
-        const firstOrder = orders.find((order) => order.id === item.orderIds?.[0])
-        code = firstOrder?.productCode
+      const relatedOrders = relatedOrderIds
+        .map((orderId) => orders.find((order) => order.id === orderId))
+        .filter((order): order is Order => Boolean(order))
+
+      if (relatedOrders.length > 0) {
+        relatedOrders.forEach((order) => {
+          const productMetric = productMetrics[order.productCode]
+          if (productMetric) {
+            productMetric.reviewCount += 1
+          }
+
+          const key = variantKey(order.productCode, order.color, order.size)
+          const variantMetric = variantMetrics[key]
+          if (variantMetric) {
+            variantMetric.reviewCount += 1
+          }
+        })
+        return
       }
 
+      const code = item.productCode?.toUpperCase()
       if (code && productMetrics[code]) {
         productMetrics[code].reviewCount += 1
       }
