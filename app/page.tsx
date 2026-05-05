@@ -1611,6 +1611,133 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
+        <section id="owner-admin" className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm">
+          <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-300">Owner/Admin Demo Dashboard</p>
+              <h2 className="text-2xl font-black">Эзэмшигчийн demo самбар</h2>
+              <p className="mt-1 text-sm text-slate-300">
+                Demo-only operator view. Бодит seller database, CRM, payment integration, login/auth холбогдоогүй.
+              </p>
+            </div>
+            <span className="rounded-2xl bg-white/10 px-4 py-2 text-sm font-bold text-emerald-200">
+              Local demo metrics only
+            </span>
+          </div>
+
+          {(() => {
+            const demoSellers = [
+              {
+                seller: 'Saraa Live Fashion',
+                plan: 'Trial',
+                status: 'Follow-up хэрэгтэй',
+                livesPerMonth: 12,
+                orders: orders.length,
+                reviewCount: paymentReviewEvents.length,
+                nextFollowUp: '2026-05-06',
+                notes: 'Анхны 2 live үнэгүй туршуулах',
+              },
+              {
+                seller: 'Nomin Kids Shop',
+                plan: 'Basic',
+                status: 'Active',
+                livesPerMonth: 18,
+                orders: Math.max(8, paidOrders.length + pendingOrders.length),
+                reviewCount: Math.max(1, paymentReviewEvents.length),
+                nextFollowUp: '2026-05-08',
+                notes: 'Packing list болон stock flow сонирхож байгаа',
+              },
+              {
+                seller: 'Bolor Shoes',
+                plan: 'Auto',
+                status: 'Demo request',
+                livesPerMonth: 20,
+                orders: Math.max(12, orders.length + 4),
+                reviewCount: Math.max(2, paymentReviewEvents.length + 1),
+                nextFollowUp: '2026-05-10',
+                notes: 'Simulated payment matching demo үзүүлэх',
+              },
+            ]
+
+            const totalSellers = demoSellers.length
+            const demoRequests = demoSellers.filter((seller) => seller.status === 'Demo request').length + 1
+            const trialSellers = demoSellers.filter((seller) => seller.plan === 'Trial').length
+            const basicSellers = demoSellers.filter((seller) => seller.plan === 'Basic').length
+            const autoSellers = demoSellers.filter((seller) => seller.plan === 'Auto').length
+            const activeSellers = demoSellers.filter((seller) => seller.status === 'Active').length
+            const monthlyRevenueEstimate = basicSellers * 99000 + autoSellers * 149000
+            const totalOrders = demoSellers.reduce((sum, seller) => sum + seller.orders, 0)
+            const paymentReviewVolume = demoSellers.reduce((sum, seller) => sum + seller.reviewCount, 0)
+            const followUpNeeded = demoSellers.filter((seller) => seller.status.includes('Follow-up') || seller.status === 'Demo request').length
+
+            const adminCards = [
+              ['Total sellers', totalSellers],
+              ['Demo хүсэлт', demoRequests],
+              ['Trial seller', trialSellers],
+              ['Basic seller', basicSellers],
+              ['Auto seller', autoSellers],
+              ['Active seller', activeSellers],
+              ['Monthly revenue', money(monthlyRevenueEstimate)],
+              ['Нийт захиалга', totalOrders],
+              ['Payment Review', paymentReviewVolume],
+              ['Follow-up', followUpNeeded],
+            ]
+
+            return (
+              <>
+                <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                  {adminCards.map(([label, value]) => (
+                    <div key={label} className="rounded-2xl bg-white/10 p-4">
+                      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
+                      <p className="mt-1 text-2xl font-black text-white">{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mb-4 rounded-2xl bg-white/10 p-4">
+                  <h3 className="mb-2 text-lg font-black">Usage report</h3>
+                  <div className="grid gap-2 text-sm text-slate-200 md:grid-cols-3">
+                    <p>Live/month estimate: <strong>{demoSellers.reduce((sum, seller) => sum + seller.livesPerMonth, 0)}</strong></p>
+                    <p>Payment review ratio: <strong>{totalOrders ? Math.round((paymentReviewVolume / totalOrders) * 100) : 0}%</strong></p>
+                    <p>Follow-up status: <strong>{followUpNeeded} seller</strong></p>
+                  </div>
+                </div>
+
+                <div className="overflow-auto rounded-2xl bg-white text-slate-900">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="border-b bg-slate-100 text-left">
+                        <th className="px-3 py-2">Seller</th>
+                        <th className="px-3 py-2">Plan</th>
+                        <th className="px-3 py-2">Status</th>
+                        <th className="px-3 py-2">Lives/month</th>
+                        <th className="px-3 py-2">Orders</th>
+                        <th className="px-3 py-2">Review count</th>
+                        <th className="px-3 py-2">Next follow-up</th>
+                        <th className="px-3 py-2">Seller notes</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {demoSellers.map((seller) => (
+                        <tr key={seller.seller} className="border-b">
+                          <td className="whitespace-nowrap px-3 py-2 font-bold">{seller.seller}</td>
+                          <td className="px-3 py-2">{seller.plan}</td>
+                          <td className="px-3 py-2">{seller.status}</td>
+                          <td className="px-3 py-2 text-center">{seller.livesPerMonth}</td>
+                          <td className="px-3 py-2 text-center">{seller.orders}</td>
+                          <td className="px-3 py-2 text-center">{seller.reviewCount}</td>
+                          <td className="whitespace-nowrap px-3 py-2">{seller.nextFollowUp}</td>
+                          <td className="min-w-64 px-3 py-2">{seller.notes}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )
+          })()}
+        </section>
+
         <section id="reservation-settings" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
