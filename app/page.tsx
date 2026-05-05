@@ -61,6 +61,8 @@ type ШалгахItem = {
   createdAt: number
 }
 
+type PaymentStatus = 'matched' | 'combined_matched' | 'underpaid' | 'overpaid' | 'ambiguous' | 'no_match' | 'late_payment'
+
 type PaymentEvent = {
   id: string
   rawText: string
@@ -70,6 +72,8 @@ type PaymentEvent = {
   phone?: string
   orderId?: string
   orderIds?: string[]
+  status?: PaymentStatus
+  matchType?: string
   reason?: string
   createdAt: number
 }
@@ -421,7 +425,7 @@ function parsePaymentLine(rawText: string) {
   })
   buyerName = buyerName.replace(/\s+/g, ' ').trim()
 
-  return { amount, productCode, phone, buyerName }
+  return { amount, productCode, phone, buyerName, rawText, createdAt: Date.now() }
 }
 
 function normalizeName(value: string) {
@@ -464,6 +468,11 @@ function csvEscape(value: string | number | undefined) {
 }
 
 function getPaymentReviewReasonLabel(reason: string, item: PaymentEvent): string {
+  if (item.status === 'late_payment') return 'Хоцорсон төлбөр';
+  if (item.status === 'underpaid') return 'Дутуу төлөлт';
+  if (item.status === 'overpaid') return 'Илүү төлөлт';
+  if (item.status === 'ambiguous') return 'Олон боломжит таарсан';
+  if (item.status === 'no_match') return 'Таараагүй төлбөр';
   if (reason.includes('Төлбөр дутуу байна')) return 'Төлбөр дутуу';
   if (reason.includes('Төлбөр илүү байна')) return 'Төлбөр илүү';
   if (reason.includes('Олон боломжит захиалга олдлоо')) return 'Олон захиалга таарч байна';
@@ -472,6 +481,17 @@ function getPaymentReviewReasonLabel(reason: string, item: PaymentEvent): string
   if (item.buyerName === '') return 'Худалдан авагчийн нэр дутуу';
   if (!item.phone) return 'Худалдан авагчийн утас дутуу';
   return 'Гараар шалгах шаардлагатай';
+}
+
+function getPaymentStatusLabel(status?: PaymentStatus) {
+  if (status === 'matched') return 'Таарсан'
+  if (status === 'combined_matched') return 'Нийлмэл төлбөр таарсан'
+  if (status === 'underpaid') return 'Дутуу төлөлт'
+  if (status === 'overpaid') return 'Илүү төлөлт'
+  if (status === 'ambiguous') return 'Олон боломжит таарсан'
+  if (status === 'no_match') return 'Таараагүй төлбөр'
+  if (status === 'late_payment') return 'Хоцорсон төлбөр'
+  return 'Төлөв тодорхойгүй'
 }
 
 export default function LiveShopManagerDemo() {
@@ -494,7 +514,7 @@ export default function LiveShopManagerDemo() {
   const [paymentReviewEvents, setPaymentReviewEvents] = useState<PaymentEvent[]>([])
   const [successfulPaymentEvents, setSuccessfulPaymentEvents] = useState<PaymentEvent[]>([])
   const [commentPaste, setCommentPaste] = useState('Болор: A12 хар M авъя\nСараа: A12 улаан L 2ш\nНомин: C01 цагаан 38 авъя')
-  const [paymentPaste, setPaymentPaste] = useState('89000 Болор A12 99112233')
+  const [paymentPaste, setPaymentPaste] = useState('89000 Болор A12 99112233\n239000 Болор 99112233\n70000 Болор 99112233\n500000 Болор 99112233\n88000 Бат 88119922')
   const [newБараа, setNewБараа] = useState({
     code: '',
     name: '',
@@ -661,6 +681,15 @@ export default function LiveShopManagerDemo() {
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
   const reviewAmount = paymentReviewEvents.reduce((sum, item) => sum + (item.amount || 0), 0)
   const pendingAmount = pendingOrders.reduce((sum, order) => sum + order.amount, 0)
+  const paymentStatusCounts = useMemo(() => ({
+    matched: successfulPaymentEvents.filter((item) => item.status === 'matched').length,
+    combinedMatched: successfulPaymentEvents.filter((item) => item.status === 'combined_matched').length,
+    underpaid: paymentReviewEvents.filter((item) => item.status === 'underpaid').length,
+    overpaid: paymentReviewEvents.filter((item) => item.status === 'overpaid').length,
+    ambiguous: paymentReviewEvents.filter((item) => item.status === 'ambiguous').length,
+    noMatch: paymentReviewEvents.filter((item) => item.status === 'no_match').length,
+    latePayments: paymentReviewEvents.filter((item) => item.status === 'late_payment').length,
+  }), [paymentReviewEvents, successfulPaymentEvents])
 
   // Demand insights using May 4 final integrated product spec formula:
   // Demand score = (comment mentions * 1)
@@ -1042,76 +1071,69 @@ export default function LiveShopManagerDemo() {
         phone: parsed.phone,
         createdAt: now,
       }
+      const pending = workingOrders.filter((order) => order.status === 'Хүлээгдэж буй')
+      const phoneCandidates = parsed.phone ? pending.filter((order) => order.phone === parsed.phone) : []
+      const fuzzyCandidates = pending.filter((order) => isFuzzyBuyerMatch(order.buyerDisplayName, parsed.buyerName))
+      const productCandidates = parsed.productCode ? pending.filter((order) => order.productCode.toUpperCase() === parsed.productCode?.toUpperCase()) : []
+      const phoneExact = phoneCandidates.filter((order) => order.amount === parsed.amount)
+      const phoneCombinations = findExactAmountCombinations(phoneCandidates.slice(0, 12), parsed.amount)
+      const fuzzyExact = fuzzyCandidates.filter((order) => order.amount === parsed.amount)
+      const fuzzyCombinations = findExactAmountCombinations(fuzzyCandidates.slice(0, 12), parsed.amount)
+      const productExact = productCandidates.filter((order) => order.amount === parsed.amount)
+      const allCombinations = [...phoneCombinations, ...fuzzyCombinations]
+      const hasLatePaymentSignal = paymentWindow === '30 минут' && pending.length === 0
 
-      const singleMatches = workingOrders.filter((order) => {
-        if (order.status !== 'Хүлээгдэж буй') return false
-        if (order.amount !== parsed.amount) return false
-        if (parsed.productCode && order.productCode.toUpperCase() !== parsed.productCode.toUpperCase()) return false
-        return isFuzzyBuyerMatch(order.buyerDisplayName, parsed.buyerName)
-      })
-
-      if (singleMatches.length === 1) {
-        const order = singleMatches[0]
+      if (phoneExact.length === 1) {
+        const order = phoneExact[0]
         paidOrderIdsWithPhone.set(order.id, parsed.phone)
-        workingOrders = workingOrders.map((item) =>
-          item.id === order.id && item.status === 'Хүлээгдэж буй'
-            ? { ...item, status: 'Төлсөн', paidAt: now, phone: parsed.phone || item.phone }
-            : item,
-        )
-        successEvents.push({
-          id: makeId('PAYMENT-SUCCESS'),
-          ...baseEvent,
-          orderId: order.id,
-          orderIds: [order.id],
-          reason: `✅ ${order.id} төлөгдлөө — ${money(order.amount)}`,
-        })
+        workingOrders = workingOrders.map((item) => item.id === order.id && item.status === 'Хүлээгдэж буй' ? { ...item, status: 'Төлсөн', paidAt: now, phone: parsed.phone || item.phone } : item)
+        successEvents.push({ id: makeId('PAYMENT-SUCCESS'), ...baseEvent, orderId: order.id, orderIds: [order.id], status: 'matched', matchType: 'phone_exact_amount', reason: `✅ ${order.id} төлөгдлөө — ${money(order.amount)}` })
         return
       }
 
-      const buyerPendingOrders = workingOrders
-        .filter((order) => {
-          if (order.status !== 'Хүлээгдэж буй') return false
-          if (parsed.productCode && order.productCode.toUpperCase() !== parsed.productCode.toUpperCase()) return false
-          return isFuzzyBuyerMatch(order.buyerDisplayName, parsed.buyerName)
-        })
-        .slice(0, 10)
-
-      const combinations = findExactAmountCombinations(buyerPendingOrders, parsed.amount)
-
-      if (singleMatches.length === 0 && combinations.length === 1) {
-        const matchedOrders = combinations[0]
+      if (phoneExact.length === 0 && phoneCombinations.length === 1 && phoneCombinations[0].length > 1) {
+        const matchedOrders = phoneCombinations[0]
         matchedOrders.forEach((order) => paidOrderIdsWithPhone.set(order.id, parsed.phone))
         const matchedIds = new Set(matchedOrders.map((order) => order.id))
-        workingOrders = workingOrders.map((order) =>
-          matchedIds.has(order.id) && order.status === 'Хүлээгдэж буй'
-            ? { ...order, status: 'Төлсөн', paidAt: now, phone: parsed.phone || order.phone }
-            : order,
-        )
-        successEvents.push({
-          id: makeId('PAYMENT-SUCCESS'),
-          ...baseEvent,
-          orderIds: matchedOrders.map((order) => order.id),
-          reason: `✅ ${matchedOrders.length} захиалга төлөгдлөө: ${matchedOrders.map((order) => order.id).join(', ')} — ${money(parsed.amount || 0)}`,
-        })
+        workingOrders = workingOrders.map((order) => matchedIds.has(order.id) && order.status === 'Хүлээгдэж буй' ? { ...order, status: 'Төлсөн', paidAt: now, phone: parsed.phone || order.phone } : order)
+        successEvents.push({ id: makeId('PAYMENT-SUCCESS'), ...baseEvent, orderIds: matchedOrders.map((order) => order.id), status: 'combined_matched', matchType: 'phone_combined_exact_amount', reason: `✅ ${matchedOrders.length} захиалга нийлмэл төлбөрөөр таарлаа` })
         return
       }
 
-      let reason = 'Тохирох pending захиалга олдсонгүй'
-      if (singleMatches.length > 1) {
-        reason = 'Олон боломжит захиалга олдлоо'
-      } else if (combinations.length > 1) {
-        reason = 'Олон боломжит захиалгын нийлбэр таарч байна'
-      } else if (buyerPendingOrders.length > 0) {
-        const buyerPendingTotal = buyerPendingOrders.reduce((sum, order) => sum + order.amount, 0)
-        if (typeof parsed.amount === 'number' && parsed.amount < buyerPendingTotal) reason = 'Төлбөр дутуу байна'
-        else if (typeof parsed.amount === 'number' && parsed.amount > buyerPendingTotal) reason = 'Төлбөр илүү байна'
+      if (fuzzyExact.length === 1) {
+        const order = fuzzyExact[0]
+        paidOrderIdsWithPhone.set(order.id, parsed.phone)
+        workingOrders = workingOrders.map((item) => item.id === order.id && item.status === 'Хүлээгдэж буй' ? { ...item, status: 'Төлсөн', paidAt: now, phone: parsed.phone || item.phone } : item)
+        successEvents.push({ id: makeId('PAYMENT-SUCCESS'), ...baseEvent, orderId: order.id, orderIds: [order.id], status: 'matched', matchType: 'buyer_fuzzy_exact_amount', reason: `✅ ${order.id} төлөгдлөө — ${money(order.amount)}` })
+        return
       }
 
-      reviewEvents.push({
-        id: makeId('PAYMENT-REVIEW'),
-        ...baseEvent,
-        reason,
-      })
+      if (fuzzyExact.length === 0 && fuzzyCombinations.length === 1 && fuzzyCombinations[0].length > 1) {
+        const matchedOrders = fuzzyCombinations[0]
+        matchedOrders.forEach((order) => paidOrderIdsWithPhone.set(order.id, parsed.phone))
+        const matchedIds = new Set(matchedOrders.map((order) => order.id))
+        workingOrders = workingOrders.map((order) => matchedIds.has(order.id) && order.status === 'Хүлээгдэж буй' ? { ...order, status: 'Төлсөн', paidAt: now, phone: parsed.phone || order.phone } : order)
+        successEvents.push({ id: makeId('PAYMENT-SUCCESS'), ...baseEvent, orderIds: matchedOrders.map((order) => order.id), status: 'combined_matched', matchType: 'buyer_fuzzy_combined_exact_amount', reason: `✅ ${matchedOrders.length} захиалга нийлмэл төлбөрөөр таарлаа` })
+        return
+      }
+
+      if (productExact.length === 1) {
+        const order = productExact[0]
+        paidOrderIdsWithPhone.set(order.id, parsed.phone)
+        workingOrders = workingOrders.map((item) => item.id === order.id && item.status === 'Хүлээгдэж буй' ? { ...item, status: 'Төлсөн', paidAt: now, phone: parsed.phone || item.phone } : item)
+        successEvents.push({ id: makeId('PAYMENT-SUCCESS'), ...baseEvent, orderId: order.id, orderIds: [order.id], status: 'matched', matchType: 'product_code_exact_amount', reason: `✅ ${order.id} төлөгдлөө — ${money(order.amount)}` })
+        return
+      }
+
+      const reviewCandidates = phoneCandidates.length > 0 ? phoneCandidates : fuzzyCandidates
+      const pendingTotal = reviewCandidates.reduce((sum, order) => sum + order.amount, 0)
+      let status: PaymentStatus = 'no_match'
+      let reason = 'Тохирох pending захиалга олдсонгүй'
+      if (hasLatePaymentSignal) { status = 'late_payment'; reason = 'Төлбөр хүлээх цонхоос хэтэрсэн байж болзошгүй' }
+      else if (phoneExact.length > 1 || fuzzyExact.length > 1 || productExact.length > 1 || allCombinations.length > 1) { status = 'ambiguous'; reason = 'Олон боломжит таарсан захиалга олдлоо' }
+      else if (reviewCandidates.length > 0 && typeof parsed.amount === 'number' && parsed.amount < pendingTotal) { status = 'underpaid'; reason = 'Төлбөр дутуу байна' }
+      else if (reviewCandidates.length > 0 && typeof parsed.amount === 'number' && parsed.amount > pendingTotal) { status = 'overpaid'; reason = 'Төлбөр илүү байна' }
+      reviewEvents.push({ id: makeId('PAYMENT-REVIEW'), ...baseEvent, status, matchType: 'review_required', reason, orderIds: reviewCandidates.map((o) => o.id) })
     })
 
     if (paidOrderIdsWithPhone.size > 0) {
@@ -1162,7 +1184,7 @@ export default function LiveShopManagerDemo() {
     setPaymentReviewEvents([])
     setSuccessfulPaymentEvents([])
     setCommentPaste('Болор: A12 хар M авъя')
-    setPaymentPaste('89000 Болор A12 99112233')
+    setPaymentPaste('89000 Болор A12 99112233\n239000 Болор 99112233\n70000 Болор 99112233\n500000 Болор 99112233\n88000 Бат 88119922')
     setPaymentRequestCopyStatus('') // Clear transient UI state
     setCopyStatus('') // Clear transient UI state
     setDemoResetFeedback('Demo data сэргээгдлээ'); // Set feedback
@@ -1911,7 +1933,7 @@ export default function LiveShopManagerDemo() {
             </select>
           </div>
           <div className="mt-3 grid gap-2 sm:grid-cols-4">
-            {['matched', 'combined matched', 'underpaid', 'overpaid', 'ambiguous', 'no match', 'late payment'].map((s) => <span key={s} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{s}</span>)}
+            {['Таарсан', 'Нийлмэл төлбөр таарсан', 'Дутуу төлөлт', 'Илүү төлөлт', 'Олон боломжит таарсан', 'Таараагүй төлбөр', 'Хоцорсон төлбөр'].map((s) => <span key={s} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{s}</span>)}
           </div>
           <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-700">
             <li>Би лайв борлуулалтдаа ашигладаг банкны данстай.</li><li>Тухайн дансны орлогын мэдэгдэл Gmail рүү ирдэг.</li><li>Мэдэгдэл дотор дүн, огноо, гүйлгээний утга харагддаг.</li><li>Borlo зөвхөн лайвын хугацаан дахь орлогын мэдээг уншихыг зөвшөөрнө.</li><li>Лайв дууссаны дараа банкны хуулга upload хийж баталгаажуулж болно.</li>
@@ -2015,9 +2037,9 @@ export default function LiveShopManagerDemo() {
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Төлбөрийн мэдээлэл наах</h2>
-              <p className="mt-2 text-sm text-slate-600">Нэг хүн олон захиалгаа нийлүүлж төлсөн бол review хэсэгт шалгах боломжтой.</p>
+              <p className="mt-2 text-sm text-slate-600">Нэг худалдан авагч олон захиалгын төлбөрийг нэг гүйлгээгээр төлсөн бол Borlo нийлбэр дүнгээр нь тулгаж болно.</p>
             <p className="mt-1 text-sm text-slate-500">Demo-д Auto payment paste ашиглаж байна.</p>
-            <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
+            <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" placeholder={'89000 Болор A12 99112233 (single match)\n239000 Болор 99112233 (combined)\n70000 Болор 99112233 (underpaid)\n500000 Болор 99112233 (overpaid)\n88000 Бат 88119922 (no match)'} value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
             <button onClick={parsePaymentEvents} className="mt-3 w-full rounded-2xl bg-violet-600 px-5 py-4 text-lg font-bold text-white">Payment тулгах</button>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -2034,7 +2056,7 @@ export default function LiveShopManagerDemo() {
               {successfulPaymentEvents.length === 0 && <p className="text-sm text-slate-500">Амжилттай payment log алга.</p>}
               {successfulPaymentEvents.map((item) => (
                 <div key={item.id} className="rounded-2xl bg-emerald-50 p-4">
-                  <p className="font-bold text-emerald-900">{item.reason || `✅ ${item.orderId || item.orderIds?.join(', ')} төлөгдлөө — ${money(item.amount || 0)}`}</p>
+                  <p className="font-bold text-emerald-900">{getPaymentStatusLabel(item.status)} • {item.reason || `✅ ${item.orderId || item.orderIds?.join(', ')} төлөгдлөө — ${money(item.amount || 0)}`}</p>
                   <p className="mt-1 text-sm text-slate-600">{item.rawText}</p>
                 </div>
               ))}
@@ -2215,7 +2237,7 @@ export default function LiveShopManagerDemo() {
               <p className="rounded-2xl bg-emerald-50 p-3 font-semibold text-emerald-800">Лайвын дараах тайлан: Лайв дуусахад Borlo танд борлуулалт, төлбөр, үлдэгдэл, баглаа боодол, алдсан эрэлт, дараагийн лайвын бэлтгэлийн тайланг гаргаж өгнө.</p>
               <div className="grid gap-3 lg:grid-cols-2">
                 <div className="rounded-2xl border p-4"><p className="font-black">A. Sales Summary</p><p className="text-sm">total comments: {todayMetrics.commentMentions} • detected order comments: {orders.length} • total orders: {orders.length} • total order amount: {money(orders.reduce((s,o)=>s+o.amount,0))} • paid amount: {money(revenue)} • pending amount: {money(pendingAmount)} • review amount: {money(reviewAmount)}</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">B. Payment Reconciliation</p><p className="text-sm">Gmail payment notices matched: {successfulPaymentEvents.length} • combined payments matched: {successfulPaymentEvents.filter((p)=>(p.orderIds||[]).length>1).length} • bank statement confirmed • underpaid • overpaid • ambiguous • no match • late payments</p><p className="mt-2 text-sm font-semibold">Actions: Review payments • Upload bank statement • Export reconciliation CSV</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">B. Payment Reconciliation</p><p className="text-sm">matched: {paymentStatusCounts.matched} • combined matched: {paymentStatusCounts.combinedMatched} • underpaid: {paymentStatusCounts.underpaid} • overpaid: {paymentStatusCounts.overpaid} • ambiguous: {paymentStatusCounts.ambiguous} • no match: {paymentStatusCounts.noMatch} • late payments: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Actions: Review payments • Upload bank statement • Export reconciliation CSV</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">C. Packing Summary</p><p className="text-sm">paid orders to pack: {paidOrders.length} • delivery orders • pickup orders • priority orders</p><p className="mt-2 text-sm">Exports: Packing list CSV • Delivery list CSV • Packing list PDF placeholder</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">D/E. Product & Missed Demand</p><p className="text-sm">demand by product/color/size • remaining stock • sold-out variants • comments requesting sold-out variants • estimated missed revenue</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">high requested/paid quantity, low remaining stock, out-of-stock demand, review demand • busiest comment period • busiest order period • comment-to-order conversion • order-to-paid conversion</p></div>
