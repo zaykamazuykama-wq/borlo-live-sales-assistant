@@ -502,7 +502,7 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
           <p className="text-sm font-semibold text-amber-600">Borlo</p>
           <h1 className="mt-3 text-4xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
           <p className="mt-4 text-lg text-slate-600">
-            Facebook Live-ийн comment-оос захиалга үүсгэж, төлбөр, нөөц, баглах жагсаалтыг нэг дор хянах туслах.
+            Facebook Live-ийн комментээс захиалга үүсгэж, төлбөр, нөөц, баглаа боодлыг нэг дор хянах туслах.
           </p>
         </div>
         <div className="flex w-full flex-col gap-3 sm:flex-row">
@@ -576,23 +576,23 @@ export default function LiveShopManagerDemo() {
   const LANG_TEXT = {
     mn: {
       mainHeading: "Лайв Захиалга Тулгагч",
-      subtitle: "Шууд борлуулалтын туслах / Live Sales Assistant",
-      flow: "Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт",
-      trialBadge: "Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй",
-      demoResetButton: "Demo сэргээх",
+      subtitle: "Шууд борлуулалтын туслах",
+      flow: "Коммент → Захиалга → Төлбөр → Баглаа боодол",
+      trialBadge: "Туршилтын хувилбар — Facebook холболт одоогооргүй",
+      demoResetButton: "Демо сэргээх",
       pendingCount: "Хүлээгдэж буй",
       paidPackingCount: "Төлсөн / Баглах",
       revenue: "Орлого",
       homeNav: "Нүүр",
-      liveNav: "Лайв",
+      liveNav: "Шууд",
       ordersNav: "Захиалга",
       paymentsNav: "Төлбөр",
       productsNav: "Бараа",
       packingNav: "Баглаа боодол",
       insightsNav: "Тайлан",
-      sellerLeadTitle: "Туршилт авах хүсэлт",
-      sellerLeadCopy: "Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.",
-      facebookPlaceholder: "Facebook page / лайв хаяг",
+      sellerLeadTitle: "Демо хүсэлт",
+      sellerLeadCopy: "Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.",
+      facebookPlaceholder: "Facebook хуудас / live хаяг",
       phonePlaceholder: "Утас",
       productPlaceholder: "Гол зардаг бараа",
       liveCountPlaceholder: "Сард хэдэн live хийдэг вэ?",
@@ -600,7 +600,7 @@ export default function LiveShopManagerDemo() {
       basicPlan: "Basic 99,000₮",
       autoPlan: "Auto 149,000₮ + 1%",
       freeTrial: "Эхлээд үнэгүй туршъя",
-      demoCta: "Demo авах",
+      demoCta: "Демо авах",
       demoFormNote: "Одоогоор туршилтын form — илгээх backend холбогдоогүй",
     },
     en: {
@@ -1411,24 +1411,24 @@ export default function LiveShopManagerDemo() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
             <p className="text-sm text-slate-500">Хүлээгдэж буй</p>
-            <p className="mt-2 text-4xl font-black">{pendingOrders.length}</p>
+            <p className="mt-2 text-3xl font-black sm:text-4xl">{pendingOrders.length}</p>
           </div>
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
             <p className="text-sm text-slate-500">Төлсөн / Баглах</p>
-            <p className="mt-2 text-4xl font-black">{paidOrders.length}</p>
+            <p className="mt-2 text-3xl font-black sm:text-4xl">{paidOrders.length}</p>
           </div>
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
+          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
             <p className="text-sm text-slate-500">Орлого</p>
-            <p className="mt-2 text-4xl font-black">{money(revenue)}</p>
+            <p className="mt-2 text-3xl font-black sm:text-4xl">{money(revenue)}</p>
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white p-5 shadow-sm">
+        <section className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
           <p className="text-sm font-bold uppercase text-amber-600">Нэг удаагийн тохиргоо</p>
-          <h2 className="mt-2 text-2xl font-black">Эхний лайваа эхлүүлэх checklist</h2>
-          <p className="mt-2 font-semibold text-slate-700">Тохиргоо: 3/5 бэлэн (demo явц)</p>
+          <h2 className="mt-2 text-xl font-black sm:text-2xl">Эхний лайваа эхлүүлэх checklist</h2>
+          <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">Тохиргоо: 3/5 бэлэн (demo явц)</p>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {[
               ['1. Facebook Page-ээ холбоно', 'Лайвын сэтгэгдэл автоматаар орж ирэхэд бэлэн болно.'],
@@ -1444,8 +1444,8 @@ export default function LiveShopManagerDemo() {
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Facebook Page холбох</a>
-            <a href="#payments" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Gmail мэдэгдэл тохируулах</a>
+            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Facebook холболт</a>
+            <a href="#payments" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Төлбөр тохируулах</a>
             <a href="#products" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Бараа нэмэх</a>
             <button
               type="button"
@@ -1455,7 +1455,7 @@ export default function LiveShopManagerDemo() {
               }}
               className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
             >
-              Active Live хайх
+              Active live хайх
             </button>
             <button
               type="button"
