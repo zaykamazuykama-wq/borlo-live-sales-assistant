@@ -561,6 +561,18 @@ export default function LiveShopManagerDemo() {
   const [paymentWindow, setPaymentWindow] = useState('1 цаг')
   const [mode, setMode] = useState<'landing' | 'dashboard'>('landing')
 
+  useEffect(() => {
+    const syncModeFromHash = () => {
+      const hash = window.location.hash || ''
+      const knownSectionHashes = new Set(['#home', '#live', '#orders', '#payments', '#products', '#packing', '#insights', '#trial', '#facebook-live'])
+      setMode(hash && knownSectionHashes.has(hash) ? 'dashboard' : 'landing')
+    }
+
+    syncModeFromHash()
+    window.addEventListener('hashchange', syncModeFromHash)
+    return () => window.removeEventListener('hashchange', syncModeFromHash)
+  }, [])
+
   const LANG_TEXT = {
     mn: {
       mainHeading: "Лайв Захиалга Тулгагч",
