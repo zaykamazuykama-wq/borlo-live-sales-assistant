@@ -523,17 +523,27 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
 
         <section className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm sm:p-6">
           <p className="text-sm font-bold uppercase tracking-wide text-amber-300">Үнэ ба туршилт</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm text-slate-200">Basic</p>
-              <p className="mt-1 text-2xl font-black">99,000₮</p>
+              <p className="text-sm text-slate-200">Эхний 1 live / campaign</p>
+              <p className="mt-1 text-2xl font-black">Үнэгүй</p>
             </div>
             <div className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm text-slate-200">Auto</p>
-              <p className="mt-1 text-2xl font-black">149,000₮ + 1%</p>
+              <p className="text-sm text-slate-200">Нэг удаагийн live/campaign pass</p>
+              <p className="mt-1 text-2xl font-black">14,900₮</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-sm text-slate-200">Monthly</p>
+              <p className="mt-1 text-2xl font-black">79,000₮</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-sm text-slate-200">Pro</p>
+              <p className="mt-1 text-2xl font-black">149,000₮</p>
             </div>
           </div>
-          <p className="mt-4 text-sm text-slate-200">Эхлээд үнэгүй туршиж болно. Борлуулалтын урсгалаа 30 секундэд ойлгуулна.</p>
+          <p className="mt-4 text-sm text-slate-200">
+            14,900₮ pass-д комментээс захиалга, төлбөрийн хяналт, stock reserve/release, packing list, delivery handoff list, campaign/live report, CSV/export бүгд багтана.
+          </p>
           <div className="mt-5 flex w-full flex-col gap-3 sm:flex-row">
             <button
               onClick={onDemo}
@@ -548,7 +558,7 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
               Самбар нээх
             </button>
           </div>
-          <p className="mt-3 text-center text-sm font-semibold text-slate-300">Facebook холболт, QPay, банкны API шаардахгүй.</p>
+          <p className="mt-3 text-center text-sm font-semibold text-slate-300">Facebook холболт, банкны API шаардахгүй.</p>
         </section>
       </div>
     </main>
@@ -622,44 +632,46 @@ export default function LiveShopManagerDemo() {
       packingNav: "Баглаа боодол",
       insightsNav: "Тайлан",
       sellerLeadTitle: "Демо хүсэлт",
-      sellerLeadCopy: "Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.",
+      sellerLeadCopy: "Эхний live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.",
       facebookPlaceholder: "Facebook хуудас / live хаяг",
       phonePlaceholder: "Утас",
       productPlaceholder: "Гол зардаг бараа",
       liveCountPlaceholder: "Сард хэдэн live хийдэг вэ?",
       planHeading: "Сонирхож буй хувилбар:",
-      basicPlan: "Basic 99,000₮",
-      autoPlan: "Auto 149,000₮ + 1%",
-      freeTrial: "Эхлээд үнэгүй туршъя",
+      basicPlan: "Эхний 1 live / campaign — үнэгүй",
+      autoPlan: "Нэг удаагийн live/campaign pass — 14,900₮",
+      monthlyPlan: "Сарын төлөвлөгөө — 79,000₮",
+      proPlan: "Pro — 149,000₮",
+      freeTrial: "Эхний 1 live үнэгүй",
       demoCta: "Демо авах",
       demoFormNote: "Одоогоор туршилтын form — илгээх backend холбогдоогүй",
     },
     en: {
       mainHeading: "Live Shop Manager",
       subtitle: "Live Sales Assistant",
-      flow: "Comment → Order → Payment → Stock → Packing list → CSV",
-      trialBadge: "Trial version — real Facebook/QPay integrations are not connected yet",
+      flow: "Comment → Order → Payment → Packing",
+      trialBadge: "Trial version — Facebook integration is not connected yet",
       demoResetButton: "Demo reset",
-      pendingCount: "Хүлээгдэж буй count",
-      paidPackingCount: "Төлсөн / Packing count",
+      pendingCount: "Pending count",
+      paidPackingCount: "Paid / Packing count",
       revenue: "Revenue",
       homeNav: "Home",
       liveNav: "Live",
       ordersNav: "Orders",
       paymentsNav: "Payments",
-      productsNav: "Барааs",
-      packingNav: "Packing List",
-      insightsNav: "Insights",
-      sellerLeadTitle: "Request a Trial",
-      sellerLeadCopy: "Try Borlo on your first 2 live streams and verify the Comment → Order → Payment → Stock → Packing list flow.",
+      productsNav: "Products",
+      packingNav: "Packing",
+      insightsNav: "Reports",
+      sellerLeadTitle: "Demo request",
+      sellerLeadCopy: "Try Borlo on your first live and verify the Comment → Order → Payment → Packing flow.",
       facebookPlaceholder: "Facebook page / live link",
       phonePlaceholder: "Phone",
       productPlaceholder: "Main products sold",
       liveCountPlaceholder: "How many live streams per month?",
       planHeading: "Interested plan:",
-      basicPlan: "Basic 99,000₮",
-      autoPlan: "Auto 149,000₮ + 1%",
-      freeTrial: "Try free first",
+      basicPlan: "First 1 live / campaign — free",
+      autoPlan: "One-time live/campaign pass — 14,900₮",
+      freeTrial: "First 1 live free",
       demoCta: "Get Demo",
       demoFormNote: "Currently a trial form — no backend integration for submission",
     },
@@ -1369,7 +1381,7 @@ export default function LiveShopManagerDemo() {
               <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
               <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт</p>
               <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
-                Туршилтын хувилбар — Facebook/QPay бодит холболт хийгдээгүй
+                Туршилтын хувилбар — Facebook холболт одоогооргүй
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
@@ -1377,7 +1389,7 @@ export default function LiveShopManagerDemo() {
                 href="#trial"
                 className="rounded-2xl bg-amber-300 px-5 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
               >
-                Анхны 2 live үнэгүй турших
+                Эхний 1 live үнэгүй турших
               </a>
               <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
                 Demo data сэргээх
@@ -1569,11 +1581,11 @@ export default function LiveShopManagerDemo() {
             <p className="sm:col-span-2 text-lg font-bold text-slate-950">Сонирхож буй хувилбар:</p>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" />
-              <span>Basic 99,000₮</span>
+              <span>Эхний 1 live / campaign — үнэгүй</span>
             </label>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" />
-              <span>Auto 149,000₮ + 1%</span>
+              <span>Нэг удаагийн live/campaign pass — 14,900₮</span>
             </label>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" defaultChecked />
@@ -1587,10 +1599,10 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr] lg:items-start">
             <div>
-              <p className="text-sm font-bold uppercase text-amber-600">Анхны 2 live үнэгүй</p>
+              <p className="text-sm font-bold uppercase text-amber-600">Эхний 1 live үнэгүй</p>
               <h2 className="mt-2 text-2xl font-black">Туршилт авах хүсэлт</h2>
               <p className="mt-3 text-slate-700">
-                Анхны 2 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.
+                Эхний live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.
               </p>
               <p className="mt-4 rounded-2xl bg-slate-100 p-4 text-sm text-slate-600">
                 Одоогоор туршилтын form — илгээх backend холбогдоогүй.
@@ -1613,16 +1625,16 @@ export default function LiveShopManagerDemo() {
                       checked={trialLead.plan === 'Basic 99,000₮'}
                       onChange={() => setTrialLead({ ...trialLead, plan: 'Basic 99,000₮' })}
                     />
-                    <span>Basic 99,000₮</span>
+                    <span>Эхний 1 live / campaign — үнэгүй</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input
                       type="radio"
                       name="trial-plan"
-                      checked={trialLead.plan === 'Auto 149,000₮ + 1%'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Auto 149,000₮ + 1%' })}
+                      checked={trialLead.plan === 'Нэг удаагийн live/campaign pass — 14,900₮'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Нэг удаагийн live/campaign pass — 14,900₮' })}
                     />
-                    <span>Auto 149,000₮ + 1%</span>
+                    <span>Нэг удаагийн live/campaign pass — 14,900₮</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -2424,13 +2436,13 @@ export default function LiveShopManagerDemo() {
           </div>
           <div className="rounded-3xl border-2 border-violet-300 bg-violet-50 p-5 shadow-sm">
             <p className="text-2xl font-black">Auto</p>
-            <p className="mt-2 text-3xl font-black">149,000₮ / сар + 1%</p>
+            <p className="mt-2 text-3xl font-black">149,000₮ / сар</p>
             <ul className="mt-4 space-y-2 text-slate-700">
-              <li>- Автомат payment matching</li>
-              <li>- QPay симуляци</li>
-              <li>- Бүх функц + ирээдүйн шинэчлэл</li>
+              <li>- Бүрэн live ажиллагаа</li>
+              <li>- Коммент → захиалга → төлбөр → баглаа боодол</li>
+              <li>- CSV / report export</li>
             </ul>
-            <p className="mt-4 rounded-2xl bg-white p-3 font-bold text-violet-800">Demo-д Auto payment paste ашиглаж байна.</p>
+            <p className="mt-4 rounded-2xl bg-white p-3 font-bold text-violet-800">Pro түвшинд илүү их live-ыг нэг дор удирдана.</p>
           </div>
         </section>
 
@@ -2446,8 +2458,8 @@ export default function LiveShopManagerDemo() {
 4. 2 pending захиалга зэрэг Төлсөн болно
 5. Packing List-д A12 болон C01 хоёулаа харагдана
 6. CSV татах товчийг дарна`}</pre>
-          <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга үлдэгдэл-ийг аль хэдийн reserve хийдэг. Төлсөн болгоход үлдэгдэл дахин хасахгүй.</p>
-        </section>
+              <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга үлдэгдлийг аль хэдийн reserve хийдэг. Төлсөн болгоход үлдэгдэл дахин хасахгүй.</p>
+</section>
 
         <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
