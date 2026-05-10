@@ -847,37 +847,40 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
-      const expiredPendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now)
-      if (expiredPendingOrders.length === 0) return
 
-      const releaseByVariant = new Map<string, number>()
-      expiredPendingOrders.forEach((order) => {
-        const key = variantKey(order.productCode, order.color, order.size)
-        releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
-      })
+      setOrders((currentOrders) => {
+        const expiredPendingOrders = currentOrders.filter(
+          (order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now,
+        )
+        if (expiredPendingOrders.length === 0) return currentOrders
 
-      setБарааs((currentБарааs) =>
-        currentБарааs.map((product) => ({
-          ...product,
-          variants: product.variants.map((variant) => ({
-            ...variant,
-            үлдэгдэл: variant.үлдэгдэл + (releaseByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
+        const releaseByVariant = new Map<string, number>()
+        expiredPendingOrders.forEach((order) => {
+          const key = variantKey(order.productCode, order.color, order.size)
+          releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
+        })
+
+        setБарааs((currentБарааs) =>
+          currentБарааs.map((product) => ({
+            ...product,
+            variants: product.variants.map((variant) => ({
+              ...variant,
+              үлдэгдэл: variant.үлдэгдэл + (releaseByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
+            })),
           })),
-        })),
-      )
+        )
 
-      const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
-      setOrders((currentOrders) =>
-        currentOrders.map((order) =>
+        const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
+        return currentOrders.map((order) =>
           expiredIds.has(order.id) && order.status === 'Хүлээгдэж буй'
             ? { ...order, status: 'Expired', expiredAt: now }
             : order,
-        ),
-      )
+        )
+      })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [orders])
+  }, [])
 
   const activeБараа = products.find((product) => product.code === activeБарааCode) || products[0]
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
