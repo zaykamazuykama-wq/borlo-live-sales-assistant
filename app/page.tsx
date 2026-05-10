@@ -497,28 +497,59 @@ function getPaymentStatusLabel(status?: PaymentStatus) {
 function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard: () => void }) {
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-xl flex-col items-center gap-8 pt-20">
+      <div className="mx-auto flex max-w-2xl flex-col gap-6 pt-16 sm:pt-20">
         <div className="text-center">
           <p className="text-sm font-semibold text-amber-600">Borlo</p>
           <h1 className="mt-3 text-4xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
-          <p className="mt-4 text-lg text-slate-600">
-            Facebook Live-ийн комментээс захиалга үүсгэж, төлбөр, нөөц, баглаа боодлыг нэг дор хянах туслах.
+          <p className="mx-auto mt-4 max-w-xl text-lg text-slate-600">
+            Facebook Live-ийн комментээс захиалга үүсгэж, төлбөр, нөөц, баглаа боодолыг нэг дор хянах.
           </p>
         </div>
-        <div className="flex w-full flex-col gap-3 sm:flex-row">
-          <button
-            onClick={onDemo}
-            className="flex-1 rounded-2xl bg-amber-300 px-6 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
-          >
-            Demo үзэх
-          </button>
-          <button
-            onClick={onDashboard}
-            className="flex-1 rounded-2xl bg-slate-950 px-6 py-4 text-center text-lg font-bold text-white shadow active:scale-95"
-          >
-            Seller dashboard
-          </button>
-        </div>
+
+        <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+          <p className="text-sm font-bold uppercase tracking-wide text-amber-600">4 алхамтай урсгал</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {['Коммент', 'Захиалга', 'Төлбөр', 'Баглаа боодол'].map((step, index) => (
+              <div key={step} className="rounded-2xl bg-slate-50 p-4">
+                <p className="text-xs font-semibold text-slate-500">Алхам {index + 1}</p>
+                <p className="mt-1 text-base font-black text-slate-950">{step}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            Демо дээр коммент наах, захиалга тулгах, төлбөр тэмдэглэх, баглах жагсаалт гаргах урсгалыг харуулна.
+          </p>
+        </section>
+
+        <section className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm sm:p-6">
+          <p className="text-sm font-bold uppercase tracking-wide text-amber-300">Үнэ ба туршилт</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-sm text-slate-200">Basic</p>
+              <p className="mt-1 text-2xl font-black">99,000₮</p>
+            </div>
+            <div className="rounded-2xl bg-white/10 p-4">
+              <p className="text-sm text-slate-200">Auto</p>
+              <p className="mt-1 text-2xl font-black">149,000₮ + 1%</p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-slate-200">Эхлээд үнэгүй туршиж болно. Борлуулалтын урсгалаа 30 секундэд ойлгуулна.</p>
+          <div className="mt-5 flex w-full flex-col gap-3 sm:flex-row">
+            <button
+              onClick={onDemo}
+              className="flex-1 rounded-2xl bg-amber-300 px-6 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
+            >
+              Демо үзэх
+            </button>
+            <button
+              onClick={onDashboard}
+              className="flex-1 rounded-2xl bg-white px-6 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
+            >
+              Самбар нээх
+            </button>
+          </div>
+          <p className="mt-3 text-center text-sm font-semibold text-slate-300">Facebook холболт, QPay, банкны API шаардахгүй.</p>
+        </section>
       </div>
     </main>
   )
