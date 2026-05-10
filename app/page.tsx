@@ -494,6 +494,36 @@ function getPaymentStatusLabel(status?: PaymentStatus) {
   return 'Төлөв тодорхойгүй'
 }
 
+function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard: () => void }) {
+  return (
+    <main className="min-h-screen bg-slate-100 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-8 pt-20">
+        <div className="text-center">
+          <p className="text-sm font-semibold text-amber-600">Borlo</p>
+          <h1 className="mt-3 text-4xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
+          <p className="mt-4 text-lg text-slate-600">
+            Facebook Live-ийн comment-оос захиалга үүсгэж, төлбөр, нөөц, баглах жагсаалтыг нэг дор хянах туслах.
+          </p>
+        </div>
+        <div className="flex w-full flex-col gap-3 sm:flex-row">
+          <button
+            onClick={onDemo}
+            className="flex-1 rounded-2xl bg-amber-300 px-6 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
+          >
+            Demo үзэх
+          </button>
+          <button
+            onClick={onDashboard}
+            className="flex-1 rounded-2xl bg-slate-950 px-6 py-4 text-center text-lg font-bold text-white shadow active:scale-95"
+          >
+            Seller dashboard
+          </button>
+        </div>
+      </div>
+    </main>
+  )
+}
+
 export default function LiveShopManagerDemo() {
   const [trialLead, setTrialLead] = useState({
     facebook: '',
@@ -529,6 +559,7 @@ export default function LiveShopManagerDemo() {
   const [facebookConnectionState, setFacebookConnectionState] = useState<'not-connected' | 'connected' | 'live-found' | 'importing'>('not-connected')
   const [liveFinished, setLiveFinished] = useState(false)
   const [paymentWindow, setPaymentWindow] = useState('1 цаг')
+  const [mode, setMode] = useState<'landing' | 'dashboard'>('landing')
 
   const LANG_TEXT = {
     mn: {
@@ -1275,13 +1306,22 @@ export default function LiveShopManagerDemo() {
     window.setTimeout(() => setDemoResetFeedback(''), 2500); // Clear feedback
   }
 
+  if (mode === 'landing') {
+    return (
+      <LandingPage
+        onDemo={() => { setMode('dashboard'); window.location.hash = '#live' }}
+        onDashboard={() => { setMode('dashboard'); window.location.hash = '#home' }}
+      />
+    )
+  }
+
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-5">
         <section id="home" className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-5 text-white shadow-lg sm:p-8">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold text-amber-300">Borlo</p>
+              <button onClick={() => setMode('landing')} className="text-sm font-semibold text-amber-300 hover:underline">Borlo</button>
               <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
               <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
               <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт</p>
