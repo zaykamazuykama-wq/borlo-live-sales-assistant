@@ -34,6 +34,7 @@ type Бараа = {
 }
 
 type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
+type DashboardView = 'home' | 'live' | 'orders' | 'payments' | 'products' | 'packing' | 'insights'
 
 type Order = {
   id: string
@@ -745,6 +746,7 @@ export default function LiveShopManagerDemo() {
   const [liveFinished, setLiveFinished] = useState(false)
   const [paymentWindow, setPaymentWindow] = useState('1 цаг')
   const [mode, setMode] = useState<'landing' | 'dashboard'>('landing')
+  const [activeView, setActiveView] = useState<DashboardView>('home')
   const productsRef = useRef(products)
   const ordersRef = useRef(orders)
 
@@ -759,13 +761,29 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const syncModeFromHash = () => {
       const hash = window.location.hash || ''
-      const knownSectionHashes = new Set(['#home', '#live', '#orders', '#payments', '#products', '#packing', '#reports', '#insights', '#trial', '#facebook-live'])
-      setMode(hash && knownSectionHashes.has(hash) ? 'dashboard' : 'landing')
+      const hashViewMap: Record<string, DashboardView> = {
+        '#home': 'home',
+        '#live': 'live',
+        '#facebook-live': 'live',
+        '#orders': 'orders',
+        '#payments': 'payments',
+        '#products': 'products',
+        '#packing': 'packing',
+        '#insights': 'insights',
+        '#reports': 'insights',
+      }
+      const view = hashViewMap[hash]
+      setMode(view ? 'dashboard' : 'landing')
+      if (view) setActiveView(view)
     }
 
     syncModeFromHash()
     window.addEventListener('hashchange', syncModeFromHash)
-    return () => window.removeEventListener('hashchange', syncModeFromHash)
+    window.addEventListener('popstate', syncModeFromHash)
+    return () => {
+      window.removeEventListener('hashchange', syncModeFromHash)
+      window.removeEventListener('popstate', syncModeFromHash)
+    }
   }, [])
 
   const LANG_TEXT = {
@@ -1524,37 +1542,46 @@ export default function LiveShopManagerDemo() {
     window.setTimeout(() => setDemoResetFeedback(''), 2500); // Clear feedback
   }
 
+  function showDashboardView(view: DashboardView) {
+    setMode('dashboard')
+    setActiveView(view)
+    const nextHash = `#${view}`
+    if (window.location.hash !== nextHash) {
+      window.history.pushState(null, '', nextHash)
+    }
+  }
+
   if (mode === 'landing') {
     return (
       <LandingPage
-        onDemo={() => { setMode('dashboard'); window.location.hash = '#live' }}
-        onDashboard={() => { setMode('dashboard'); window.location.hash = '#home' }}
+        onDemo={() => showDashboardView('live')}
+        onDashboard={() => showDashboardView('home')}
       />
     )
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-5">
-        <section id="home" className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-5 text-white shadow-lg sm:p-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-            <div>
-              <button onClick={() => setMode('landing')} className="text-sm font-semibold text-amber-300 hover:underline">Borlo</button>
-              <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
-              <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
-              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</p>
-              <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
-                Facebook Live худалдааны үндсэн урсгалыг туршилтын загвараар шалгана.
+    <main className="min-h-screen bg-slate-100 px-4 py-4 text-slate-900 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-5">
+        <section id="home" className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 p-5 text-white shadow-xl shadow-slate-200/70 sm:p-6">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-3xl">
+              <button onClick={() => setMode('landing')} className="inline-flex rounded-full bg-amber-300 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-slate-950 shadow-sm">Borlo</button>
+              <h1 className="mt-4 text-3xl font-black leading-tight tracking-normal sm:text-4xl">Лайв Захиалга Тулгагч</h1>
+              <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-slate-200">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</p>
+              <p className="mt-3 max-w-xl text-sm font-semibold leading-6 text-amber-100">
+                Эхний 1 live үнэгүй. Туршилтын загвараар урсгалаа шалгана.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
-              <a
-                href="#trial"
-                className="rounded-2xl bg-amber-300 px-5 py-4 text-center text-lg font-bold text-slate-950 shadow active:scale-95"
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-72">
+              <button
+                type="button"
+                onClick={() => showDashboardView('live')}
+                className="rounded-2xl bg-amber-300 px-5 py-3 text-center text-base font-black text-slate-950 shadow-lg shadow-amber-950/10 transition active:scale-[0.98] hover:bg-amber-200"
               >
                 Эхний 1 live үнэгүй турших
-              </a>
-              <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
+              </button>
+              <button onClick={resetDemo} className="rounded-2xl border border-white/15 bg-white px-5 py-3 text-base font-black text-slate-950 shadow-lg shadow-slate-950/10 transition active:scale-[0.98] hover:bg-slate-100">
                 Туршилтын загварын өгөгдөл сэргээх
               </button>
               {demoResetFeedback && (
@@ -1566,65 +1593,84 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        <nav className="rounded-3xl border bg-white/90 p-3 shadow-sm backdrop-blur">
-          <div className="flex gap-2 overflow-x-auto text-sm font-bold text-slate-700">
-            <a href="#home" className="whitespace-nowrap rounded-2xl bg-slate-950 px-4 py-2 text-white">Нүүр</a>
-            <a href="#live" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Шууд дамжуулалт</a>
-            <a href="#orders" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Захиалга</a>
-            <a href="#payments" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Төлбөр</a>
-            <a href="#products" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Бараа</a>
-            <a href="#packing" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Баглаа боодол</a>
-            <a href="#insights" className="whitespace-nowrap rounded-2xl px-4 py-2 hover:bg-slate-100">Тайлан</a>
+        <nav className="rounded-2xl border border-slate-200 bg-white/95 p-2 shadow-sm shadow-slate-200/70 backdrop-blur">
+          <div className="flex gap-2 overflow-x-auto text-sm font-black text-slate-700">
+            {[
+              ['home', 'Нүүр'],
+              ['live', 'Шууд дамжуулалт'],
+              ['orders', 'Захиалга'],
+              ['payments', 'Төлбөр'],
+              ['products', 'Бараа'],
+              ['packing', 'Баглаа боодол'],
+              ['insights', 'Тайлан'],
+            ].map(([view, label]) => (
+              <button
+                key={view}
+                type="button"
+                onClick={() => showDashboardView(view as DashboardView)}
+                className={`min-h-10 whitespace-nowrap rounded-2xl px-4 py-2 transition ${activeView === view ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'}`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </nav>
 
-        <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="grid gap-5 lg:grid-cols-[1.1fr_1.2fr] lg:items-start">
+        {activeView === 'home' && (
+          <>
+        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+          <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div>
-              <p className="text-sm font-bold uppercase text-amber-600">Лайвын урсгал</p>
-              <h2 className="mt-2 text-2xl font-black">Бараагаа оруулаад, live-ээ эхлүүлээд, комментээс захиалга үүсгээрэй</h2>
-              <p className="mt-3 text-slate-700">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-600">Лайвын урсгал</p>
+              <h2 className="mt-2 text-2xl font-black tracking-normal text-slate-950">Өнөөдрийн live урсгал</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
                 Seller-д хамгийн түрүүнд ойлгогдох дараалал: бараа оруулна → live эхлүүлнэ → коммент орж ирнэ → захиалга үүснэ → төлбөр тулгана → баглах жагсаалт гарна.
               </p>
             </div>
 
             <div className="grid gap-3 md:grid-cols-3">
-              <a href="#products" className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
-                <p className="text-lg font-black">1. Бараа оруулах</p>
+              <button type="button" onClick={() => showDashboardView('products')} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-300 text-sm font-black text-slate-950">1</span>
+                <p className="mt-3 text-base font-black text-slate-950">Бараагаа оруулах</p>
                 <p className="mt-2 text-sm text-slate-600">Live эхлэхээс өмнө код, өнгө, размер, үлдэгдлээ оруулна.</p>
-              </a>
-              <a href="#live" className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
-                <p className="text-lg font-black">2. Live эхлүүлэх</p>
+              </button>
+              <button type="button" onClick={() => showDashboardView('live')} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-300 text-sm font-black text-slate-950">2</span>
+                <p className="mt-3 text-base font-black text-slate-950">Live эхлүүлэх</p>
                 <p className="mt-2 text-sm text-slate-600">Коммент орж ирмэгц захиалга үүсэж, төлөв шинэчлэгдэнэ.</p>
-              </a>
-              <a href="#insights" className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
-                <p className="text-lg font-black">3. Тайлан харах</p>
+              </button>
+              <button type="button" onClick={() => showDashboardView('insights')} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-300 text-sm font-black text-slate-950">3</span>
+                <p className="mt-3 text-base font-black text-slate-950">Тайлан харах</p>
                 <p className="mt-2 text-sm text-slate-600">Төлбөр, үлдэгдэл, баглах жагсаалт, дараагийн live-ийн санал харагдана.</p>
-              </a>
+              </button>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
-            <p className="text-sm text-slate-500">Хүлээгдэж буй</p>
-            <p className="mt-2 text-3xl font-black sm:text-4xl">{pendingOrders.length}</p>
+        <section className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+            <p className="text-sm font-bold text-slate-500">Хүлээгдэж буй</p>
+            <p className="mt-2 text-3xl font-black tracking-normal text-slate-950">{pendingOrders.length}</p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">Төлбөр хүлээж буй захиалга</p>
           </div>
-          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
-            <p className="text-sm text-slate-500">Төлсөн / Баглах</p>
-            <p className="mt-2 text-3xl font-black sm:text-4xl">{paidOrders.length}</p>
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+            <p className="text-sm font-bold text-slate-500">Төлсөн / Баглах</p>
+            <p className="mt-2 text-3xl font-black tracking-normal text-slate-950">{paidOrders.length}</p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">Баглахад бэлэн мөр</p>
           </div>
-          <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
-            <p className="text-sm text-slate-500">Орлого</p>
-            <p className="mt-2 text-3xl font-black sm:text-4xl">{money(revenue)}</p>
+          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+            <p className="text-sm font-bold text-slate-500">Орлого</p>
+            <p className="mt-2 text-3xl font-black tracking-normal text-slate-950">{money(revenue)}</p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">Төлсөн захиалгын дүн</p>
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
-          <p className="text-sm font-bold uppercase text-amber-600">Нэг удаагийн тохиргоо</p>
-          <h2 className="mt-2 text-xl font-black sm:text-2xl">Эхний лайваа эхлүүлэх шалгах жагсаалт</h2>
+        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-amber-600">Нэг удаагийн тохиргоо</p>
+          <h2 className="mt-2 text-xl font-black text-slate-950 sm:text-2xl">Эхний live-ээ эхлүүлэх шалгах хуудас</h2>
           <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">Тохиргоо: 3/5 бэлэн (туршилтын загварын явц)</p>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             {[
               ['1. Live худалдааны урсгалаа бэлдэнэ', 'Туршилтын загварт коммент орж ирэх урсгалыг шалгана.'],
               ['2. Төлбөрийн мэдээллээ оруулна', 'Төлбөрийн текст ашиглан захиалгатай тулгана.'],
@@ -1632,21 +1678,21 @@ export default function LiveShopManagerDemo() {
               ['4. Лайваа эхлүүлнэ', 'Borlo дээр live урсгалаа сонгоно.'],
               ['5. Лайв дуусгаад тайлангаа харна', 'Төлбөр, баглаа боодол, алдсан эрэлт, дараагийн лайвын зөвлөмж гарна.'],
             ].map((step) => (
-              <div key={step[0]} className="rounded-2xl border bg-slate-50 p-4">
-                <p className="font-black">{step[0]}</p>
-                <p className="mt-2 text-sm text-slate-600">{step[1]}</p>
+              <div key={step[0]} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-black text-slate-950">{step[0]}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{step[1]}</p>
               </div>
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Live урсгал</a>
-            <a href="#payments" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Төлбөр тохируулах</a>
-            <a href="#products" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Бараа нэмэх</a>
+            <button type="button" onClick={() => showDashboardView('live')} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Live урсгал</button>
+            <button type="button" onClick={() => showDashboardView('payments')} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Төлбөр тохируулах</button>
+            <button type="button" onClick={() => showDashboardView('products')} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Бараа нэмэх</button>
             <button
               type="button"
               onClick={() => {
                 setFacebookConnectionState('live-found')
-                document.getElementById('facebook-live')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                showDashboardView('live')
               }}
               className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
             >
@@ -1656,7 +1702,7 @@ export default function LiveShopManagerDemo() {
               type="button"
               onClick={() => {
                 setLiveFinished(true)
-                document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                showDashboardView('insights')
               }}
               className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
             >
@@ -1668,7 +1714,11 @@ export default function LiveShopManagerDemo() {
             <p className="mt-2 text-sm text-amber-900">Туршилтын загвар дээр коммент, төлбөр, нөөц, баглаа боодол, тайлангийн урсгалыг нэг дор шалгана.</p>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'live' && (
+          <>
         <section id="facebook-live" className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Facebook Live худалдааны урсгал</h2>
           <p className="mt-2 text-slate-700">Туршилтын загвар нь live-ийн жишээ комментуудаас барааны код, өнгө, размер, тоо, утасны дугаарыг таньж захиалга үүсгэнэ.</p>
@@ -1888,8 +1938,12 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
 
+        {activeView === 'insights' && (
+          <>
         <section id="demand-insights" className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-2xl font-black">Тайлан</h2>
 
@@ -2164,7 +2218,11 @@ export default function LiveShopManagerDemo() {
             )
           })()}
         </section>
+          </>
+        )}
 
+        {activeView === 'orders' && (
+          <>
         <section id="reservation-settings" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
@@ -2204,7 +2262,11 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'products' && (
+          <>
         <section id="products" className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
@@ -2250,7 +2312,11 @@ export default function LiveShopManagerDemo() {
             <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Backup комментоос захиалга үүсгэх</button>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'payments' && (
+          <>
         <section id="payments" className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Төлбөрийн текст тулгалт</h2>
           <p className="mt-2 text-slate-700">Туршилтын загвар дээр төлбөрийн мэдээллийг текстээр оруулж, pending захиалгатай тулгана.</p>
@@ -2304,7 +2370,11 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'orders' && (
+          <>
         <section id="orders" className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Хүлээгдэж буй захиалга</h2>
@@ -2415,7 +2485,11 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'packing' && (
+          <>
         <section id="packing" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -2498,7 +2572,11 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'payments' && (
+          <>
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Шалгах</h2>
@@ -2552,7 +2630,11 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {activeView === 'home' && (
+          <>
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl border-2 border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-2xl font-black">Сарын багц</p>
@@ -2589,7 +2671,11 @@ export default function LiveShopManagerDemo() {
 6. CSV татах товчийг дарна`}</pre>
               <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Анхаарах: Хүлээгдэж буй захиалга нөөцийг аль хэдийн хадгалдаг. Төлсөн болгоход нөөц дахин хасахгүй.</p>
 </section>
+          </>
+        )}
 
+        {activeView === 'insights' && (
+          <>
         <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
@@ -2601,7 +2687,6 @@ export default function LiveShopManagerDemo() {
               onClick={() => {
                 if (!window.confirm('Лайвыг дуусгах уу?')) return
                 setLiveFinished(true)
-                document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
               }}
               className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white"
             >
@@ -2627,6 +2712,8 @@ export default function LiveShopManagerDemo() {
           <h2 className="text-xl font-black">Тэмдэглэл</h2>
           <p className="mt-2 text-slate-200">Энэ нь худалдагчийн туршилтын үндсэн урсгал. Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан гэсэн дарааллыг туршилтын загвараар харуулж байна.</p>
         </section>
+          </>
+        )}
       </div>
     </main>
   )
