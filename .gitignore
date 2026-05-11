@@ -16,3 +16,4 @@ node_modules
 *.bak*
 *.tsbuildinfo
 .DS_Store
+.vercel
