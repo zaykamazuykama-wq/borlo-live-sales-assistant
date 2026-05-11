@@ -507,8 +507,8 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
     {
       step: 2,
       title: 'Live эхлүүл',
-      detail: '→ Active Live сонго',
-      note: 'Идэвхтэй live-ээ сонгоод comment таталт эхлүүлнэ.',
+      detail: '→ Live урсгал сонго',
+      note: 'Идэвхтэй live урсгалаа сонгоод комментын туршилтыг эхлүүлнэ.',
     },
     {
       step: 3,
@@ -569,9 +569,9 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
                 })}
               </div>
               <div className="mt-4 rounded-2xl bg-amber-300 p-4 text-slate-950">
-                <p className="text-sm font-bold uppercase tracking-wide">Demo урсгал</p>
+                <p className="text-sm font-bold uppercase tracking-wide">Туршилтын загварын урсгал</p>
                 <p className="mt-2 text-sm leading-6 font-medium">
-                  Демо дээр A12, C01 гэх мэт жишээ бараа, Болор/Сараа зэрэг жишээ comment ашиглан live худалдааны урсгалыг шалгана.
+                  Туршилтын загвар дээр Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан урсгалыг шалгана.
                 </p>
               </div>
             </div>
@@ -613,7 +613,7 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-sm font-bold uppercase tracking-wide text-amber-600">Workflow</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-amber-600">Урсгал</p>
           <div className="mt-4 rounded-3xl bg-slate-50 p-4">
             <p className="text-base font-black text-slate-950 sm:text-lg">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</p>
           </div>
@@ -649,29 +649,29 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
               <p className="mt-1 text-2xl font-black">79,000₮</p>
             </div>
             <div className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm text-slate-200">Pro</p>
+              <p className="text-sm text-slate-200">Pro багц</p>
               <p className="mt-1 text-2xl font-black">149,000₮</p>
             </div>
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="font-black text-white">14,900₮ pass</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">Нэг live/campaign хийхэд тохирно. Коммент → захиалга, төлбөр тулгалт, нөөц, баглах жагсаалт, тайлан, CSV бүгд орно.</p>
+              <p className="font-black text-white">14,900₮ 1 live/campaign эрх</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">Нэг live/campaign хийхэд тохирно. Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан урсгал, CSV татах бүгд орно.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="font-black text-white">79,000₮ monthly</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">Тогтмол live хийдэг seller-д зориулсан. Сар бүр ижил урсгалаар ашиглана.</p>
+              <p className="font-black text-white">79,000₮ Сарын багц</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">Тогтмол live хийдэг худалдагчид зориулсан. Сар бүр ижил урсгалаар ашиглана.</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="font-black text-white">149,000₮ Pro</p>
-              <p className="mt-2 text-sm leading-6 text-slate-200">Олон campaign, баг, түүх, тайлан илүү хэрэгтэй seller-д зориулсан багц.</p>
+              <p className="font-black text-white">149,000₮ Pro багц</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">Олон live/campaign, баг, түүх, тайлан илүү хэрэгтэй худалдагчид зориулсан багц.</p>
             </div>
           </div>
           <div className="mt-4 rounded-2xl bg-white/10 p-4 text-sm leading-7 text-slate-200">
-            Одоо хаалттай beta туршилтын шатанд. Эхний seller-үүдээс feedback авч, live худалдаанд яг хэрэгтэй урсгалыг цэгцэлж байна.
+            Одоо хаалттай туршилтын шатанд. Эхний худалдагчдаас санал авч, live худалдаанд яг хэрэгтэй урсгалыг цэгцэлж байна.
           </div>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <button onClick={onDemo} className="flex-1 rounded-2xl bg-amber-300 px-6 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">Демо үзэх</button>
+            <button onClick={onDemo} className="flex-1 rounded-2xl bg-amber-300 px-6 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">Туршилтын загвар үзэх</button>
             <button onClick={onDashboard} className="flex-1 rounded-2xl bg-white px-6 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">Самбар нээх</button>
           </div>
           <p className="mt-3 text-center text-sm font-semibold text-slate-300">Facebook Live худалдаанд зориулсан Монгол хэлтэй туслах.</p>
@@ -736,9 +736,9 @@ export default function LiveShopManagerDemo() {
     mn: {
       mainHeading: "Лайв Захиалга Тулгагч",
       subtitle: "Шууд борлуулалтын туслах",
-      flow: "Коммент → Захиалга → Төлбөр → Баглаа боодол",
-      trialBadge: "Туршилтын хувилбар — Facebook холболт одоогооргүй",
-      demoResetButton: "Демо сэргээх",
+      flow: "Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан",
+      trialBadge: "Facebook Live худалдааны үндсэн урсгалыг туршилтын загвараар шалгана.",
+      demoResetButton: "Туршилтын загвар сэргээх",
       pendingCount: "Хүлээгдэж буй",
       paidPackingCount: "Төлсөн / Баглах",
       revenue: "Орлого",
@@ -749,20 +749,20 @@ export default function LiveShopManagerDemo() {
       productsNav: "Бараа",
       packingNav: "Баглаа боодол",
       insightsNav: "Тайлан",
-      sellerLeadTitle: "Демо хүсэлт",
-      sellerLeadCopy: "Эхний live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.",
+      sellerLeadTitle: "Туршилтын загварын хүсэлт",
+      sellerLeadCopy: "Эхний live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан урсгалыг шалгаарай.",
       facebookPlaceholder: "Facebook хуудас / live хаяг",
       phonePlaceholder: "Утас",
       productPlaceholder: "Гол зардаг бараа",
       liveCountPlaceholder: "Сард хэдэн live хийдэг вэ?",
       planHeading: "Сонирхож буй хувилбар:",
       basicPlan: "Эхний 1 live / campaign — үнэгүй",
-      autoPlan: "Нэг удаагийн live/campaign pass — 14,900₮",
-      monthlyPlan: "Сарын төлөвлөгөө — 79,000₮",
-      proPlan: "Pro — 149,000₮",
+      autoPlan: "Нэг удаагийн live/campaign эрх — 14,900₮",
+      monthlyPlan: "Сарын багц — 79,000₮",
+      proPlan: "Pro багц — 149,000₮",
       freeTrial: "Эхний 1 live үнэгүй",
-      demoCta: "Демо авах",
-      demoFormNote: "Одоогоор туршилтын form — илгээх backend холбогдоогүй",
+      demoCta: "Туршилтын загвар авах",
+      demoFormNote: "Одоогоор туршилтын загварын хүсэлт.",
     },
     en: {
       mainHeading: "Live Shop Manager",
@@ -1478,7 +1478,7 @@ export default function LiveShopManagerDemo() {
     setPaymentPaste('89000 Болор A12 99112233\n239000 Болор 99112233\n70000 Болор 99112233\n500000 Болор 99112233\n88000 Бат 88119922')
     setPaymentRequestCopyStatus('') // Clear transient UI state
     setCopyStatus('') // Clear transient UI state
-    setDemoResetFeedback('Demo data сэргээгдлээ'); // Set feedback
+    setDemoResetFeedback('Туршилтын загварын өгөгдөл сэргээгдлээ'); // Set feedback
     window.setTimeout(() => setDemoResetFeedback(''), 2500); // Clear feedback
   }
 
@@ -1500,9 +1500,9 @@ export default function LiveShopManagerDemo() {
               <button onClick={() => setMode('landing')} className="text-sm font-semibold text-amber-300 hover:underline">Borlo</button>
               <h1 className="mt-2 text-3xl font-black sm:text-5xl">Лайв Захиалга Тулгагч</h1>
               <p className="mt-2 text-lg font-semibold text-white">Шууд борлуулалтын туслах</p>
-              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Үлдэгдэл → Баглаа боодол → Жагсаалт</p>
+              <p className="mt-3 max-w-2xl text-slate-200">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</p>
               <p className="mt-4 inline-flex rounded-full bg-amber-300 px-4 py-2 text-sm font-bold text-slate-950">
-                Туршилтын хувилбар — Facebook холболт одоогооргүй
+                Facebook Live худалдааны үндсэн урсгалыг туршилтын загвараар шалгана.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
@@ -1513,7 +1513,7 @@ export default function LiveShopManagerDemo() {
                 Эхний 1 live үнэгүй турших
               </a>
               <button onClick={resetDemo} className="rounded-2xl bg-white px-5 py-4 text-lg font-bold text-slate-950 shadow active:scale-95">
-                Demo data сэргээх
+                Туршилтын загварын өгөгдөл сэргээх
               </button>
               {demoResetFeedback && (
                 <p className="rounded-2xl bg-slate-200 p-2 text-center text-sm font-bold text-slate-700">
@@ -1580,14 +1580,14 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-white p-4 shadow-sm sm:p-5">
           <p className="text-sm font-bold uppercase text-amber-600">Нэг удаагийн тохиргоо</p>
-          <h2 className="mt-2 text-xl font-black sm:text-2xl">Эхний лайваа эхлүүлэх checklist</h2>
-          <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">Тохиргоо: 3/5 бэлэн (demo явц)</p>
+          <h2 className="mt-2 text-xl font-black sm:text-2xl">Эхний лайваа эхлүүлэх шалгах жагсаалт</h2>
+          <p className="mt-2 text-sm font-semibold text-slate-700 sm:text-base">Тохиргоо: 3/5 бэлэн (туршилтын загварын явц)</p>
           <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {[
-              ['1. Facebook Page-ээ холбоно', 'Лайвын сэтгэгдэл автоматаар орж ирэхэд бэлэн болно.'],
-              ['2. Төлбөрийн мэдээллээ оруулна', 'Gmail орлогын мэдэгдэл эсвэл payment text ашиглан захиалгатай тулгана.'],
-              ['3. Бараа, өнгө, размер, үлдэгдлээ оруулна', 'Захиалга үүсэхэд үлдэгдэл автоматаар хадгалагдана.'],
-              ['4. Лайваа Facebook Page дээрээ эхлүүлнэ', 'Borlo дээр Active Live хайж сонгоно.'],
+              ['1. Live худалдааны урсгалаа бэлдэнэ', 'Туршилтын загварт коммент орж ирэх урсгалыг шалгана.'],
+              ['2. Төлбөрийн мэдээллээ оруулна', 'Төлбөрийн текст ашиглан захиалгатай тулгана.'],
+              ['3. Бараа, өнгө, размер, нөөцөө оруулна', 'Захиалга үүсэхэд нөөц автоматаар хадгалагдана.'],
+              ['4. Лайваа эхлүүлнэ', 'Borlo дээр live урсгалаа сонгоно.'],
               ['5. Лайв дуусгаад тайлангаа харна', 'Төлбөр, баглаа боодол, алдсан эрэлт, дараагийн лайвын зөвлөмж гарна.'],
             ].map((step) => (
               <div key={step[0]} className="rounded-2xl border bg-slate-50 p-4">
@@ -1597,7 +1597,7 @@ export default function LiveShopManagerDemo() {
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Facebook холболт</a>
+            <a href="#facebook-live" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Live урсгал</a>
             <a href="#payments" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Төлбөр тохируулах</a>
             <a href="#products" className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">Бараа нэмэх</a>
             <button
@@ -1608,7 +1608,7 @@ export default function LiveShopManagerDemo() {
               }}
               className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white"
             >
-              Active live хайх
+              Live урсгал сонгох
             </button>
             <button
               type="button"
@@ -1623,27 +1623,27 @@ export default function LiveShopManagerDemo() {
           </div>
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <p className="font-black text-amber-900">Тохиргоо хийхэд тусламж хэрэгтэй юу?</p>
-            <p className="mt-2 text-sm text-amber-900">Facebook Page болон Gmail орлогын мэдээний тохиргоог нэг удаа хийвэл дараагийн лайв бүр дээр Borlo таны сэтгэгдэл, төлбөр, үлдэгдэл, баглаа боодлыг цэгцэлнэ.</p>
+            <p className="mt-2 text-sm text-amber-900">Туршилтын загвар дээр коммент, төлбөр, нөөц, баглаа боодол, тайлангийн урсгалыг нэг дор шалгана.</p>
           </div>
         </section>
 
         <section id="facebook-live" className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Facebook Live холболт</h2>
-          <p className="mt-2 text-slate-700">Borlo нь live-ийн комментуудыг автоматаар уншиж, барааны код, өнгө, размер, тоо, утасны дугаарыг таньж захиалга үүсгэнэ.</p>
-          <p className="mt-2 rounded-2xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">Тохиргооны сануулга: Демо горимд комментууд жишээ урсгалаар орж ирнэ. Бодит Facebook Page холболтыг seller onboarding үед тохируулна.</p>
+          <h2 className="text-2xl font-black">Facebook Live худалдааны урсгал</h2>
+          <p className="mt-2 text-slate-700">Туршилтын загвар нь live-ийн жишээ комментуудаас барааны код, өнгө, размер, тоо, утасны дугаарыг таньж захиалга үүсгэнэ.</p>
+          <p className="mt-2 rounded-2xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">Тохиргооны сануулга: Туршилтын загварт комментууд жишээ урсгалаар орж ирнэ.</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('not-connected')}>Холбогдоогүй</button>
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('connected')}>Холбогдсон</button>
+            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('not-connected')}>Туршилтын эхлэл</button>
+            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('connected')}>Туршилтын урсгал сонгосон</button>
             <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('live-found')}>Live олдсон</button>
             <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('importing')}>Коммент орж байна</button>
           </div>
           <div className="mt-4 rounded-2xl border p-4">
-            {facebookConnectionState === 'not-connected' && <button className="rounded-2xl bg-blue-600 px-4 py-3 font-bold text-white">Facebook Page холбох</button>}
-            {facebookConnectionState === 'connected' && <div className="space-y-3"><p className="font-bold">Холбогдсон хуудас: Borlo Seller Demo Page</p><div className="flex gap-2"><button className="rounded-xl bg-slate-950 px-3 py-2 text-white">Live хайх</button><button className="rounded-xl bg-slate-100 px-3 py-2 font-bold">Live холбоос оруулах</button></div></div>}
-            {facebookConnectionState === 'live-found' && <div className="space-y-3"><p className="font-bold">Live: Friday New Arrivals Live — 2026-05-05 19:00</p><button className="rounded-xl bg-emerald-600 px-4 py-2 font-bold text-white">Коммент татаж эхлэх</button></div>}
+            {facebookConnectionState === 'not-connected' && <button className="rounded-2xl bg-blue-600 px-4 py-3 font-bold text-white" onClick={() => setFacebookConnectionState('connected')}>Туршилтын live урсгал сонгох</button>}
+            {facebookConnectionState === 'connected' && <div className="space-y-3"><p className="font-bold">Сонгосон туршилтын урсгал: Borlo live загвар</p><div className="flex gap-2"><button className="rounded-xl bg-slate-950 px-3 py-2 text-white" onClick={() => setFacebookConnectionState('live-found')}>Live урсгал харах</button><button className="rounded-xl bg-slate-100 px-3 py-2 font-bold" onClick={() => setFacebookConnectionState('live-found')}>Live холбоосын тэмдэглэл</button></div></div>}
+            {facebookConnectionState === 'live-found' && <div className="space-y-3"><p className="font-bold">Live: Шинэ барааны туршилтын live — 2026-05-05 19:00</p><button className="rounded-xl bg-emerald-600 px-4 py-2 font-bold text-white" onClick={() => setFacebookConnectionState('importing')}>Жишээ коммент эхлүүлэх</button></div>}
             {facebookConnectionState === 'importing' && <div className="grid gap-2 sm:grid-cols-4">{[['Нийт сэтгэгдэл','326'],['Захиалга илэрсэн','88'],['Хүлээгдэж буй','17'],['Шалгах','9']].map((s)=><div key={s[0]} className="rounded-xl bg-slate-50 p-3"><p className="text-xs text-slate-500">{s[0]}</p><p className="text-2xl font-black">{s[1]}</p></div>)}</div>}
           </div>
-          <p className="mt-3 text-sm text-slate-600">Одоогоор демо нь Facebook Live худалдааны үндсэн урсгалыг харуулах зориулалттай.</p>
+          <p className="mt-3 text-sm text-slate-600">Одоогоор туршилтын загвар нь Facebook Live худалдааны үндсэн урсгалыг харуулах зориулалттай.</p>
           <p className="mt-2 text-sm text-slate-500">Нөөц гар арга: шаардлагатай үед коммент оруулах нэмэлт арга ашиглаж болно.</p>
         </section>
 
@@ -1661,11 +1661,11 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Туршилт авах хүсэлт</h2>
-          <p className="mt-2 text-slate-700">Эхний 1 live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → үлдэгдэл → баглаа боодлын жагсаалт урсгалыг шалгаарай.</p>
+          <p className="mt-2 text-slate-700">Эхний 1 live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан урсгалыг шалгаарай.</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <input
                 className="rounded-2xl border p-4 sm:col-span-2"
-                placeholder="Facebook page / лайв хаяг"
+                placeholder="Facebook live хаяг"
                 value={trialLead.facebook}
                 onChange={(e) => setTrialLead({ ...trialLead, facebook: e.target.value })}
               />
@@ -1695,15 +1695,15 @@ export default function LiveShopManagerDemo() {
             </label>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" />
-              <span>Нэг удаагийн live/campaign pass — 14,900₮</span>
+              <span>Нэг удаагийн live/campaign эрх — 14,900₮</span>
             </label>
             <label className="flex items-center space-x-2 sm:col-span-2">
               <input type="radio" name="plan" className="form-radio" defaultChecked />
               <span>Эхлээд үнэгүй туршъя</span>
             </label>
-            <button className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Demo авах</button>
+            <button className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Туршилтын загвар авах</button>
           </div>
-          <p className="mt-4 text-sm text-slate-500 text-center">Одоогоор туршилтын form — илгээх backend холбогдоогүй.</p>
+          <p className="mt-4 text-sm text-slate-500 text-center">Одоогоор туршилтын загварын хүсэлт.</p>
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
@@ -1712,15 +1712,15 @@ export default function LiveShopManagerDemo() {
               <p className="text-sm font-bold uppercase text-amber-600">Эхний 1 live үнэгүй</p>
               <h2 className="mt-2 text-2xl font-black">Туршилт авах хүсэлт</h2>
               <p className="mt-3 text-slate-700">
-                Эхний live дээр Borlo-г туршиж үзээд, коммент → захиалга → төлбөр → баглаа боодлын урсгалыг шалгаарай.
+                Эхний live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан урсгалыг шалгаарай.
               </p>
               <p className="mt-4 rounded-2xl bg-slate-100 p-4 text-sm text-slate-600">
-                Одоогоор туршилтын form — илгээх backend холбогдоогүй.
+                Одоогоор туршилтын загварын хүсэлт.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook page / лайв хаяг" />
+              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook live хаяг" />
               <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
               <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
               <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
@@ -1732,8 +1732,8 @@ export default function LiveShopManagerDemo() {
                     <input
                       type="radio"
                       name="trial-plan"
-                      checked={trialLead.plan === 'Basic 99,000₮'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Basic 99,000₮' })}
+                      checked={trialLead.plan === 'Сарын багц — 79,000₮'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Сарын багц — 79,000₮' })}
                     />
                     <span>Эхний 1 live / campaign — үнэгүй</span>
                   </label>
@@ -1741,10 +1741,10 @@ export default function LiveShopManagerDemo() {
                     <input
                       type="radio"
                       name="trial-plan"
-                      checked={trialLead.plan === 'Нэг удаагийн live/campaign pass — 14,900₮'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Нэг удаагийн live/campaign pass — 14,900₮' })}
+                      checked={trialLead.plan === 'Нэг удаагийн live/campaign эрх — 14,900₮'}
+                      onChange={() => setTrialLead({ ...trialLead, plan: 'Нэг удаагийн live/campaign эрх — 14,900₮' })}
                     />
-                    <span>Нэг удаагийн live/campaign pass — 14,900₮</span>
+                    <span>Нэг удаагийн live/campaign эрх — 14,900₮</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input
@@ -1771,12 +1771,12 @@ export default function LiveShopManagerDemo() {
                     `Сонирхож буй хувилбар: ${trialLead.plan} `,
                   ].join('\n')
                   navigator.clipboard.writeText(demoRequestText)
-                  setCopyStatus('Хууллаа — Messenger/Telegram рүү paste хийгээрэй')
+                  setCopyStatus('Хууллаа — Messenger/Telegram рүү наагаарай')
                   window.setTimeout(() => setCopyStatus(''), 2500)
                 }}
                 className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 sm:col-span-2"
               >
-                Demo хүсэлтийн текст хуулах
+                Туршилтын загварын хүсэлтийн текст хуулах
               </button>
               {copyStatus && (
                 <p className="rounded-2xl bg-emerald-50 p-3 text-center text-sm font-bold text-emerald-700 sm:col-span-2">
@@ -1793,13 +1793,13 @@ export default function LiveShopManagerDemo() {
               <p className="text-sm font-bold uppercase text-amber-300">Холбогдох сувгууд</p>
               <h2 className="mt-2 text-2xl font-black">Туршилт авахад ойрхон байна</h2>
               <p className="mt-3 text-slate-300">
-                Facebook page эсвэл live хаягаа явуулбал таны одоогийн захиалга авах урсгалд Borlo хэрхэн таарахыг шалгаж өгнө.
+                Facebook live хаягаа явуулбал таны одоогийн захиалга авах урсгалд Borlo хэрхэн таарахыг шалгаж өгнө.
               </p>
               <p className="mt-3 text-sm text-slate-400">
                 Одоогоор эдгээр нь туршилтын товчнууд — бодит чатбот холболт дараагийн шатанд нэмэгдэнэ.
               </p>
               <p className="mt-3 rounded-2xl bg-white/10 p-3 text-sm font-semibold text-slate-200">
-                Эхлээд demo хүсэлтийн текстээ хуулж аваад Messenger эсвэл Telegram рүү paste хийгээрэй.
+                Эхлээд туршилтын загварын хүсэлтийн текстээ хуулж аваад Messenger эсвэл Telegram рүү наагаарай.
               </p>
             </div>
 
@@ -1841,14 +1841,14 @@ export default function LiveShopManagerDemo() {
                 </div>
               </div>
               <p className="mt-3 text-xs text-amber-700">
-                Одоогоор demo мэдээлэл — бодит blacklist/database холболт дараагийн шатанд нэмэгдэнэ.
+                Одоогоор туршилтын загварын мэдээлэл.
               </p>
             </div>
           </div>
         </section>
 
 
-        <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
+        <section id="demand-insights" className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-2xl font-black">Тайлан</h2>
 
           <div className="mb-4 rounded-2xl bg-slate-50 p-4">
@@ -1889,7 +1889,7 @@ export default function LiveShopManagerDemo() {
                     <th className="px-2 py-1">Төлсөн</th>
                     <th className="px-2 py-1">Хүрэлцээгүй</th>
                     <th className="px-2 py-1">Шалгах</th>
-                    <th className="px-2 py-1 text-right">Demand</th>
+                    <th className="px-2 py-1 text-right">Эрэлт</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1910,7 +1910,7 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="mb-4">
-            <h3 className="mb-2 text-lg font-black">Эрэлттэй variant</h3>
+            <h3 className="mb-2 text-lg font-black">Эрэлттэй хувилбар</h3>
             <div className="overflow-auto">
               <table className="min-w-full text-sm">
                 <thead>
@@ -1923,7 +1923,7 @@ export default function LiveShopManagerDemo() {
                     <th className="px-2 py-1">Төлсөн</th>
                     <th className="px-2 py-1">Хүрэлцээгүй</th>
                     <th className="px-2 py-1">Шалгах</th>
-                    <th className="px-2 py-1 text-right">Demand</th>
+                    <th className="px-2 py-1 text-right">Эрэлт</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1964,7 +1964,7 @@ export default function LiveShopManagerDemo() {
                 {restockSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор дахин нөөцлөх санал алга.</li>}
                 {restockSuggestions.map((item) => (
                   <li key={item.code} className="rounded-2xl bg-amber-50 p-3 text-amber-800">
-                    {item.code} — {item.name}: үлдэгдэл {item.availableStock}, Demand {item.demandScore}
+                    {item.code} — {item.name}: үлдэгдэл {item.availableStock}, эрэлт {item.demandScore}
                   </li>
                 ))}
               </ul>
@@ -1976,7 +1976,7 @@ export default function LiveShopManagerDemo() {
                 {nextLiveSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор санал алга.</li>}
                 {nextLiveSuggestions.map((item) => (
                   <li key={item.key} className="rounded-2xl bg-blue-50 p-3 text-blue-800">
-                    {item.productCode} — {item.color}/{item.size}: Demand {item.demandScore}
+                    {item.productCode} — {item.color}/{item.size}: эрэлт {item.demandScore}
                   </li>
                 ))}
               </ul>
@@ -1985,7 +1985,7 @@ export default function LiveShopManagerDemo() {
             <div>
               <h3 className="mb-2 text-lg font-black">Нөөц дуусах гэж байна</h3>
               <ul className="space-y-2">
-                {lowStockWarnings.length === 0 && <li className="text-sm text-slate-500">Одоогоор нөөц дуусах гэж буй variant алга.</li>}
+                {lowStockWarnings.length === 0 && <li className="text-sm text-slate-500">Одоогоор нөөц дуусах гэж буй хувилбар алга.</li>}
                 {lowStockWarnings.map((item) => (
                   <li key={item.key} className="rounded-2xl bg-amber-100 p-3 text-amber-800">
                     {item.productCode} — {item.color}/{item.size}: үлдэгдэл {item.availableStock}
@@ -1999,14 +1999,14 @@ export default function LiveShopManagerDemo() {
         <section id="owner-admin" className="rounded-3xl bg-slate-950 p-5 text-white shadow-sm">
           <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-300">Эзэмшигчийн demo самбар</p>
-              <h2 className="text-2xl font-black">Эзэмшигчийн demo самбар</h2>
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-300">Эзэмшигчийн туршилтын самбар</p>
+              <h2 className="text-2xl font-black">Эзэмшигчийн туршилтын самбар</h2>
               <p className="mt-1 text-sm text-slate-300">
-                Demo-only view. Бодит худалдагчийн бүртгэл, CRM, төлбөрийн нэгтгэл, нэвтрэлт холбогдоогүй.
+                Туршилтын харагдац. Бодит худалдагчийн бүртгэл, CRM, төлбөрийн нэгтгэл, нэвтрэлт холбогдоогүй.
               </p>
             </div>
             <span className="rounded-2xl bg-white/10 px-4 py-2 text-sm font-bold text-emerald-200">
-              Зөвхөн local demo metric
+              Зөвхөн локал туршилтын үзүүлэлт
             </span>
           </div>
 
@@ -2030,38 +2030,38 @@ export default function LiveShopManagerDemo() {
                 orders: Math.max(8, paidOrders.length + pendingOrders.length),
                 reviewCount: Math.max(1, paymentReviewEvents.length),
                 nextFollowUp: '2026-05-08',
-                notes: 'Packing list болон stock flow сонирхож байгаа',
+                notes: 'Баглах жагсаалт болон нөөцийн урсгал сонирхож байгаа',
               },
               {
                 seller: 'Bolor Shoes',
                 plan: 'Auto',
-                status: 'Demo request',
+                status: 'Туршилтын хүсэлт',
                 livesPerMonth: 20,
                 orders: Math.max(12, orders.length + 4),
                 reviewCount: Math.max(2, paymentReviewEvents.length + 1),
                 nextFollowUp: '2026-05-10',
-                notes: 'Simulated payment matching demo үзүүлэх',
+                notes: 'Төлбөр тулгах туршилтын загвар үзүүлэх',
               },
             ]
 
             const totalSellers = demoSellers.length
-            const demoRequests = demoSellers.filter((seller) => seller.status === 'Demo request').length + 1
+            const demoRequests = demoSellers.filter((seller) => seller.status === 'Туршилтын хүсэлт').length + 1
             const trialSellers = demoSellers.filter((seller) => seller.plan === 'Trial').length
             const basicSellers = demoSellers.filter((seller) => seller.plan === 'Basic').length
             const autoSellers = demoSellers.filter((seller) => seller.plan === 'Auto').length
             const activeSellers = demoSellers.filter((seller) => seller.status === 'Active').length
-            const monthlyRevenueEstimate = basicSellers * 99000 + autoSellers * 149000
+            const monthlyRevenueEstimate = basicSellers * 79000 + autoSellers * 149000
             const totalOrders = demoSellers.reduce((sum, seller) => sum + seller.orders, 0)
             const paymentReviewVolume = demoSellers.reduce((sum, seller) => sum + seller.reviewCount, 0)
-            const followUpNeeded = demoSellers.filter((seller) => seller.status.includes('Follow-up') || seller.status === 'Demo request').length
+            const followUpNeeded = demoSellers.filter((seller) => seller.status.includes('Follow-up') || seller.status === 'Туршилтын хүсэлт').length
 
             const adminCards = [
               ['Нийт худалдагч', totalSellers],
-              ['Demo хүсэлт', demoRequests],
-              ['Туршилтын seller', trialSellers],
-              ['Үндсэн seller', basicSellers],
-              ['Автомат seller', autoSellers],
-              ['Идэвхтэй seller', activeSellers],
+              ['Туршилтын хүсэлт', demoRequests],
+              ['Туршилтын худалдагч', trialSellers],
+              ['Үндсэн худалдагч', basicSellers],
+              ['Автомат худалдагч', autoSellers],
+              ['Идэвхтэй худалдагч', activeSellers],
               ['Сарын орлого', money(monthlyRevenueEstimate)],
               ['Нийт захиалга', totalOrders],
               ['Төлбөр шалгалт', paymentReviewVolume],
@@ -2179,7 +2179,7 @@ export default function LiveShopManagerDemo() {
                       </p>
                     </div>
                     <button onClick={() => setActiveБарааCode(product.code)} className={`rounded-2xl px-5 py-3 font-bold ${activeБарааCode === product.code ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
-                      {activeБарааCode === product.code ? 'Active' : 'Active болгох'}
+                      {activeБарааCode === product.code ? 'Идэвхтэй' : 'Идэвхтэй болгох'}
                     </button>
                   </div>
                 </div>
@@ -2201,8 +2201,8 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 id="orders" className="text-2xl font-black">Нөөц горим: Лайв коммент гараар оруулах</h2>
-            <p className="mt-1 text-sm text-slate-500">Үндсэн урсгал нь Facebook Page Live холболт. Энэ хэсэг нь зөвхөн backup зориулалттай.</p>
+            <h2 className="text-2xl font-black">Нөөц горим: Лайв коммент гараар оруулах</h2>
+          <p className="mt-1 text-sm text-slate-500">Үндсэн урсгал нь туршилтын загварын live коммент. Энэ хэсэг нь нэмэлт гараар оруулах арга.</p>
             <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
             <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
             <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Backup комментоос захиалга үүсгэх</button>
@@ -2210,11 +2210,9 @@ export default function LiveShopManagerDemo() {
         </section>
 
         <section id="payments" className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Gmail орлогын мэдээ тулгалт</h2>
-          <p className="mt-2 text-slate-700">Банкны орлогын мэдэгдлээ Gmail рүү нэг удаа тохируулбал Borlo лайвын төлбөрүүдийг захиалгатай тулгана.</p>
-          <p className="mt-2 text-slate-700">Borlo таны бүх Gmail-ийг уншихгүй. Зөвхөн таны зөвшөөрсөн орлогын мэдэгдлийг тухайн лайвын хугацаа болон төлбөр хүлээх цонхоор шалгана.</p>
-          <p className="mt-1 text-sm font-bold text-emerald-700">Төлбөрийн мэдээллээ оруулаад захиалгатай тулгана.</p>
-          <p className="mt-1 text-sm text-amber-700">Тохиргоо шаардлагатай. Gmail холболт энэ орчинд бодитоор идэвхжээгүй.</p>
+          <h2 className="text-2xl font-black">Төлбөрийн текст тулгалт</h2>
+          <p className="mt-2 text-slate-700">Туршилтын загвар дээр төлбөрийн мэдээллийг текстээр оруулж, pending захиалгатай тулгана.</p>
+          <p className="mt-1 text-sm font-bold text-emerald-700">Одоогоор банк, Gmail, QPay холболт идэвхжээгүй. Seller trial-д зөвхөн төлбөрийн текст нааж урсгалыг шалгана.</p>
           <div className="mt-3">
             <p className="text-sm font-bold">Төлбөр хүлээх цонх</p>
             <select value={paymentWindow} onChange={(e) => setPaymentWindow(e.target.value)} className="mt-2 rounded-xl border p-2">
@@ -2225,20 +2223,17 @@ export default function LiveShopManagerDemo() {
             {['Таарсан', 'Нийлмэл төлбөр таарсан', 'Дутуу төлөлт', 'Илүү төлөлт', 'Олон боломжит таарсан', 'Таараагүй төлбөр', 'Хоцорсон төлбөр'].map((s) => <span key={s} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold">{s}</span>)}
           </div>
           <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-slate-700">
-            <li>Би лайв борлуулалтдаа ашигладаг банкны данстай.</li><li>Тухайн дансны орлогын мэдэгдэл Gmail рүү ирдэг.</li><li>Мэдэгдэл дотор дүн, огноо, гүйлгээний утга харагддаг.</li><li>Borlo зөвхөн лайвын хугацаан дахь орлогын мэдээг уншихыг зөвшөөрнө.</li><li>Лайв дууссаны дараа банкны хуулга upload хийж баталгаажуулж болно.</li>
+            <li>Лайвын захиалгууд pending төлөвт үүснэ.</li><li>Төлбөрийн мэдээллийг текстээр оруулна.</li><li>Дүн, нэр, утас таарвал төлбөр paid/review төлөвт орно.</li><li>Лайв дуусахад баглах жагсаалт болон тайлан гарна.</li>
           </ul>
-          <div className="mt-4 rounded-2xl border border-dashed p-4 text-sm font-semibold">Видео зааврын placeholder: “Банкны орлогын мэдэгдлээ Gmail рүү хэрхэн авах вэ?”</div>
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-            {['ХААН Банк', 'Голомт Банк', 'TDB', 'ХасБанк', 'Төрийн Банк'].map((bank) => <div key={bank} className="rounded-xl border p-3 text-sm"><p className="font-bold">{bank}</p><p className="text-slate-500">Заавар удахгүй</p></div>)}
-          </div>
+          <div className="mt-4 rounded-2xl border border-dashed p-4 text-sm font-semibold">Видео зааврын хэсэг: “Төлбөрийн мэдээллээ хэрхэн наах вэ?”</div>
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Банкны хуулга upload хийх</h2>
-          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана (demo CSV/XLSX мөр дэмжинэ).</p>
-          <p className="mt-1 text-sm text-slate-500">PDF/image OCR — future support placeholder.</p>
+          <h2 className="text-2xl font-black">Банкны хуулга оруулах</h2>
+          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана (туршилтын CSV/XLSX мөр дэмжинэ).</p>
+          <p className="mt-1 text-sm text-slate-500">PDF/зураг унших хэсэг дараагийн хувилбарт орно.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-5">
-            {['Bank statement confirmed', 'Gmail notice missed', 'Late payment found', 'Review resolved', 'Still unmatched'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
+            {['Банкны хуулга баталгаажсан', 'Төлбөрийн мэдээ дутуу', 'Хоцорсон төлбөр олдсон', 'Шалгалт шийдэгдсэн', 'Таараагүй хэвээр'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
           </div>
 
           <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
@@ -2268,11 +2263,11 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        <section className="grid gap-5 lg:grid-cols-2">
+        <section id="orders" className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Хүлээгдэж буй захиалга</h2>
             <div className="mt-4 space-y-3">
-              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Одоогоор хүлээгдэж буй захиалга алга. Коммент paste хийж захиалга үүсгэнэ.</p>}
+              {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-slate-500">Одоогоор хүлээгдэж буй захиалга алга. Коммент нааж захиалга үүсгэнэ.</p>}
               {pendingOrders.map((order, index) => (
                 <div key={order.id} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -2353,13 +2348,13 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Төлбөрийн мэдээлэл наах</h2>
               <p className="mt-2 text-sm text-slate-600">Нэг худалдан авагч олон захиалгын төлбөрийг нэг гүйлгээгээр төлсөн бол Borlo нийлбэр дүнгээр нь тулгаж болно.</p>
-            <p className="mt-1 text-sm text-slate-500">Demo-д Auto payment paste ашиглаж байна.</p>
-            <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" placeholder={'89000 Болор A12 99112233 (single match)\n239000 Болор 99112233 (combined)\n70000 Болор 99112233 (underpaid)\n500000 Болор 99112233 (overpaid)\n88000 Бат 88119922 (no match)'} value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
-            <button onClick={parsePaymentEvents} className="mt-3 w-full rounded-2xl bg-violet-600 px-5 py-4 text-lg font-bold text-white">Payment тулгах</button>
+            <p className="mt-1 text-sm text-slate-500">Туршилтын загварт төлбөрийн мэдээлэл нааж тулгаж байна.</p>
+            <textarea className="mt-4 min-h-32 w-full rounded-2xl border p-4 text-base" placeholder={'89000 Болор A12 99112233 (нэг захиалга таарна)\n239000 Болор 99112233 (нийлбэр дүн таарна)\n70000 Болор 99112233 (дутуу төлсөн)\n500000 Болор 99112233 (илүү төлсөн)\n88000 Бат 88119922 (таарахгүй)'} value={paymentPaste} onChange={(e) => setPaymentPaste(e.target.value)} />
+            <button onClick={parsePaymentEvents} className="mt-3 w-full rounded-2xl bg-violet-600 px-5 py-4 text-lg font-bold text-white">Төлбөр тулгах</button>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl bg-slate-50 p-4">
-                <p className="font-black">Successful Payments</p>
+                <p className="font-black">Амжилттай төлбөр</p>
                 <p className="text-3xl font-black">{successfulPaymentEvents.length}</p>
               </div>
               <div className="rounded-2xl bg-amber-50 p-4">
@@ -2379,31 +2374,13 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white p-5 shadow-sm">
+        <section id="packing" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-2xl font-black">Баглах захиалга</h2>
               <p className="text-sm text-slate-500">Зөвхөн төлсөн, баглахад бэлэн захиалга харагдана.</p>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => {
-                if (paidOrders.length === 0) {
-                  setPackingListCopyStatus('Хуулах баглаа боодлын жагсаалт алга');
-                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
-                  return;
-                }
-                const packingListHeader = 'Баглах жагсаалт:';
-                const packingListItems = packingGroups.map((item) => `${item.productCode} ${item.productName} / ${item.color} / ${item.size} — ${item.totalQuantity}ш`);
-                const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
-
-                if (navigator.clipboard) {
-                  navigator.clipboard.writeText(packingListText);
-                  setPackingListCopyStatus('Баглаа боодлын жагсаалт хуулагдлаа');
-                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
-                } else {
-                  alert('Clipboard API is not available.');
-                }
-              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
               <div className="flex gap-2">
               <button onClick={() => {
                 if (paidOrders.length === 0) {
@@ -2423,7 +2400,7 @@ export default function LiveShopManagerDemo() {
                   alert('Clipboard API is not available.');
                 }
               }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
-              <button onClick={exportOrdersCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
+              <button onClick={exportPackingCsv} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white">CSV татах</button>
             </div>
             </div>
           </div>
@@ -2536,59 +2513,69 @@ export default function LiveShopManagerDemo() {
 
         <section className="grid gap-5 lg:grid-cols-2">
           <div className="rounded-3xl border-2 border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-2xl font-black">Basic</p>
-            <p className="mt-2 text-3xl font-black">99,000₮ / сар</p>
+          <p className="text-2xl font-black">Сарын багц</p>
+            <p className="mt-2 text-3xl font-black">79,000₮ / сар</p>
             <ul className="mt-4 space-y-2 text-slate-700">
-              <li>- Manual Төлсөн товч</li>
-              <li>- Stock удирдлага</li>
-              <li>- CSV Packing list</li>
+              <li>- Гараар Төлсөн болгох товч</li>
+              <li>- Нөөц хадгалах/буцаах удирдлага</li>
+              <li>- Баглах жагсаалт CSV татах</li>
             </ul>
           </div>
           <div className="rounded-3xl border-2 border-violet-300 bg-violet-50 p-5 shadow-sm">
-            <p className="text-2xl font-black">Auto</p>
+            <p className="text-2xl font-black">Pro багц</p>
             <p className="mt-2 text-3xl font-black">149,000₮ / сар</p>
             <ul className="mt-4 space-y-2 text-slate-700">
               <li>- Бүрэн live ажиллагаа</li>
-              <li>- Коммент → захиалга → төлбөр → баглаа боодол</li>
-              <li>- CSV / report export</li>
+              <li>- Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</li>
+              <li>- CSV татах / тайлан татах</li>
             </ul>
-            <p className="mt-4 rounded-2xl bg-white p-3 font-bold text-violet-800">Pro түвшинд илүү их live-ыг нэг дор удирдана.</p>
+            <p className="mt-4 rounded-2xl bg-white p-3 font-bold text-violet-800">Pro багцад илүү их live/campaign-ыг нэг дор удирдана.</p>
           </div>
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">5 минутын demo заавар</h2>
-              <p className="mt-2 text-sm text-slate-600">Энэ зааврыг seller-д demo үзүүлэхдээ дагахад хангалттай.</p>
-          <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-white">{`1. A12-ыг Active болгох
+          <h2 className="text-2xl font-black">5 минутын туршилтын загварын заавар</h2>
+              <p className="mt-2 text-sm text-slate-600">Энэ зааврыг худалдагчид туршилтын загвар үзүүлэхдээ дагахад хангалттай.</p>
+          <pre className="mt-4 whitespace-pre-wrap rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-white">{`1. A12-ыг идэвхтэй болгох
 2. Лайв коммент наах:
    Болор: A12 хар M авъя
    Болор: C01 цагаан 38 авъя
 3. Төлбөрийн мэдээлэл наах:
    239000 Болор 99112233
-4. 2 pending захиалга зэрэг Төлсөн болно
-5. Packing List-д A12 болон C01 хоёулаа харагдана
+4. 2 хүлээгдэж буй захиалга зэрэг Төлсөн болно
+5. Баглах жагсаалтад A12 болон C01 хоёулаа харагдана
 6. CSV татах товчийг дарна`}</pre>
-              <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Important: Хүлээгдэж буй захиалга үлдэгдлийг аль хэдийн reserve хийдэг. Төлсөн болгоход үлдэгдэл дахин хасахгүй.</p>
+              <p className="mt-4 rounded-2xl bg-amber-50 p-4 font-bold text-amber-900">Анхаарах: Хүлээгдэж буй захиалга нөөцийг аль хэдийн хадгалдаг. Төлсөн болгоход нөөц дахин хасахгүй.</p>
 </section>
 
         <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-2xl font-black">Лайвын дараах тайлангийн төв</h2>
-              <p className="text-slate-700">Лайв урсгал → Захиалга → Төлбөр тулгалт → Үлдэгдэл → Баглаа боодол → Лайвын дараах тайлан</p>
+              <p className="text-slate-700">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан</p>
             </div>
-            <button onClick={() => setLiveFinished(true)} className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white">Лайв дуусгах</button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm('Лайвыг дуусгах уу?')) return
+                setLiveFinished(true)
+                document.getElementById('insights')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="rounded-2xl bg-slate-950 px-5 py-3 font-bold text-white"
+            >
+              Лайв дуусгах
+            </button>
           </div>
           {liveFinished && (
             <div className="mt-4 space-y-4">
               <p className="rounded-2xl bg-emerald-50 p-3 font-semibold text-emerald-800">Лайвын дараах тайлан: Лайв дуусахад Borlo танд борлуулалт, төлбөр, үлдэгдэл, баглаа боодол, алдсан эрэлт, дараагийн лайвын бэлтгэлийн тайланг гаргаж өгнө.</p>
               <div className="grid gap-3 lg:grid-cols-2">
-                <div className="rounded-2xl border p-4"><p className="font-black">A. Sales Summary</p><p className="text-sm">total comments: {todayMetrics.commentMentions} • detected order comments: {orders.length} • total orders: {orders.length} • total order amount: {money(orders.reduce((s,o)=>s+o.amount,0))} • paid amount: {money(revenue)} • pending amount: {money(pendingAmount)} • review amount: {money(reviewAmount)}</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">B. Payment Reconciliation</p><p className="text-sm">matched: {paymentStatusCounts.matched} • combined matched: {paymentStatusCounts.combinedMatched} • underpaid: {paymentStatusCounts.underpaid} • overpaid: {paymentStatusCounts.overpaid} • ambiguous: {paymentStatusCounts.ambiguous} • no match: {paymentStatusCounts.noMatch} • late payments: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Actions: Review payments • Upload bank statement • Export reconciliation CSV</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">C. Packing Summary</p><p className="text-sm">paid orders to pack: {paidOrders.length} • delivery orders • pickup orders • priority orders</p><p className="mt-2 text-sm">Exports: Захиалга CSV татах • Баглах жагсаалт CSV татах • Хүргэлтийн жагсаалт CSV татах • PDF тайлан — дараагийн хувилбар</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">D/E. Product & Missed Demand</p><p className="text-sm">demand by product/color/size • remaining stock • sold-out variants • comments requesting sold-out variants • estimated missed revenue</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">high requested/paid quantity, low remaining stock, out-of-stock demand, review demand • busiest comment period • busiest order period • comment-to-order conversion • order-to-paid conversion</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">G/I. Хэрэглэгчийн follow-up ба Export Center</p><p className="text-sm">paid/pending/review customers • repeat buyers • no-show placeholder • sales summary PDF placeholder • orders CSV • payment reconciliation CSV • packing/delivery/product demand/out-of-stock/customer follow-up CSV</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">A. Борлуулалтын товч тайлан</p><p className="text-sm">нийт коммент: {todayMetrics.commentMentions} • захиалга илэрсэн коммент: {orders.length} • нийт захиалга: {orders.length} • нийт захиалгын дүн: {money(orders.reduce((s,o)=>s+o.amount,0))} • төлсөн дүн: {money(revenue)} • хүлээгдэж буй дүн: {money(pendingAmount)} • шалгах дүн: {money(reviewAmount)}</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">B. Төлбөрийн тулгалт</p><p className="text-sm">таарсан: {paymentStatusCounts.matched} • нийлж таарсан: {paymentStatusCounts.combinedMatched} • дутуу төлсөн: {paymentStatusCounts.underpaid} • илүү төлсөн: {paymentStatusCounts.overpaid} • тодорхойгүй: {paymentStatusCounts.ambiguous} • таараагүй: {paymentStatusCounts.noMatch} • оройтсон төлбөр: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Үйлдэл: Төлбөр шалгах • Банкны хуулга оруулах • Тулгалтын CSV татах</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">C. Баглах товч тайлан</p><p className="text-sm">баглах төлсөн захиалга: {paidOrders.length} • хүргэлтийн захиалга • өөрөө авах захиалга • яаралтай захиалга</p><p className="mt-2 text-sm">Татах: Захиалга CSV татах • Баглах жагсаалт CSV татах • Хүргэлтэд өгөх жагсаалт CSV татах • PDF тайлан — дараагийн хувилбар</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">D/E. Бараа ба алдсан эрэлт</p><p className="text-sm">бараа/өнгө/размерын эрэлт • үлдсэн нөөц • дууссан хувилбар • дууссан хувилбар хүссэн коммент • алдсан орлогын тооцоо</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">өндөр хүсэлт/төлсөн тоо • бага үлдсэн нөөц • дууссан барааны эрэлт • шалгах эрэлт • хамгийн идэвхтэй комментын үе • хамгийн идэвхтэй захиалгын үе • комментоос захиалга болсон хувь • захиалгаас төлбөр болсон хувь</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">G/I. Хэрэглэгчийн дагах ажил ба татах төв</p><p className="text-sm">төлсөн/хүлээгдэж буй/шалгах хэрэглэгч • давтан худалдан авагч • авахгүй үлдээсэн хэсэг • борлуулалтын PDF тайлангийн хэсэг • захиалга CSV • төлбөрийн тулгалт CSV • баглах/хүргэлт/барааны эрэлт/дууссан бараа/хэрэглэгч дагах ажил CSV</p></div>
               </div>
             </div>
           )}
@@ -2596,7 +2583,7 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-slate-900 p-5 text-white shadow-sm">
           <h2 className="text-xl font-black">Тэмдэглэл</h2>
-          <p className="mt-2 text-slate-200">Энэ нь seller trial-ийн үндсэн урсгал. Шууд дамжуулалтын коммент → захиалга → төлбөр тулгалт → үлдэгдэл → баглаа боодол → тайлан гэсэн дарааллыг туршилтын загвараар харуулж байна.</p>
+          <p className="mt-2 text-slate-200">Энэ нь худалдагчийн туршилтын үндсэн урсгал. Коммент → Захиалга → Төлбөр → Нөөц → Баглаа боодол → Тайлан гэсэн дарааллыг туршилтын загвараар харуулж байна.</p>
         </section>
       </div>
     </main>
