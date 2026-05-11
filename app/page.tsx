@@ -130,6 +130,17 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
   'handmade-other': 'Гар урлал / Бусад',
 }
 
+const PRODUCT_FILTER_OPTIONS: Array<{ value: ProductCategory | 'all'; label: string }> = [
+  { value: 'all', label: 'Бүгд' },
+  { value: 'clothing', label: 'Хувцас' },
+  { value: 'shoes', label: 'Гутал' },
+  { value: 'bag-accessory', label: 'Цүнх / Аксессуар' },
+  { value: 'beauty', label: 'Гоо сайхан' },
+  { value: 'kids-baby', label: 'Хүүхэд / Нярай' },
+  { value: 'home', label: 'Гэр ахуй' },
+  { value: 'handmade-other', label: 'Гар урлал / Бусад' },
+]
+
 const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
   'women-clothing': 'Эмэгтэй хувцас',
   'men-clothing': 'Эрэгтэй хувцас',
@@ -863,9 +874,10 @@ export default function LiveShopManagerDemo() {
     sizeTemplate: 'women-clothing' as РазмерTemplate,
     category: 'clothing' as ProductCategory,
     variants: [defaultVariantInput('women-clothing')],
+    variantStock: '',
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
-  const [selectedProductCategory, setSelectedProductCategory] = useState<РазмерTemplate>('women-clothing')
+  const [productFilterCategory, setProductFilterCategory] = useState<ProductCategory | 'all'>('all')
   const [selectedOnboardingStep, setSelectedOnboardingStep] = useState(1)
   const [reservationTimeoutMinutes, setReservationTimeoutMinutes] = useState(DEFAULT_RESERVATION_TIMEOUT_MINUTES)
   const [customReservationTimeout, setCustomReservationTimeout] = useState(String(DEFAULT_RESERVATION_TIMEOUT_MINUTES))
@@ -984,7 +996,7 @@ export default function LiveShopManagerDemo() {
     setPaymentReviewEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentReviewEvents), []))
     setSuccessfulPaymentEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.successfulPaymentEvents), []))
     const savedActiveView = localStorage.getItem(STORAGE_KEYS.activeView) as DashboardView | null
-    if (!window.location.hash && savedActiveView && ['home', 'live', 'orders', 'payments', 'products', 'packing', 'insights'].includes(savedActiveView)) {
+    if (!window.location.hash && savedActiveView && ['home', 'live', 'orders', 'payments', 'products', 'packing', 'insights', 'settings'].includes(savedActiveView)) {
       setActiveView(savedActiveView)
     }
     const savedFacebookConnectionState = localStorage.getItem(STORAGE_KEYS.facebookConnectionState) as typeof facebookConnectionState | null
@@ -1083,6 +1095,7 @@ export default function LiveShopManagerDemo() {
   }, [])
 
   const activeБараа = products.find((product) => product.code === activeБарааCode) || products[0]
+  const filteredProducts = productFilterCategory === 'all' ? products : products.filter((product) => product.category === productFilterCategory)
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
@@ -1379,7 +1392,7 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    const nextProduct = { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants }
+    const nextProduct = { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants, category: newБараа.category }
     productsRef.current = [...productsRef.current, nextProduct]
     setБарааs((currentProducts) => [
       ...currentProducts,
@@ -1767,6 +1780,7 @@ export default function LiveShopManagerDemo() {
               ['orders', 'Захиалга'],
               ['payments', 'Төлбөр'],
               ['packing', 'Баглаа боодол'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -1783,6 +1797,7 @@ export default function LiveShopManagerDemo() {
               ['home', 'Нүүр'],
               ['products', 'Бараа'],
               ['insights', 'Тайлан'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -1803,6 +1818,7 @@ export default function LiveShopManagerDemo() {
               ['products', 'Бараа'],
               ['packing', 'Баглаа боодол'],
               ['insights', 'Тайлан'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -2344,6 +2360,30 @@ export default function LiveShopManagerDemo() {
           </>
         )}
 
+        {activeView === 'settings' && (
+          <section className="rounded-3xl bg-white p-5 shadow-sm">
+            <h2 className="text-2xl font-black">Тохиргоо</h2>
+            <p className="mt-2 text-slate-700">Энэ хэсэг нь одоогоор нийгмийн сувгийн холболтын төлвийг харуулах зориулалттай. Жинхэнэ интеграцтай холбогдоогүй.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Facebook', 'Одоо ашиглаж байгаа үндсэн суваг — комментоо гараар наана'],
+                ['TikTok', 'Дараа холбох боломжтой'],
+                ['Instagram', 'Дараа холбох боломжтой'],
+                ['Messenger', 'Дараа мэдэгдэл / мессеж автоматжуулалт'],
+                ['Telegram', 'Дараа seller notification'],
+              ].map(([platform, status]) => (
+                <div key={platform} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-black text-slate-900">{platform}</p>
+                  <p className="mt-2 text-sm text-slate-600">{status}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+              Жич: Одоогийн статустай туслах нь жишээ болон харах зориулалттай. Жинхэнэ Facebook, TikTok, Instagram, Messenger, Telegram интеграцтэй холбогдоогүй.
+            </div>
+          </section>
+        )}
+
         {activeView === 'orders' && (
           <>
         <section id="reservation-settings" className="rounded-3xl bg-white p-5 shadow-sm">
@@ -2394,11 +2434,31 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
             <div className="mt-4 space-y-3">
-              {products.map((product) => (
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {PRODUCT_FILTER_OPTIONS.map((filterOption) => (
+                    <button
+                      key={filterOption.value}
+                      type="button"
+                      onClick={() => setProductFilterCategory(filterOption.value)}
+                      className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${productFilterCategory === filterOption.value ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    >
+                      {filterOption.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-500">Сонгосон ангилал: {CATEGORY_LABELS[productFilterCategory] ?? 'Бүгд'}</p>
+              </div>
+              {filteredProducts.map((product) => (
                 <div key={product.code} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-xl font-black">{product.code} — {product.name}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-xl font-black">{product.code} — {product.name}</p>
+                        <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+                          {CATEGORY_LABELS[product.category]}
+                        </span>
+                      </div>
                       <p className="text-slate-600">{money(product.price)} • үлдэгдэл {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
                       <p className="mt-1 text-sm text-slate-500">Өнгө: {product.colors.join(', ')}</p>
                       <p className="mt-2 text-xs text-slate-500">
@@ -2421,6 +2481,19 @@ export default function LiveShopManagerDemo() {
                   <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
                 ))}
               </select>
+              <div className="rounded-2xl border p-4">
+                <label className="block text-sm font-semibold text-slate-900">Барааны ангилал</label>
+                <select
+                  className="mt-3 w-full rounded-2xl border px-3 py-3 text-sm"
+                  value={newБараа.category}
+                  onChange={(e) => setNewБараа({ ...newБараа, category: e.target.value as ProductCategory })}
+                >
+                  {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+                <p className="mt-2 text-xs text-slate-500">Ангилал нь барааг ялгана. Размерын төрөл тусдаа сонгогдоно.</p>
+              </div>
               <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
               <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Үлдэгдэл: Хар/S:1, Хар/M:2, Улаан/L:2" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
               <button onClick={addБараа} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Бүтээгдэхүүн нэмэх</button>
@@ -2493,6 +2566,30 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
           </>
+        )}
+
+        {activeView === 'settings' && (
+          <section className="rounded-3xl bg-white p-5 shadow-sm">
+            <h2 className="text-2xl font-black">Тохиргоо</h2>
+            <p className="mt-2 text-slate-700">Энэ хэсэг нь одоогоор нийгмийн сувгийн холболтын төлвийг харуулах зориулалттай. Жинхэнэ интеграцтай холбогдоогүй.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Facebook', 'Одоо ашиглаж байгаа үндсэн суваг — комментоо гараар наана'],
+                ['TikTok', 'Дараа холбох боломжтой'],
+                ['Instagram', 'Дараа холбох боломжтой'],
+                ['Messenger', 'Дараа мэдэгдэл / мессеж автоматжуулалт'],
+                ['Telegram', 'Дараа seller notification'],
+              ].map(([platform, status]) => (
+                <div key={platform} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-black text-slate-900">{platform}</p>
+                  <p className="mt-2 text-sm text-slate-600">{status}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+              Жич: Одоогийн статустай туслах нь жишээ болон харах зориулалттай. Жинхэнэ Facebook, TikTok, Instagram, Messenger, Telegram интеграцтэй холбогдоогүй.
+            </div>
+          </section>
         )}
 
         {activeView === 'orders' && (
