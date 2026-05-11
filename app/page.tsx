@@ -2,6 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+type ProductCategory =
+  | 'clothing'
+  | 'shoes'
+  | 'bag-accessory'
+  | 'beauty'
+  | 'home'
+  | 'kitchen'
+  | 'kids-baby'
+  | 'food-packaged'
+  | 'electronics-small'
+  | 'handmade-other'
+
 type РазмерTemplate =
   | 'women-clothing'
   | 'men-clothing'
@@ -37,10 +49,11 @@ type Бараа = {
   sizeTemplate: РазмерTemplate
   colors: string[]
   variants: БарааVariant[]
+  category: ProductCategory
 }
 
 type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
-type DashboardView = 'home' | 'live' | 'orders' | 'payments' | 'products' | 'packing' | 'insights'
+type DashboardView = 'home' | 'live' | 'orders' | 'payments' | 'products' | 'packing' | 'insights' | 'settings'
 
 type Order = {
   id: string
@@ -104,6 +117,19 @@ const SIZE_TEMPLATES: Record<РазмерTemplate, string[]> = {
   shoes: ['35', '36', '37', '38', '39', '40', '41', '42'],
 }
 
+const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  clothing: 'Хувцас',
+  shoes: 'Гутал',
+  'bag-accessory': 'Цүнх / Аксессуар',
+  beauty: 'Гоо сайхан',
+  home: 'Гэр ахуй',
+  kitchen: 'Гал тогоо',
+  'kids-baby': 'Хүүхэд / Нярай',
+  'food-packaged': 'Хүнс / Савласан бүтээгдэхүүн',
+  'electronics-small': 'Цахилгаан бараа / Жижиг хэрэгсэл',
+  'handmade-other': 'Гар урлал / Бусад',
+}
+
 const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
   'women-clothing': 'Эмэгтэй хувцас',
   'men-clothing': 'Эрэгтэй хувцас',
@@ -160,6 +186,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 89000,
     sizeTemplate: 'women-clothing',
     colors: ['Хар', 'Улаан'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: 'S', үлдэгдэл: 1 },
       { color: 'Хар', size: 'M', үлдэгдэл: 2 },
@@ -175,6 +202,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 120000,
     sizeTemplate: 'one-size',
     colors: ['Хар'],
+    category: 'bag-accessory',
     variants: [{ color: 'Хар', size: 'Нэг размер', үлдэгдэл: 3 }],
   },
   {
@@ -183,6 +211,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 150000,
     sizeTemplate: 'women-shoes',
     colors: ['Цагаан', 'Хар'],
+    category: 'shoes',
     variants: [
       { color: 'Цагаан', size: '37', үлдэгдэл: 1 },
       { color: 'Цагаан', size: '38', үлдэгдэл: 2 },
@@ -199,6 +228,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 210000,
     sizeTemplate: 'european',
     colors: ['Хар', 'Саарал'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: '40', үлдэгдэл: 1 },
       { color: 'Хар', size: '42', үлдэгдэл: 2 },
@@ -211,6 +241,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 79000,
     sizeTemplate: 'kids-shoes',
     colors: ['Цагаан'],
+    category: 'kids-baby',
     variants: [
       { color: 'Цагаан', size: '28', үлдэгдэл: 1 },
       { color: 'Цагаан', size: '29', үлдэгдэл: 2 },
@@ -223,6 +254,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 99000,
     sizeTemplate: 'pants',
     colors: ['Хар'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: '30', үлдэгдэл: 1 },
       { color: 'Хар', size: '32', үлдэгдэл: 2 },
@@ -313,14 +345,71 @@ function normalizeVariantSize(sizeTemplate: РазмерTemplate, size: string) 
   return size
 }
 
-function normalizeБараа(product: Бараа & { үлдэгдэл?: number; sizeTemplate?: РазмерTemplate }): Бараа {
+function isValidCategory(value: any): value is ProductCategory {
+  return Object.keys(CATEGORY_LABELS).includes(value as ProductCategory)
+}
+
+function inferCategory(product: { code: string; name: string }): ProductCategory {
+  const lowerName = product.name.toLowerCase()
+  const lowerCode = product.code.toLowerCase()
+
+  if (lowerName.includes('даашинз') || lowerName.includes('пальто') || lowerName.includes('өмд') || lowerName.includes('хувцас')) {
+    return 'clothing'
+  }
+  if (lowerName.includes('гутал')) {
+    return 'shoes'
+  }
+  if (lowerName.includes('цүнх') || lowerName.includes('аксессуар')) {
+    return 'bag-accessory'
+  }
+  if (lowerName.includes('гоо сайхан')) {
+    return 'beauty'
+  }
+  if (lowerName.includes('гэр ахуй')) {
+    return 'home'
+  }
+  if (lowerName.includes('гал тогоо')) {
+    return 'kitchen'
+  }
+  if (lowerName.includes('хүүхэд') || lowerName.includes('нярай')) {
+    return 'kids-baby'
+  }
+  if (lowerName.includes('хүнс') || lowerName.includes('савласан')) {
+    return 'food-packaged'
+  }
+  if (lowerName.includes('цахилгаан бараа') || lowerName.includes('жижиг хэрэгсэл')) {
+    return 'electronics-small'
+  }
+  if (lowerName.includes('гар урлал') || lowerName.includes('бусад')) {
+    return 'handmade-other'
+  }
+
+  // Fallback based on code prefix if applicable (example logic)
+  if (lowerCode.startsWith('a') || lowerCode.startsWith('d') || lowerCode.startsWith('f')) {
+    return 'clothing'
+  }
+  if (lowerCode.startsWith('b')) {
+    return 'bag-accessory'
+  }
+  if (lowerCode.startsWith('c')) {
+    return 'shoes'
+  }
+  if (lowerCode.startsWith('e')) {
+    return 'kids-baby'
+  }
+
+  return 'clothing' // Default fallback
+}
+
+function normalizeБараа(product: Бараа & { үлдэгдэл?: number; sizeTemplate?: РазмерTemplate; category?: ProductCategory }): Бараа {
   const sizeTemplate = normalizeРазмерTemplate(product.sizeTemplate)
+  const category = isValidCategory(product.category) ? product.category : inferCategory(product)
   const colors = product.colors?.length ? product.colors : [DEFAULT_COLOR]
   const variants = product.variants?.length
     ? product.variants.map((variant) => ({ ...variant, size: normalizeVariantSize(sizeTemplate, variant.size) }))
     : [{ color: colors[0], size: SIZE_TEMPLATES[sizeTemplate][0] || 'Free', үлдэгдэл: product.үлдэгдэл || 0 }]
 
-  return { ...product, sizeTemplate, colors, variants }
+  return { ...product, sizeTemplate, colors, variants, category }
 }
 
 function totalStock(product: Бараа) {
@@ -772,6 +861,7 @@ export default function LiveShopManagerDemo() {
     name: '',
     price: '',
     sizeTemplate: 'women-clothing' as РазмерTemplate,
+    category: 'clothing' as ProductCategory,
     variants: [defaultVariantInput('women-clothing')],
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
