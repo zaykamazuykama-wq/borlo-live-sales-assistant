@@ -2,6 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+type ProductCategory =
+  | 'clothing'
+  | 'shoes'
+  | 'bag-accessory'
+  | 'beauty'
+  | 'home'
+  | 'kitchen'
+  | 'kids-baby'
+  | 'food-packaged'
+  | 'electronics-small'
+  | 'handmade-other'
+
 type РазмерTemplate =
   | 'women-clothing'
   | 'men-clothing'
@@ -24,6 +36,12 @@ type БарааVariant = {
   үлдэгдэл: number
 }
 
+type NewБарааVariantInput = {
+  color: string
+  size: string
+  stock: string
+}
+
 type Бараа = {
   code: string
   name: string
@@ -31,10 +49,11 @@ type Бараа = {
   sizeTemplate: РазмерTemplate
   colors: string[]
   variants: БарааVariant[]
+  category: ProductCategory
 }
 
 type OrderStatus = 'Хүлээгдэж буй' | 'Төлсөн' | 'Expired' | 'Cancelled'
-type DashboardView = 'home' | 'live' | 'orders' | 'payments' | 'products' | 'packing' | 'insights'
+type DashboardView = 'home' | 'live' | 'orders' | 'payments' | 'products' | 'packing' | 'insights' | 'settings'
 
 type Order = {
   id: string
@@ -82,21 +101,45 @@ type PaymentEvent = {
 const DEFAULT_COLOR = 'Үндсэн өнгө'
 
 const SIZE_TEMPLATES: Record<РазмерTemplate, string[]> = {
+  'one-size': ['Free'],
   'women-clothing': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
   'men-clothing': ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
+  european: ['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54', '56'],
+  pants: ['24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '36', '38', '40'],
+  tops: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
   'women-shoes': ['35', '36', '37', '38', '39', '40', '41', '42'],
   'men-shoes': ['39', '40', '41', '42', '43', '44', '45', '46'],
   'kids-shoes': ['20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35'],
   'kids-clothing': ['80', '90', '100', '110', '120', '130', '140', '150', '160'],
-  'baby-clothing': ['0-3сар', '3-6сар', '6-12сар', '12-18сар', '18-24сар'],
-  pants: ['26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '38', '40'],
-  tops: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
-  european: ['34', '36', '38', '40', '42', '44', '46', '48', '50', '52', '54', '56', '58', '60'],
-  'one-size': ['Нэг размер'],
+  'baby-clothing': ['0-3 сар', '3-6 сар', '6-9 сар', '9-12 сар', '12-18 сар', '18-24 сар'],
   custom: [],
   clothing: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'],
   shoes: ['35', '36', '37', '38', '39', '40', '41', '42'],
 }
+
+const CATEGORY_LABELS: Record<ProductCategory, string> = {
+  clothing: 'Хувцас',
+  shoes: 'Гутал',
+  'bag-accessory': 'Цүнх / Аксессуар',
+  beauty: 'Гоо сайхан',
+  home: 'Гэр ахуй',
+  kitchen: 'Гал тогоо',
+  'kids-baby': 'Хүүхэд / Нярай',
+  'food-packaged': 'Хүнс / Савласан бүтээгдэхүүн',
+  'electronics-small': 'Цахилгаан бараа / Жижиг хэрэгсэл',
+  'handmade-other': 'Гар урлал / Бусад',
+}
+
+const PRODUCT_FILTER_OPTIONS: Array<{ value: ProductCategory | 'all'; label: string }> = [
+  { value: 'all', label: 'Бүгд' },
+  { value: 'clothing', label: 'Хувцас' },
+  { value: 'shoes', label: 'Гутал' },
+  { value: 'bag-accessory', label: 'Цүнх / Аксессуар' },
+  { value: 'beauty', label: 'Гоо сайхан' },
+  { value: 'kids-baby', label: 'Хүүхэд / Нярай' },
+  { value: 'home', label: 'Гэр ахуй' },
+  { value: 'handmade-other', label: 'Гар урлал / Бусад' },
+]
 
 const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
   'women-clothing': 'Эмэгтэй хувцас',
@@ -109,24 +152,24 @@ const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
   pants: 'Өмд',
   tops: 'Цамц / Дээд хувцас',
   european: 'Европ размер',
-  'one-size': 'Нэг размер',
+  'one-size': 'Нэг размер / Free size',
   custom: 'Өөрөө тохируулах',
   clothing: 'Эмэгтэй хувцас',
   shoes: 'Эмэгтэй гутал',
 }
 
 const SELLER_SIZE_TEMPLATE_OPTIONS: РазмерTemplate[] = [
+  'one-size',
   'women-clothing',
   'men-clothing',
-  'women-shoes',
-  'men-shoes',
-  'kids-clothing',
-  'kids-shoes',
-  'one-size',
   'european',
-  'baby-clothing',
   'pants',
   'tops',
+  'women-shoes',
+  'men-shoes',
+  'kids-shoes',
+  'kids-clothing',
+  'baby-clothing',
   'custom',
 ]
 
@@ -154,6 +197,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 89000,
     sizeTemplate: 'women-clothing',
     colors: ['Хар', 'Улаан'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: 'S', үлдэгдэл: 1 },
       { color: 'Хар', size: 'M', үлдэгдэл: 2 },
@@ -169,6 +213,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 120000,
     sizeTemplate: 'one-size',
     colors: ['Хар'],
+    category: 'bag-accessory',
     variants: [{ color: 'Хар', size: 'Нэг размер', үлдэгдэл: 3 }],
   },
   {
@@ -177,6 +222,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 150000,
     sizeTemplate: 'women-shoes',
     colors: ['Цагаан', 'Хар'],
+    category: 'shoes',
     variants: [
       { color: 'Цагаан', size: '37', үлдэгдэл: 1 },
       { color: 'Цагаан', size: '38', үлдэгдэл: 2 },
@@ -193,6 +239,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 210000,
     sizeTemplate: 'european',
     colors: ['Хар', 'Саарал'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: '40', үлдэгдэл: 1 },
       { color: 'Хар', size: '42', үлдэгдэл: 2 },
@@ -205,6 +252,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 79000,
     sizeTemplate: 'kids-shoes',
     colors: ['Цагаан'],
+    category: 'kids-baby',
     variants: [
       { color: 'Цагаан', size: '28', үлдэгдэл: 1 },
       { color: 'Цагаан', size: '29', үлдэгдэл: 2 },
@@ -217,6 +265,7 @@ const DEFAULT_PRODUCTS: Бараа[] = [
     price: 99000,
     sizeTemplate: 'pants',
     colors: ['Хар'],
+    category: 'clothing',
     variants: [
       { color: 'Хар', size: '30', үлдэгдэл: 1 },
       { color: 'Хар', size: '32', үлдэгдэл: 2 },
@@ -302,14 +351,76 @@ function normalizeРазмерTemplate(template?: РазмерTemplate): Раз�
   return template || 'one-size'
 }
 
-function normalizeБараа(product: Бараа & { үлдэгдэл?: number; sizeTemplate?: РазмерTemplate }): Бараа {
+function normalizeVariantSize(sizeTemplate: РазмерTemplate, size: string) {
+  if (sizeTemplate === 'one-size' && ['Нэг размер', 'Free size', 'free'].includes(size.trim())) return 'Free'
+  return size
+}
+
+function isValidCategory(value: any): value is ProductCategory {
+  return Object.keys(CATEGORY_LABELS).includes(value as ProductCategory)
+}
+
+function inferCategory(product: { code: string; name: string }): ProductCategory {
+  const lowerName = product.name.toLowerCase()
+  const lowerCode = product.code.toLowerCase()
+
+  if (lowerName.includes('даашинз') || lowerName.includes('пальто') || lowerName.includes('өмд') || lowerName.includes('хувцас')) {
+    return 'clothing'
+  }
+  if (lowerName.includes('гутал')) {
+    return 'shoes'
+  }
+  if (lowerName.includes('цүнх') || lowerName.includes('аксессуар')) {
+    return 'bag-accessory'
+  }
+  if (lowerName.includes('гоо сайхан')) {
+    return 'beauty'
+  }
+  if (lowerName.includes('гэр ахуй')) {
+    return 'home'
+  }
+  if (lowerName.includes('гал тогоо')) {
+    return 'kitchen'
+  }
+  if (lowerName.includes('хүүхэд') || lowerName.includes('нярай')) {
+    return 'kids-baby'
+  }
+  if (lowerName.includes('хүнс') || lowerName.includes('савласан')) {
+    return 'food-packaged'
+  }
+  if (lowerName.includes('цахилгаан бараа') || lowerName.includes('жижиг хэрэгсэл')) {
+    return 'electronics-small'
+  }
+  if (lowerName.includes('гар урлал') || lowerName.includes('бусад')) {
+    return 'handmade-other'
+  }
+
+  // Fallback based on code prefix if applicable (example logic)
+  if (lowerCode.startsWith('a') || lowerCode.startsWith('d') || lowerCode.startsWith('f')) {
+    return 'clothing'
+  }
+  if (lowerCode.startsWith('b')) {
+    return 'bag-accessory'
+  }
+  if (lowerCode.startsWith('c')) {
+    return 'shoes'
+  }
+  if (lowerCode.startsWith('e')) {
+    return 'kids-baby'
+  }
+
+  return 'clothing' // Default fallback
+}
+
+function normalizeБараа(product: Бараа & { үлдэгдэл?: number; sizeTemplate?: РазмерTemplate; category?: ProductCategory }): Бараа {
   const sizeTemplate = normalizeРазмерTemplate(product.sizeTemplate)
+  const category = isValidCategory(product.category) ? product.category : inferCategory(product)
   const colors = product.colors?.length ? product.colors : [DEFAULT_COLOR]
   const variants = product.variants?.length
-    ? product.variants
-    : [{ color: colors[0], size: SIZE_TEMPLATES[sizeTemplate][0] || 'Нэг размер', үлдэгдэл: product.үлдэгдэл || 0 }]
+    ? product.variants.map((variant) => ({ ...variant, size: normalizeVariantSize(sizeTemplate, variant.size) }))
+    : [{ color: colors[0], size: SIZE_TEMPLATES[sizeTemplate][0] || 'Free', үлдэгдэл: product.үлдэгдэл || 0 }]
 
-  return { ...product, sizeTemplate, colors, variants }
+  return { ...product, sizeTemplate, colors, variants, category }
 }
 
 function totalStock(product: Бараа) {
@@ -419,6 +530,29 @@ function parseVariantStockInput(value: string, colors: string[], template: Ра�
     .filter((variant): variant is БарааVariant =>
       Boolean(variant && colors.includes(variant.color) && (template === 'custom' || SIZE_TEMPLATES[template].includes(variant.size))),
     )
+}
+
+function defaultVariantInput(template: РазмерTemplate): NewБарааVariantInput {
+  return {
+    color: '',
+    size: template === 'custom' ? '' : SIZE_TEMPLATES[template][0] || 'Free',
+    stock: '',
+  }
+}
+
+function parseVariantRows(rows: NewБарааVariantInput[], template: РазмерTemplate) {
+  const variants = rows
+    .map((row) => ({
+      color: row.color.trim() || DEFAULT_COLOR,
+      size: normalizeVariantSize(template, row.size.trim()),
+      үлдэгдэл: Number(row.stock),
+    }))
+    .filter((variant) => variant.үлдэгдэл > 0)
+
+  if (template === 'custom' && variants.some((variant) => !variant.size)) return []
+  if (template !== 'custom' && variants.some((variant) => !SIZE_TEMPLATES[template].includes(variant.size))) return []
+
+  return variants
 }
 
 function extractQuantity(text: string, productCode?: string) {
@@ -738,11 +872,12 @@ export default function LiveShopManagerDemo() {
     name: '',
     price: '',
     sizeTemplate: 'women-clothing' as РазмерTemplate,
-    colors: '',
+    category: 'clothing' as ProductCategory,
+    variants: [defaultVariantInput('women-clothing')],
     variantStock: '',
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
-  const [selectedProductCategory, setSelectedProductCategory] = useState<РазмерTemplate>('women-clothing')
+  const [productFilterCategory, setProductFilterCategory] = useState<ProductCategory | 'all'>('all')
   const [selectedOnboardingStep, setSelectedOnboardingStep] = useState(1)
   const [reservationTimeoutMinutes, setReservationTimeoutMinutes] = useState(DEFAULT_RESERVATION_TIMEOUT_MINUTES)
   const [customReservationTimeout, setCustomReservationTimeout] = useState(String(DEFAULT_RESERVATION_TIMEOUT_MINUTES))
@@ -861,7 +996,7 @@ export default function LiveShopManagerDemo() {
     setPaymentReviewEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.paymentReviewEvents), []))
     setSuccessfulPaymentEvents(safeParse<PaymentEvent[]>(localStorage.getItem(STORAGE_KEYS.successfulPaymentEvents), []))
     const savedActiveView = localStorage.getItem(STORAGE_KEYS.activeView) as DashboardView | null
-    if (!window.location.hash && savedActiveView && ['home', 'live', 'orders', 'payments', 'products', 'packing', 'insights'].includes(savedActiveView)) {
+    if (!window.location.hash && savedActiveView && ['home', 'live', 'orders', 'payments', 'products', 'packing', 'insights', 'settings'].includes(savedActiveView)) {
       setActiveView(savedActiveView)
     }
     const savedFacebookConnectionState = localStorage.getItem(STORAGE_KEYS.facebookConnectionState) as typeof facebookConnectionState | null
@@ -960,6 +1095,7 @@ export default function LiveShopManagerDemo() {
   }, [])
 
   const activeБараа = products.find((product) => product.code === activeБарааCode) || products[0]
+  const filteredProducts = productFilterCategory === 'all' ? products : products.filter((product) => product.category === productFilterCategory)
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
@@ -1256,7 +1392,7 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    const nextProduct = { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants }
+    const nextProduct = { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants, category: newБараа.category }
     productsRef.current = [...productsRef.current, nextProduct]
     setБарааs((currentProducts) => [
       ...currentProducts,
@@ -1644,6 +1780,7 @@ export default function LiveShopManagerDemo() {
               ['orders', 'Захиалга'],
               ['payments', 'Төлбөр'],
               ['packing', 'Баглаа боодол'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -1660,6 +1797,7 @@ export default function LiveShopManagerDemo() {
               ['home', 'Нүүр'],
               ['products', 'Бараа'],
               ['insights', 'Тайлан'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -1680,6 +1818,7 @@ export default function LiveShopManagerDemo() {
               ['products', 'Бараа'],
               ['packing', 'Баглаа боодол'],
               ['insights', 'Тайлан'],
+              ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
                 key={view}
@@ -2221,6 +2360,30 @@ export default function LiveShopManagerDemo() {
           </>
         )}
 
+        {activeView === 'settings' && (
+          <section className="rounded-3xl bg-white p-5 shadow-sm">
+            <h2 className="text-2xl font-black">Тохиргоо</h2>
+            <p className="mt-2 text-slate-700">Энэ хэсэг нь одоогоор нийгмийн сувгийн холболтын төлвийг харуулах зориулалттай. Жинхэнэ интеграцтай холбогдоогүй.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Facebook', 'Одоо ашиглаж байгаа үндсэн суваг — комментоо гараар наана'],
+                ['TikTok', 'Дараа холбох боломжтой'],
+                ['Instagram', 'Дараа холбох боломжтой'],
+                ['Messenger', 'Дараа мэдэгдэл / мессеж автоматжуулалт'],
+                ['Telegram', 'Дараа seller notification'],
+              ].map(([platform, status]) => (
+                <div key={platform} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-black text-slate-900">{platform}</p>
+                  <p className="mt-2 text-sm text-slate-600">{status}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+              Жич: Одоогийн статустай туслах нь жишээ болон харах зориулалттай. Жинхэнэ Facebook, TikTok, Instagram, Messenger, Telegram интеграцтэй холбогдоогүй.
+            </div>
+          </section>
+        )}
+
         {activeView === 'orders' && (
           <>
         <section id="reservation-settings" className="rounded-3xl bg-white p-5 shadow-sm">
@@ -2271,11 +2434,31 @@ export default function LiveShopManagerDemo() {
           <div className="rounded-3xl bg-white p-5 shadow-sm">
             <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
             <div className="mt-4 space-y-3">
-              {products.map((product) => (
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {PRODUCT_FILTER_OPTIONS.map((filterOption) => (
+                    <button
+                      key={filterOption.value}
+                      type="button"
+                      onClick={() => setProductFilterCategory(filterOption.value)}
+                      className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${productFilterCategory === filterOption.value ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    >
+                      {filterOption.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-500">Сонгосон ангилал: {CATEGORY_LABELS[productFilterCategory] ?? 'Бүгд'}</p>
+              </div>
+              {filteredProducts.map((product) => (
                 <div key={product.code} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-xl font-black">{product.code} — {product.name}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-xl font-black">{product.code} — {product.name}</p>
+                        <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+                          {CATEGORY_LABELS[product.category]}
+                        </span>
+                      </div>
                       <p className="text-slate-600">{money(product.price)} • үлдэгдэл {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
                       <p className="mt-1 text-sm text-slate-500">Өнгө: {product.colors.join(', ')}</p>
                       <p className="mt-2 text-xs text-slate-500">
@@ -2298,6 +2481,19 @@ export default function LiveShopManagerDemo() {
                   <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
                 ))}
               </select>
+              <div className="rounded-2xl border p-4">
+                <label className="block text-sm font-semibold text-slate-900">Барааны ангилал</label>
+                <select
+                  className="mt-3 w-full rounded-2xl border px-3 py-3 text-sm"
+                  value={newБараа.category}
+                  onChange={(e) => setNewБараа({ ...newБараа, category: e.target.value as ProductCategory })}
+                >
+                  {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+                <p className="mt-2 text-xs text-slate-500">Ангилал нь барааг ялгана. Размерын төрөл тусдаа сонгогдоно.</p>
+              </div>
               <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
               <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Үлдэгдэл: Хар/S:1, Хар/M:2, Улаан/L:2" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
               <button onClick={addБараа} className="rounded-2xl bg-slate-950 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Бүтээгдэхүүн нэмэх</button>
@@ -2370,6 +2566,30 @@ export default function LiveShopManagerDemo() {
           </div>
         </section>
           </>
+        )}
+
+        {activeView === 'settings' && (
+          <section className="rounded-3xl bg-white p-5 shadow-sm">
+            <h2 className="text-2xl font-black">Тохиргоо</h2>
+            <p className="mt-2 text-slate-700">Энэ хэсэг нь одоогоор нийгмийн сувгийн холболтын төлвийг харуулах зориулалттай. Жинхэнэ интеграцтай холбогдоогүй.</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Facebook', 'Одоо ашиглаж байгаа үндсэн суваг — комментоо гараар наана'],
+                ['TikTok', 'Дараа холбох боломжтой'],
+                ['Instagram', 'Дараа холбох боломжтой'],
+                ['Messenger', 'Дараа мэдэгдэл / мессеж автоматжуулалт'],
+                ['Telegram', 'Дараа seller notification'],
+              ].map(([platform, status]) => (
+                <div key={platform} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-black text-slate-900">{platform}</p>
+                  <p className="mt-2 text-sm text-slate-600">{status}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+              Жич: Одоогийн статустай туслах нь жишээ болон харах зориулалттай. Жинхэнэ Facebook, TikTok, Instagram, Messenger, Telegram интеграцтэй холбогдоогүй.
+            </div>
+          </section>
         )}
 
         {activeView === 'orders' && (
