@@ -2336,11 +2336,11 @@ export default function LiveShopManagerDemo() {
         </section>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Банкны хуулга оруулах</h2>
-          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана (жишээ Excel мөр дэмжинэ).</p>
-          <p className="mt-1 text-sm text-slate-500">PDF/зураг унших хэсэг дараагийн хувилбарт орно.</p>
+          <h2 className="text-2xl font-black">Төлбөрийн мөрүүдээ наах</h2>
+          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана. Төлбөрийн мэдэгдлийн мөрөө хуулж наагаад шалгана.</p>
+          <p className="mt-1 text-sm text-slate-500">PDF/зураг унших, банкны автомат холболт энэ хувилбарт идэвхгүй.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-5">
-            {['Банкны хуулга баталгаажсан', 'Төлбөрийн мэдээ дутуу', 'Хоцорсон төлбөр олдсон', 'Шалгалт шийдэгдсэн', 'Таараагүй хэвээр'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
+            {['Төлбөр таарсан', 'Төлбөрийн мэдээ дутуу', 'Хоцорсон төлбөр олдсон', 'Шалгалт шийдэгдсэн', 'Таараагүй хэвээр'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
           </div>
 
           <div className="mt-6 rounded-2xl border bg-slate-50 p-4">
@@ -2698,7 +2698,7 @@ export default function LiveShopManagerDemo() {
               <p className="rounded-2xl bg-emerald-50 p-3 font-semibold text-emerald-800">Лайвын дараах тайлан: Лайв дуусахад Borlo танд борлуулалт, төлбөр, үлдэгдэл, баглаа боодол, алдсан эрэлт, дараагийн лайвын бэлтгэлийн тайланг гаргаж өгнө.</p>
               <div className="grid gap-3 lg:grid-cols-2">
                 <div className="rounded-2xl border p-4"><p className="font-black">A. Борлуулалтын товч тайлан</p><p className="text-sm">нийт коммент: {todayMetrics.commentMentions} • захиалга илэрсэн коммент: {orders.length} • нийт захиалга: {orders.length} • нийт захиалгын дүн: {money(orders.reduce((s,o)=>s+o.amount,0))} • төлсөн дүн: {money(revenue)} • хүлээгдэж буй дүн: {money(pendingAmount)} • шалгах дүн: {money(reviewAmount)}</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">B. Төлбөрийн тулгалт</p><p className="text-sm">таарсан: {paymentStatusCounts.matched} • нэг дор төлсөн: {paymentStatusCounts.combinedMatched} • дутуу төлсөн: {paymentStatusCounts.underpaid} • илүү төлсөн: {paymentStatusCounts.overpaid} • тодорхойгүй: {paymentStatusCounts.ambiguous} • таараагүй: {paymentStatusCounts.noMatch} • оройтсон төлбөр: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Үйлдэл: Төлбөр шалгах • Банкны хуулга оруулах • Тулгалтын Excel файл татах</p></div>
+                <div className="rounded-2xl border p-4"><p className="font-black">B. Төлбөрийн тулгалт</p><p className="text-sm">таарсан: {paymentStatusCounts.matched} • нэг дор төлсөн: {paymentStatusCounts.combinedMatched} • дутуу төлсөн: {paymentStatusCounts.underpaid} • илүү төлсөн: {paymentStatusCounts.overpaid} • тодорхойгүй: {paymentStatusCounts.ambiguous} • таараагүй: {paymentStatusCounts.noMatch} • оройтсон төлбөр: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Үйлдэл: Төлбөр шалгах • Төлбөрийн мөр наах • Тулгалтын Excel файл татах</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">C. Баглах товч тайлан</p><p className="text-sm">баглах төлсөн захиалга: {paidOrders.length} • хүргэлтийн захиалга • өөрөө авах захиалга • яаралтай захиалга</p><p className="mt-2 text-sm">Татах: Захиалга Excel файл татах • Баглах жагсаалт Excel файл татах • Хүргэлтэд өгөх жагсаалт Excel файл татах • PDF тайлан — дараагийн хувилбар</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">D/E. Бараа ба алдсан эрэлт</p><p className="text-sm">бараа/өнгө/размерын эрэлт • үлдсэн нөөц • дууссан хувилбар • дууссан хувилбар хүссэн коммент • алдсан орлогын тооцоо</p></div>
                 <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">өндөр хүсэлт/төлсөн тоо • бага үлдсэн нөөц • дууссан барааны эрэлт • шалгах эрэлт • хамгийн идэвхтэй комментын үе • хамгийн идэвхтэй захиалгын үе • комментоос захиалга болсон хувь • захиалгаас төлбөр болсон хувь</p></div>
