@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type РазмерTemplate =
   | 'women-clothing'
@@ -331,6 +331,32 @@ function updateVariantStock(product: Бараа, color: string, size: string, de
       variant.color === color && variant.size === size ? { ...variant, үлдэгдэл: variant.үлдэгдэл + delta } : variant,
     ),
   }
+}
+
+function adjustStockForOrders(products: Бараа[], orders: Order[], direction: 1 | -1): Бараа[] {
+  if (orders.length === 0) return products
+
+  const quantityByVariant = new Map<string, number>()
+  orders.forEach((order) => {
+    const key = variantKey(order.productCode, order.color, order.size)
+    quantityByVariant.set(key, (quantityByVariant.get(key) || 0) + order.quantity)
+  })
+
+  return products.map((product) => ({
+    ...product,
+    variants: product.variants.map((variant) => ({
+      ...variant,
+      үлдэгдэл: variant.үлдэгдэл + direction * (quantityByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
+    })),
+  }))
+}
+
+function releaseStockForOrders(products: Бараа[], orders: Order[]): Бараа[] {
+  return adjustStockForOrders(products, orders, 1)
+}
+
+function reserveStockForOrders(products: Бараа[], orders: Order[]): Бараа[] {
+  return adjustStockForOrders(products, orders, -1)
 }
 
 function findKnownӨнгөInText(text: string) {
@@ -719,6 +745,16 @@ export default function LiveShopManagerDemo() {
   const [liveFinished, setLiveFinished] = useState(false)
   const [paymentWindow, setPaymentWindow] = useState('1 цаг')
   const [mode, setMode] = useState<'landing' | 'dashboard'>('landing')
+  const productsRef = useRef(products)
+  const ordersRef = useRef(orders)
+
+  useEffect(() => {
+    productsRef.current = products
+  }, [products])
+
+  useEffect(() => {
+    ordersRef.current = orders
+  }, [orders])
 
   useEffect(() => {
     const syncModeFromHash = () => {
@@ -847,36 +883,25 @@ export default function LiveShopManagerDemo() {
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now()
+      const currentOrders = ordersRef.current
+      const expiredPendingOrders = currentOrders.filter(
+        (order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now,
+      )
 
-      setOrders((currentOrders) => {
-        const expiredPendingOrders = currentOrders.filter(
-          (order) => order.status === 'Хүлээгдэж буй' && order.expiresAt <= now,
-        )
-        if (expiredPendingOrders.length === 0) return currentOrders
+      if (expiredPendingOrders.length === 0) return
 
-        const releaseByVariant = new Map<string, number>()
-        expiredPendingOrders.forEach((order) => {
-          const key = variantKey(order.productCode, order.color, order.size)
-          releaseByVariant.set(key, (releaseByVariant.get(key) || 0) + order.quantity)
-        })
+      const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
+      const nextOrders = currentOrders.map((order) =>
+        expiredIds.has(order.id) && order.status === 'Хүлээгдэж буй'
+          ? { ...order, status: 'Expired' as OrderStatus, expiredAt: now }
+          : order,
+      )
+      const nextProducts = releaseStockForOrders(productsRef.current, expiredPendingOrders)
 
-        setБарааs((currentБарааs) =>
-          currentБарааs.map((product) => ({
-            ...product,
-            variants: product.variants.map((variant) => ({
-              ...variant,
-              үлдэгдэл: variant.үлдэгдэл + (releaseByVariant.get(variantKey(product.code, variant.color, variant.size)) || 0),
-            })),
-          })),
-        )
-
-        const expiredIds = new Set(expiredPendingOrders.map((order) => order.id))
-        return currentOrders.map((order) =>
-          expiredIds.has(order.id) && order.status === 'Хүлээгдэж буй'
-            ? { ...order, status: 'Expired', expiredAt: now }
-            : order,
-        )
-      })
+      ordersRef.current = nextOrders
+      productsRef.current = nextProducts
+      setOrders(nextOrders)
+      setБарааs(nextProducts)
     }, 1000)
 
     return () => clearInterval(interval)
@@ -1132,13 +1157,13 @@ export default function LiveShopManagerDemo() {
   }
 
   function extendReservation(orderId: string, minutes: number) {
-    setOrders((currentOrders) =>
-      currentOrders.map((order) =>
-        order.id === orderId && order.status === 'Хүлээгдэж буй'
-          ? { ...order, expiresAt: order.expiresAt + minutes * 60 * 1000 }
-          : order,
-      ),
+    const nextOrders = ordersRef.current.map((order) =>
+      order.id === orderId && order.status === 'Хүлээгдэж буй'
+        ? { ...order, expiresAt: order.expiresAt + minutes * 60 * 1000 }
+        : order,
     )
+    ordersRef.current = nextOrders
+    setOrders(nextOrders)
   }
 
   function releasePendingOrder(order: Order) {
@@ -1146,19 +1171,20 @@ export default function LiveShopManagerDemo() {
     const confirmed = window.confirm(`${order.id} захиалгын нөөцийг суллах уу?`)
     if (!confirmed) return
 
-    setOrders((currentOrders) =>
-      currentOrders.map((item) =>
-        item.id === order.id ? { ...item, status: 'Cancelled', cancelledAt: Date.now() } : item,
-      ),
-    )
+    const now = Date.now()
+    const currentOrders = ordersRef.current
+    const currentOrder = currentOrders.find((item) => item.id === order.id)
+    if (!currentOrder || currentOrder.status !== 'Хүлээгдэж буй') return
 
-    setБарааs((currentProducts) =>
-      currentProducts.map((product) =>
-        product.code === order.productCode
-          ? updateVariantStock(product, order.color, order.size, order.quantity)
-          : product,
-      ),
+    const nextOrders = currentOrders.map((item) =>
+      item.id === currentOrder.id ? { ...item, status: 'Cancelled' as OrderStatus, cancelledAt: now } : item,
     )
+    const nextProducts = releaseStockForOrders(productsRef.current, [currentOrder])
+
+    ordersRef.current = nextOrders
+    productsRef.current = nextProducts
+    setOrders(nextOrders)
+    setБарааs(nextProducts)
   }
 
   function addБараа() {
@@ -1173,12 +1199,17 @@ export default function LiveShopManagerDemo() {
       return
     }
 
-    if (products.some((product) => product.code === code)) {
+    if (productsRef.current.some((product) => product.code === code)) {
       alert('Ийм кодтой бүтээгдэхүүн байна.')
       return
     }
 
-    setБарааs([...products, { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants }])
+    const nextProduct = { code, name, price, sizeTemplate: newБараа.sizeTemplate, colors, variants }
+    productsRef.current = [...productsRef.current, nextProduct]
+    setБарааs((currentProducts) => [
+      ...currentProducts,
+      nextProduct,
+    ])
     setActiveБарааCode(code)
     setNewБараа({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', colors: '', variantStock: '' })
   }
@@ -1187,19 +1218,22 @@ export default function LiveShopManagerDemo() {
     const lines = commentPaste.split('\n').map((line) => line.trim()).filter(Boolean)
     if (lines.length === 0) return
 
+    const currentProducts = productsRef.current
+    const currentOrders = ordersRef.current
+    const currentActiveБараа = currentProducts.find((product) => product.code === activeБарааCode) || currentProducts[0]
     const availableStockByVariant = new Map(
-      products.flatMap((product) =>
+      currentProducts.flatMap((product) =>
         product.variants.map((variant) => [variantKey(product.code, variant.color, variant.size), variant.үлдэгдэл] as const),
       ),
     )
     const newOrders: Order[] = []
     const newШалгахs: ШалгахItem[] = []
-    let orderSequence = maxOrderNumber + 1
+    let orderSequence = Math.max(0, ...currentOrders.map((order) => orderNumber(order.id))) + 1
     const now = Date.now()
 
     lines.forEach((line) => {
-      const codedБараа = findБарааInText(line, products)
-      const product = codedБараа || (hasBuyKeyword(line) ? activeБараа : undefined)
+      const codedБараа = findБарааInText(line, currentProducts)
+      const product = codedБараа || (hasBuyKeyword(line) ? currentActiveБараа : undefined)
 
       if (!product) {
         newШалгахs.push({
@@ -1260,41 +1294,44 @@ export default function LiveShopManagerDemo() {
       })
     })
 
-    setБарааs(products.map((product) => ({
-      ...product,
-      variants: product.variants.map((variant) => ({
-        ...variant,
-        үлдэгдэл: availableStockByVariant.get(variantKey(product.code, variant.color, variant.size)) ?? variant.үлдэгдэл,
-      })),
-    })))
-    if (newOrders.length > 0) setOrders([...orders, ...newOrders])
-    if (newШалгахs.length > 0) setUnclearComments([...newШалгахs, ...unclearComments])
+    if (newOrders.length > 0) {
+      const nextProducts = reserveStockForOrders(currentProducts, newOrders)
+      const nextOrders = [...currentOrders, ...newOrders]
+      productsRef.current = nextProducts
+      ordersRef.current = nextOrders
+      setБарааs(nextProducts)
+      setOrders(nextOrders)
+    }
+    if (newШалгахs.length > 0) setUnclearComments((currentItems) => [...newШалгахs, ...currentItems])
     setCommentPaste('')
   }
 
   function markPaid(orderId: string, phone?: string) {
     const now = Date.now()
-    setOrders((currentOrders) =>
-      currentOrders.map((order) =>
-        order.id === orderId && order.status === 'Хүлээгдэж буй'
-          ? { ...order, status: 'Төлсөн', paidAt: now, phone: phone || order.phone }
-          : order,
-      ),
+    const nextOrders = ordersRef.current.map((order) =>
+      order.id === orderId && order.status === 'Хүлээгдэж буй'
+        ? { ...order, status: 'Төлсөн' as OrderStatus, paidAt: now, phone: phone || order.phone }
+        : order,
     )
+    ordersRef.current = nextOrders
+    setOrders(nextOrders)
   }
 
   function cancelOrder(orderId: string) {
     const now = Date.now()
-    const order = orders.find((item) => item.id === orderId)
+    const currentOrders = ordersRef.current
+    const order = currentOrders.find((item) => item.id === orderId)
     if (!order || order.status !== 'Хүлээгдэж буй') return
 
-    setБарааs(products.map((product) =>
-      product.code === order.productCode ? updateVariantStock(product, order.color, order.size, order.quantity) : product,
-    ))
+    const nextProducts = releaseStockForOrders(productsRef.current, [order])
+    const nextOrders = currentOrders.map((item) =>
+      item.id === orderId ? { ...item, status: 'Cancelled' as OrderStatus, cancelledAt: now } : item,
+    )
 
-    setOrders(orders.map((item) =>
-      item.id === orderId ? { ...item, status: 'Cancelled', cancelledAt: now } : item,
-    ))
+    productsRef.current = nextProducts
+    ordersRef.current = nextOrders
+    setБарааs(nextProducts)
+    setOrders(nextOrders)
   }
 
   function parsePaymentEvents() {
@@ -1305,7 +1342,8 @@ export default function LiveShopManagerDemo() {
     const successEvents: PaymentEvent[] = []
     const reviewEvents: PaymentEvent[] = []
     const paidOrderIdsWithPhone = new Map<string, string | undefined>()
-    let workingOrders = [...orders]
+    const currentOrders = ordersRef.current
+    let workingOrders = [...currentOrders]
 
     lines.forEach((line) => {
       const parsed = parsePaymentLine(line)
@@ -1383,13 +1421,15 @@ export default function LiveShopManagerDemo() {
     })
 
     if (paidOrderIdsWithPhone.size > 0) {
-      setOrders(orders.map((order) => {
+      const nextOrders = currentOrders.map((order) => {
         if (!paidOrderIdsWithPhone.has(order.id) || order.status !== 'Хүлээгдэж буй') return order
         return { ...order, status: 'Төлсөн', paidAt: now, phone: paidOrderIdsWithPhone.get(order.id) || order.phone }
-      }))
+      })
+      ordersRef.current = nextOrders
+      setOrders(nextOrders)
     }
-    if (successEvents.length > 0) setSuccessfulPaymentEvents([...successEvents, ...successfulPaymentEvents])
-    if (reviewEvents.length > 0) setPaymentReviewEvents([...reviewEvents, ...paymentReviewEvents])
+    if (successEvents.length > 0) setSuccessfulPaymentEvents((currentEvents) => [...successEvents, ...currentEvents])
+    if (reviewEvents.length > 0) setPaymentReviewEvents((currentEvents) => [...reviewEvents, ...currentEvents])
     setPaymentPaste('')
   }
 
@@ -1468,6 +1508,8 @@ export default function LiveShopManagerDemo() {
   }
 
   function resetDemo() {
+    productsRef.current = DEFAULT_PRODUCTS
+    ordersRef.current = []
     setБарааs(DEFAULT_PRODUCTS)
     setActiveБарааCode('A12')
     setOrders([])
