@@ -2309,7 +2309,7 @@ export default function LiveShopManagerDemo() {
           <p className="mt-1 text-sm text-slate-500">Үндсэн урсгал нь жишээ live коммент. Энэ хэсэг нь нэмэлт гараар оруулах арга.</p>
             <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
             <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
-            <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Backup комментоос захиалга үүсгэх</button>
+            <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Комментоос захиалга үүсгэх</button>
           </div>
         </section>
           </>
@@ -2337,7 +2337,7 @@ export default function LiveShopManagerDemo() {
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Банкны хуулга оруулах</h2>
-          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана (жишээ Excel/CSV мөр дэмжинэ).</p>
+          <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана (жишээ Excel мөр дэмжинэ).</p>
           <p className="mt-1 text-sm text-slate-500">PDF/зураг унших хэсэг дараагийн хувилбарт орно.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-5">
             {['Банкны хуулга баталгаажсан', 'Төлбөрийн мэдээ дутуу', 'Хоцорсон төлбөр олдсон', 'Шалгалт шийдэгдсэн', 'Таараагүй хэвээр'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
