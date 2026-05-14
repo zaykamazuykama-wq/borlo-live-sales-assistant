@@ -2090,227 +2090,157 @@ export default function LiveShopManagerDemo() {
 
         {activeView === 'live' && (
           <>
-        <section id="facebook-live" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Facebook Live худалдааны урсгал</h2>
-          <p className="mt-2 text-slate-700">Жишээ live нь комментуудаас барааны код, өнгө, размер, тоо, утасны дугаарыг таньж захиалга үүсгэнэ.</p>
-          <p className="mt-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-slate-700">Тохиргооны сануулга: комментууд жишээ урсгалаар орж ирнэ.</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('not-connected')}>Эхлэл</button>
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('connected')}>Live урсгал сонгосон</button>
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('live-found')}>Live олдсон</button>
-            <button className="rounded-xl bg-slate-200 px-3 py-2 text-sm font-bold" onClick={() => setFacebookConnectionState('importing')}>Коммент орж байна</button>
-          </div>
-          <div className="mt-4 rounded-2xl border p-4">
-            {facebookConnectionState === 'not-connected' && <button className="rounded-2xl bg-blue-600 px-4 py-3 font-bold text-white" onClick={() => setFacebookConnectionState('connected')}>Жишээ live урсгал сонгох</button>}
-            {facebookConnectionState === 'connected' && <div className="space-y-3"><p className="font-bold">Сонгосон live урсгал: Borlo live загвар</p><div className="flex gap-2"><button className="rounded-xl bg-blue-600 px-3 py-2 text-white hover:bg-blue-700" onClick={() => setFacebookConnectionState('live-found')}>Live урсгал харах</button><button className="rounded-xl bg-slate-100 px-3 py-2 font-bold" onClick={() => setFacebookConnectionState('live-found')}>Live холбоосын тэмдэглэл</button></div></div>}
-            {facebookConnectionState === 'live-found' && <div className="space-y-3"><p className="font-bold">Live: Шинэ барааны жишээ live — 2026-05-05 19:00</p><button className="rounded-xl bg-emerald-600 px-4 py-2 font-bold text-white" onClick={() => setFacebookConnectionState('importing')}>Жишээ коммент эхлүүлэх</button></div>}
-            {facebookConnectionState === 'importing' && <div className="rounded-2xl bg-slate-50 p-4 text-sm font-semibold text-slate-700">Жишээ комментууд орж ирэх горим идэвхтэй. Доорх комментын талбараар захиалга үүсгэж шалгана.</div>}
-          </div>
-          <p className="mt-3 text-sm text-slate-600">Одоогоор жишээ live нь Facebook Live худалдааны үндсэн урсгалыг харуулах зориулалттай.</p>
-          <p className="mt-2 text-sm text-slate-500">Нөөц гар арга: шаардлагатай үед коммент оруулах нэмэлт арга ашиглаж болно.</p>
-        </section>
-
-        {activeБараа && (
-          <section id="live" className="rounded-3xl border border-emerald-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-bold uppercase text-emerald-700">Одоо зарагдаж буй бараа</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-4">
-              <div><p className="text-xs text-slate-500">Код</p><p className="text-2xl font-black">{activeБараа.code}</p></div>
-              <div><p className="text-xs text-slate-500">Нэр</p><p className="text-2xl font-black">{activeБараа.name}</p></div>
-              <div><p className="text-xs text-slate-500">Үнэ</p><p className="text-2xl font-black">{money(activeБараа.price)}</p></div>
-              <div><p className="text-xs text-slate-500">Үлдэгдэл</p><p className="text-2xl font-black">{totalStock(activeБараа)}</p></div>
-            </div>
-          </section>
-        )}
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-2xl font-black">Туршилт авах хүсэлт</h2>
-          <p className="mt-2 text-slate-700">Эхний 1 live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа урсгалыг шалгаарай.</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <input
-                className="rounded-2xl border p-4 sm:col-span-2"
-                placeholder="Facebook live хаяг"
-                value={trialLead.facebook}
-                onChange={(e) => setTrialLead({ ...trialLead, facebook: e.target.value })}
-              />
-            <input
-                className="rounded-2xl border p-4"
-                placeholder="Утас"
-                type="tel"
-                value={trialLead.phone}
-                onChange={(e) => setTrialLead({ ...trialLead, phone: e.target.value })}
-              />
-            <input
-                className="rounded-2xl border p-4"
-                placeholder="Гол зардаг бараа"
-                value={trialLead.product}
-                onChange={(e) => setTrialLead({ ...trialLead, product: e.target.value })}
-              />
-            <input
-                className="rounded-2xl border p-4 sm:col-span-2"
-                placeholder="Сард хэдэн live хийдэг вэ?"
-                value={trialLead.liveCount}
-                onChange={(e) => setTrialLead({ ...trialLead, liveCount: e.target.value })}
-              />
-            <p className="sm:col-span-2 text-lg font-bold text-slate-950">Сонирхож буй хувилбар:</p>
-            <label className="flex items-center space-x-2 sm:col-span-2">
-              <input type="radio" name="plan" className="form-radio" />
-              <span>Эхний 1 Live / Борлуулалт — үнэгүй</span>
-            </label>
-            <label className="flex items-center space-x-2 sm:col-span-2">
-              <input type="radio" name="plan" className="form-radio" />
-              <span>Нэг удаагийн Live / Борлуулалт эрх — 14,900₮</span>
-            </label>
-            <label className="flex items-center space-x-2 sm:col-span-2">
-              <input type="radio" name="plan" className="form-radio" defaultChecked />
-              <span>Эхлээд үнэгүй туршъя</span>
-            </label>
-            <button className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white sm:col-span-2">Жишээ live авах</button>
-          </div>
-          <p className="mt-4 text-sm text-slate-500 text-center">Одоогоор жишээ live хүсэлт.</p>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-            <div>
-              <p className="text-sm font-bold uppercase text-blue-600">Эхний 1 live үнэгүй</p>
-              <h2 className="mt-2 text-2xl font-black">Туршилт авах хүсэлт</h2>
-              <p className="mt-3 text-slate-700">
-                Эхний live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа урсгалыг шалгаарай.
+        <section id="facebook-live" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-600">Live operations</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">Facebook Live худалдааны урсгал</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
+                Коммент оруулж захиалга үүсгэнэ. Төлбөр, нөөц, баглаа боодлын дарааллыг нэг самбарт шалгана.
               </p>
-              <p className="mt-4 rounded-2xl bg-slate-100 p-4 text-sm text-slate-600">
-                Одоогоор жишээ live хүсэлт.
+              <p className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-slate-700">
+                Одоогоор Facebook comment-оо гараар нааж workflow шалгана. Real Facebook API холболт дараагийн шатанд нэмэгдэнэ.
               </p>
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Facebook live хаяг" />
-              <input className="rounded-2xl border p-4" placeholder="Утас" type="tel" />
-              <input className="rounded-2xl border p-4" placeholder="Гол зардаг бараа" />
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Сард хэдэн live хийдэг вэ?" />
-
-              <div className="rounded-2xl border p-4 sm:col-span-2">
-                <p className="font-bold text-slate-950">Сонирхож буй хувилбар</p>
-                <div className="mt-3 grid gap-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="trial-plan"
-                      checked={trialLead.plan === 'Сарын багц — 79,000₮'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Сарын багц — 79,000₮' })}
-                    />
-                    <span>Эхний 1 Live / Борлуулалт — үнэгүй</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="trial-plan"
-                      checked={trialLead.plan === 'Нэг удаагийн Live / Борлуулалт эрх — 14,900₮'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Нэг удаагийн Live / Борлуулалт эрх — 14,900₮' })}
-                    />
-                    <span>Нэг удаагийн Live / Борлуулалт эрх — 14,900₮</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="trial-plan"
-                      checked={trialLead.plan === 'Эхлээд үнэгүй туршъя'}
-                      onChange={() => setTrialLead({ ...trialLead, plan: 'Эхлээд үнэгүй туршъя' })}
-                    />
-                    <span>Эхлээд үнэгүй туршъя</span>
-                  </label>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const demoRequestText = [
-                    'Сайн байна уу. Borlo-г анхны 2 live дээр туршиж үзмээр байна.',
-                    '',
-                    `Facebook/live хаяг: ${trialLead.facebook || '[энд бичнэ]'} `,
-                    `Утас: ${trialLead.phone || '[энд бичнэ]'} `,
-                    `Гол зардаг бараа: ${trialLead.product || '[энд бичнэ]'} `,
-                    `Сард хийх live: ${trialLead.liveCount || '[энд бичнэ]'} `,
-                    `Сонирхож буй хувилбар: ${trialLead.plan} `,
-                  ].join('\n')
-                  navigator.clipboard.writeText(demoRequestText)
-                  setCopyStatus('Хууллаа — Messenger/Telegram рүү наагаарай')
-                  window.setTimeout(() => setCopyStatus(''), 2500)
-                }}
-                className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white shadow active:scale-95 hover:bg-blue-700 sm:col-span-2"
-              >
-                Жишээ live хүсэлтийн текст хуулах
-              </button>
-              {copyStatus && (
-                <p className="rounded-2xl bg-emerald-50 p-3 text-center text-sm font-bold text-emerald-700 sm:col-span-2">
-                  {copyStatus}
-                </p>
-              )}
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-          <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr] lg:items-center">
-            <div>
-              <p className="text-sm font-bold uppercase text-blue-600">Холбогдох сувгууд</p>
-              <h2 className="mt-2 text-2xl font-black">Туршилт авахад ойрхон байна</h2>
-              <p className="mt-3 text-slate-700">
-                Одоогоор real Facebook/TikTok/Instagram/Messenger/Telegram integration идэвхтэй биш. Guided workflow ашиглана.
-              </p>
-              <p className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-700">
-                Эхлээд жишээ live хүсэлтийн текстээ хуулж аваад Messenger эсвэл Telegram рүү наагаарай.
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4 lg:min-w-[28rem]">
               {[
-                ['Facebook', SOCIAL_LINKS.facebook, 'border-blue-100 bg-blue-50 text-blue-700'],
-                ['Messenger', SOCIAL_LINKS.messenger, 'border-slate-200 bg-white text-slate-700'],
-                ['Telegram', SOCIAL_LINKS.telegram, 'border-slate-200 bg-white text-slate-700'],
-                ['Instagram', SOCIAL_LINKS.instagram, 'border-slate-200 bg-slate-50 text-slate-500'],
-                ['TikTok', SOCIAL_LINKS.tiktok, 'border-slate-200 bg-slate-50 text-slate-500'],
-              ].map(([label, href, className]) =>
-                href === '#'
-                  ? <span key={label} className={`rounded-2xl border px-4 py-3 text-center font-bold shadow-sm ${className}`}>{label}</span>
-                  : <a key={label} href={href} className={`rounded-2xl border px-4 py-3 text-center font-bold shadow-sm active:scale-95 ${className}`}>{label}</a>
-              )}
+                ['Хүлээгдэж буй', pendingOrders.length, 'border-amber-200 bg-amber-50 text-amber-800'],
+                ['Төлсөн', paidOrders.length, 'border-emerald-200 bg-emerald-50 text-emerald-800'],
+                ['Шалгах', paymentReviewEvents.length + unclearComments.length, 'border-orange-200 bg-orange-50 text-orange-800'],
+                ['Баглах', paidPackingOrders.length, 'border-blue-200 bg-blue-50 text-blue-800'],
+              ].map(([label, value, className]) => (
+                <div key={label} className={`rounded-2xl border p-3 shadow-sm ${className}`}>
+                  <p className="text-xs font-bold">{label}</p>
+                  <p className="mt-1 text-2xl font-black">{value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-            <div>
-              <p className="text-sm font-bold uppercase text-orange-600">Анхааруулга</p>
-              <h2 className="mt-2 text-2xl font-black">Анхаарах худалдан авагч</h2>
-              <p className="mt-3 text-slate-700">
-                Дараагийн шатанд Borlo өмнө нь захиалга аваад авахгүй алга болсон,
-                төлбөр дутуу хийсэн, эсвэл олон удаа цуцалсан худалдан авагчийг анхааруулдаг болно.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4">
-              <p className="font-bold text-slate-900">Жишээ сануулга</p>
-              <div className="mt-3 grid gap-2 text-sm text-slate-700">
-                <div className="rounded-2xl bg-white p-3 shadow-sm">
-                  <p className="font-bold">Мөнхөө — 9900****</p>
-                  <p className="mt-1 text-slate-600">
-                    Өмнөх live дээр 2 захиалга цуцалсан. Төлбөр баталгаажтал бараа хадгалахгүй.
-                  </p>
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)]">
+          <div className="space-y-5">
+            {activeБараа && (
+              <div id="live" className="rounded-3xl border border-blue-100 bg-white p-5 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-sm font-bold uppercase text-blue-600">Одоо зарагдаж буй бараа</p>
+                    <h3 className="mt-2 text-2xl font-black text-slate-950">{activeБараа.name}</h3>
+                  </div>
+                  <span className="w-fit rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                    Идэвхтэй
+                  </span>
                 </div>
-                <div className="rounded-2xl bg-white p-3 shadow-sm">
-                  <p className="font-bold">Нараа — 8811****</p>
-                  <p className="mt-1 text-slate-600">
-                    Баглаа боодолд орсон захиалгаа авахгүй буцаасан. Шалгаж баталгаажуулах шаардлагатай.
-                  </p>
+                <div className="mt-5 grid gap-3 sm:grid-cols-4">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-bold text-slate-500">Код</p><p className="mt-1 text-xl font-black text-slate-950">{activeБараа.code}</p></div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-bold text-slate-500">Нэр</p><p className="mt-1 truncate text-xl font-black text-slate-950">{activeБараа.name}</p></div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-bold text-slate-500">Үнэ</p><p className="mt-1 text-xl font-black text-slate-950">{money(activeБараа.price)}</p></div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4"><p className="text-xs font-bold text-slate-500">Үлдэгдэл</p><p className="mt-1 text-xl font-black text-slate-950">{totalStock(activeБараа)}</p></div>
                 </div>
               </div>
-              <p className="mt-3 text-xs text-slate-600">
-                Одоогоор жишээ мэдээлэл.
-              </p>
+            )}
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-950">Комментоос захиалга үүсгэх</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">Жишээ: “A12 хар M авъя 99112233”</p>
+                </div>
+                <span className="w-fit rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 ring-1 ring-blue-100">Comment paste workflow</span>
+              </div>
+              <textarea className="mt-4 min-h-44 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-base text-slate-900 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
+              <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 active:scale-[0.98]">Комментоос захиалга үүсгэх</button>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 className="text-xl font-black text-slate-950">Live workflow status</h3>
+              <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                {[
+                  ['Эхлэл', 'not-connected'],
+                  ['Сонгосон', 'connected'],
+                  ['Live олдсон', 'live-found'],
+                  ['Коммент орж байна', 'importing'],
+                ].map(([label, state]) => (
+                  <button
+                    key={state}
+                    type="button"
+                    className={`rounded-2xl border px-3 py-3 text-sm font-bold transition ${
+                      facebookConnectionState === state ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-blue-50 hover:text-blue-700'
+                    }`}
+                    onClick={() => setFacebookConnectionState(state as typeof facebookConnectionState)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">
+                {facebookConnectionState === 'not-connected' && <button className="rounded-2xl bg-blue-600 px-4 py-3 font-bold text-white" onClick={() => setFacebookConnectionState('connected')}>Жишээ live урсгал сонгох</button>}
+                {facebookConnectionState === 'connected' && <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p>Сонгосон live урсгал: Borlo live загвар</p><button className="rounded-xl bg-blue-600 px-3 py-2 text-white hover:bg-blue-700" onClick={() => setFacebookConnectionState('live-found')}>Live урсгал харах</button></div>}
+                {facebookConnectionState === 'live-found' && <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><p>Live: Шинэ барааны жишээ live — 2026-05-05 19:00</p><button className="rounded-xl bg-emerald-600 px-4 py-2 font-bold text-white" onClick={() => setFacebookConnectionState('importing')}>Жишээ коммент эхлүүлэх</button></div>}
+                {facebookConnectionState === 'importing' && <p>Жишээ комментууд орж ирэх горим идэвхтэй. Дээрх comment талбараар захиалга үүсгэж шалгана.</p>}
+              </div>
             </div>
           </div>
+
+          <aside className="space-y-5">
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-black text-slate-950">Захиалга summary</h3>
+                <button type="button" onClick={() => showDashboardView('orders')} className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">Нээх</button>
+              </div>
+              <div className="mt-4 space-y-3">
+                {pendingOrders.slice(0, 3).map((order) => (
+                  <div key={order.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm">
+                    <p className="font-black text-slate-950">{order.buyerDisplayName}</p>
+                    <p className="mt-1 text-slate-600">{order.productCode} {order.color} / {order.size} × {order.quantity}</p>
+                    <p className="mt-1 font-bold text-slate-900">{money(order.amount)}</p>
+                  </div>
+                ))}
+                {pendingOrders.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">Хүлээгдэж буй захиалга алга. Коммент нааж захиалга үүсгэнэ.</p>}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-black text-slate-950">Төлбөр summary</h3>
+                <button type="button" onClick={() => showDashboardView('payments')} className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">Тулгах</button>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-3">
+                  <p className="text-xs font-bold text-emerald-700">Төлсөн</p>
+                  <p className="mt-1 text-2xl font-black text-emerald-800">{successfulPaymentEvents.length}</p>
+                </div>
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3">
+                  <p className="text-xs font-bold text-amber-700">Шалгах</p>
+                  <p className="mt-1 text-2xl font-black text-amber-800">{paymentReviewEvents.length}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-black text-slate-950">Баглахад бэлэн</h3>
+                <button type="button" onClick={() => showDashboardView('packing')} className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">Баглах</button>
+              </div>
+              <div className="mt-4 space-y-2">
+                {packingGroups.slice(0, 4).map((item) => (
+                  <p key={`${item.productCode}-${item.color}-${item.size}`} className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-700">
+                    {item.productCode} / {item.color} / {item.size} — {item.totalQuantity} ширхэг
+                  </p>
+                ))}
+                {packingGroups.length === 0 && <p className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-500">Баглахад бэлэн захиалга алга.</p>}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+              <h3 className="text-lg font-black text-slate-950">Анхаарах худалдан авагч</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-700">Жишээ сануулга. Бодит blacklist/CRM automation идэвхтэй биш.</p>
+              <div className="mt-3 space-y-2 text-sm text-slate-700">
+                <p className="rounded-2xl bg-white p-3 font-semibold shadow-sm">Мөнхөө — өмнөх live дээр 2 захиалга цуцалсан.</p>
+                <p className="rounded-2xl bg-white p-3 font-semibold shadow-sm">Нараа — баглаа боодолд орсон захиалгаа буцаасан.</p>
+              </div>
+            </div>
+          </aside>
         </section>
           </>
         )}
