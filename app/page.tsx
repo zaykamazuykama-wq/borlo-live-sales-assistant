@@ -905,16 +905,17 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
           <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Боломжууд</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              'Комментоос захиалга',
-              'Төлбөрийн төлөв',
-              'Нөөцийн хяналт',
-              'Барааны ангилал',
-              'Баглаа боодол',
-              'Campaign тайлан',
-            ].map((feature) => (
+              ['Комментоос захиалга', 'Comment paste workflow-оор захиалгаа жагсаалт болгоно'],
+              ['Төлбөрийн төлөв', 'Төлсөн, хүлээгдэж буй, шалгах төлөвөө ялгаж харна'],
+              ['Нөөцийн хяналт', 'Төлсөн захиалгатай уялдуулж үлдэгдлээ цэгцэлнэ'],
+              ['Барааны ангилал', 'Хувцас, гутал, гоо сайхан зэрэг ангиллаар бараагаа зохион байгуулна'],
+              ['Баглаа боодол', 'Төлсөн захиалгуудаа баглах жагсаалт болгоно'],
+              ['CSV export', 'Захиалга болон баглаа боодлын жагсаалтаа CSV болгон гаргана'],
+            ].map(([feature, detail]) => (
               <div key={feature} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/60 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-blue-100">
                 <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20" />
                 <p className="mt-5 text-lg font-black text-zinc-950">{feature}</p>
+                <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
               </div>
             ))}
           </div>
@@ -983,7 +984,7 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
             ))}
           </div>
           <p className="mt-8 rounded-3xl border border-blue-100 bg-white p-5 text-sm font-semibold leading-7 text-zinc-600 shadow-lg shadow-blue-950/5">
-            Pro багц: 149,000₮ / сар — илүү олон live, илүү нарийн тайлан, нэмэлт seller tools
+            Pro багц: 149,000₮ / сар — илүү олон live, захиалга, төлбөр, баглаа боодлын workflow, нэмэлт seller tools
           </p>
         </div>
       </section>
