@@ -1128,7 +1128,7 @@ export default function LiveShopManagerDemo() {
       pendingCount: "Төлбөр хүлээгдэж байна",
       paidPackingCount: "Төлсөн / Баглах",
       revenue: "Орлого",
-      homeNav: "Нүүр",
+      homeNav: "Самбар",
       liveNav: "Шууд",
       ordersNav: "Захиалга",
       paymentsNav: "Төлбөр",
@@ -1152,7 +1152,7 @@ export default function LiveShopManagerDemo() {
     },
     en: {
       mainHeading: "Live Shop Manager",
-      subtitle: "Live Sales Assistant",
+      subtitle: "Borlo dashboard",
       flow: "Comment → Order → Payment → Packing",
       trialBadge: "Trial version — Facebook integration is not connected yet",
       demoResetButton: "Demo reset",
@@ -1933,11 +1933,11 @@ export default function LiveShopManagerDemo() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-slate-50 px-4 py-4 text-slate-900 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1180px] flex-col gap-5">
-        <section id="home" className="rounded-3xl border border-blue-100 bg-white p-4 shadow-xl shadow-slate-200/70 sm:p-5">
+        <section id="home" className="rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/40 p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0">
-              <button onClick={() => setMode('landing')} className="inline-flex rounded-2xl bg-slate-950 px-3 py-2 text-lg font-black text-white shadow-lg shadow-blue-950/10">Borlo</button>
-              <h1 className="mt-4 text-2xl font-black leading-tight tracking-normal text-slate-950 sm:text-3xl">Live Sales Assistant</h1>
+              <button onClick={() => setMode('landing')} className="inline-flex rounded-2xl bg-slate-950 px-3 py-2 text-lg font-black text-white shadow-sm shadow-blue-950/10">Borlo</button>
+              <h1 className="mt-4 text-2xl font-black leading-tight tracking-normal text-slate-950 sm:text-3xl">Borlo самбар</h1>
               <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-blue-700">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа → Export</p>
               <p className="mt-3 inline-flex rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-slate-700">
                 Одоогоор өгөгдөл энэ төхөөрөмж дээр хадгалагдана.
@@ -1966,7 +1966,7 @@ export default function LiveShopManagerDemo() {
         <nav className="rounded-2xl border border-slate-200 bg-white p-2 shadow-lg shadow-slate-200/60">
           <div className="flex gap-2 overflow-x-auto text-sm font-black text-slate-700">
             {[
-              ['home', 'Нүүр'],
+              ['home', 'Самбар'],
               ['live', 'Шууд'],
               ['orders', 'Захиалга'],
               ['payments', 'Төлбөр'],
