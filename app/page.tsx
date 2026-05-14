@@ -660,381 +660,365 @@ function getPaymentStatusLabel(status?: PaymentStatus) {
 }
 
 function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard: () => void }) {
-  const [selectedStep, setSelectedStep] = useState(1)
+  type LandingTab = 'home' | 'how' | 'features' | 'pricing' | 'faq' | 'contact'
 
-  const onboardingSteps = [
-    {
-      step: 1,
-      title: 'Бараагаа оруул',
-      detail: '→ өнгө, размер, үнэ, үлдэгдэл',
-      note: 'Live эхлэхээс өмнө бараагаа бэлдэнэ.',
-    },
-    {
-      step: 2,
-      title: 'Live эхлүүл',
-      detail: '→ Live урсгал сонго',
-      note: 'Идэвхтэй live урсгалаа сонгоод комментын туршилтыг эхлүүлнэ.',
-    },
-    {
-      step: 3,
-      title: 'Коммент орж ирнэ',
-      detail: '→ “A12 хар M авъя”',
-      note: 'Коммент бүрээс барааны код, өнгө, размер уншина.',
-    },
-    {
-      step: 4,
-      title: 'Төлбөр тулгана',
-      detail: '→ төлсөн эсэх шалгана',
-      note: 'Төлбөрийн мэдэгдлийн текстээ наагаад, Borlo захиалгатай тулгаж санал болгоно. Эргэлзээтэй төлбөрийг “Шалгах шаардлагатай” хэсэгт оруулна.',
-    },
-    {
-      step: 5,
-      title: 'Баглах жагсаалт гарна',
-      detail: '→ хүргэлтэд бэлэн',
-      note: 'Төлөгдсөн захиалгууд баглахад бэлэн болно.',
-    },
+  const [landingTab, setLandingTab] = useState<LandingTab>('home')
+
+  const landingTabs: { id: LandingTab; label: string }[] = [
+    { id: 'home', label: 'Нүүр' },
+    { id: 'how', label: 'Яаж ажилладаг' },
+    { id: 'features', label: 'Боломжууд' },
+    { id: 'pricing', label: 'Үнэ' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'contact', label: 'Холбоо барих' },
   ]
 
+  const sectionClass = 'px-4 py-12 sm:px-6 sm:py-16 lg:px-8'
+
   return (
-    <main id="landing" className="min-h-screen overflow-x-hidden bg-white text-zinc-900">
-      <header className="sticky top-0 z-50 border-b border-blue-100/80 bg-white/85 shadow-sm shadow-blue-950/5 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <a href="#landing" className="shrink-0 rounded-2xl bg-zinc-950 px-3 py-2 text-xl font-black text-white shadow-lg shadow-blue-950/10">Borlo</a>
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-zinc-600 lg:flex">
-            <a href="#landing" className="transition hover:text-blue-600">Нүүр</a>
-            <a href="#landing-how" className="transition hover:text-blue-600">Яаж ажилладаг</a>
-            <a href="#landing-features" className="transition hover:text-blue-600">Боломжууд</a>
-            <a href="#landing-pricing" className="transition hover:text-blue-600">Үнэ</a>
-            <a href="#landing-faq" className="transition hover:text-blue-600">FAQ</a>
-            <a href="#landing-contact" className="transition hover:text-blue-600">Холбоо барих</a>
+    <main id="landing" className="min-h-screen overflow-x-hidden bg-zinc-50 text-slate-900">
+      <header className="sticky top-0 z-50 border-b border-blue-100/80 bg-white/90 shadow-sm shadow-blue-950/5 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => setLandingTab('home')}
+            className="shrink-0 rounded-2xl bg-zinc-950 px-3 py-2 text-xl font-black text-white shadow-sm shadow-blue-950/10"
+          >
+            Borlo
+          </button>
+          <nav className="min-w-0 flex-1 overflow-x-auto">
+            <div className="flex w-max items-center gap-1 rounded-full border border-slate-200 bg-white p-1 text-sm font-bold text-slate-600 shadow-sm lg:mx-auto">
+              {landingTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setLandingTab(tab.id)}
+                  className={`whitespace-nowrap rounded-full px-3 py-2 transition sm:px-4 ${
+                    landingTab === tab.id ? 'bg-blue-50 text-blue-600 shadow-sm' : 'hover:bg-slate-50 hover:text-blue-600'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </nav>
-          <div className="flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              onClick={onDemo}
-              className="rounded-full bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.98] sm:hidden"
-            >
-              Турших
-            </button>
-            <button
-              type="button"
-              onClick={onDemo}
-              className="hidden rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.98] sm:inline-flex"
-            >
-              1 live үнэгүй
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <section className="relative isolate bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.18),transparent_32rem),linear-gradient(180deg,#eff6ff_0%,#ffffff_48%,#ffffff_100%)] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="pointer-events-none absolute left-1/2 top-10 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-300/30 blur-3xl sm:h-96 sm:w-96" />
-        <div className="pointer-events-none absolute right-0 top-24 -z-10 hidden h-80 w-80 rounded-full bg-cyan-200/35 blur-3xl lg:block" />
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div className="min-w-0">
-            <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm shadow-blue-900/5 backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.14)]" />
-              Facebook-first live selling assistant
-            </p>
-            <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[1.02] text-zinc-950 sm:text-5xl lg:text-6xl">
-              Live худалдаагаа комментоос баглаа боодол хүртэл нэг дор удирд
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-zinc-600">
-              Facebook live хийдэг худалдаачдад зориулсан энгийн туслах систем. Комментоос захиалга үүсгэж, төлбөрийн төлөв хянаж, үлдэгдэл шинэчилж, баглаа боодлын жагсаалтаа гарга.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <button
-                type="button"
-                onClick={onDemo}
-                className="rounded-2xl bg-blue-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-600/25 ring-1 ring-blue-500/20 transition hover:bg-blue-700 active:scale-[0.98]"
-              >
-                1 live үнэгүй турших
-              </button>
-              <a
-                href="#landing-how"
-                className="rounded-2xl border border-zinc-200 bg-white/90 px-6 py-4 text-center text-base font-bold text-zinc-900 shadow-lg shadow-zinc-200/60 backdrop-blur transition hover:border-blue-200 hover:text-blue-700 active:scale-[0.98]"
-              >
-                Яаж ажилладгийг харах
-              </a>
-            </div>
-            <div className="mt-6 grid max-w-2xl gap-3 sm:grid-cols-3">
-              {['Карт шаардахгүй', '5 минутанд эхэлнэ', 'Comment-оо гараар нааж туршина'].map((badge) => (
-                <div key={badge} className="rounded-2xl border border-blue-100 bg-white/85 px-4 py-3 text-sm font-black text-zinc-800 shadow-lg shadow-blue-950/5 backdrop-blur">
-                  {badge}
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 max-w-2xl rounded-3xl border border-blue-100 bg-white/80 p-5 text-sm font-semibold leading-7 text-blue-950 shadow-xl shadow-blue-950/5 backdrop-blur">
-              Эхний хувилбарт Facebook comment-оо хуулж наагаад Borlo workflow-г шууд туршина. Real integration хүлээлгүйгээр захиалга, төлбөр, нөөц, баглаа боодлын дарааллаа шалгаж болно.
-            </div>
-          </div>
-
-          <div className="relative min-w-0 rounded-[2rem] border border-white/70 bg-white/80 p-3 shadow-2xl shadow-blue-950/20 ring-1 ring-blue-100/80 backdrop-blur sm:p-4">
-            <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[2.25rem] bg-gradient-to-br from-blue-500/18 via-cyan-300/10 to-transparent blur-xl" />
-            <div className="rounded-[1.6rem] border border-zinc-200/80 bg-zinc-950 p-3 text-white shadow-xl shadow-zinc-950/20">
-              <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
-                </div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold text-blue-100">Live dashboard</span>
-              </div>
-              <div className="mt-4 rounded-[1.35rem] bg-white p-4 text-zinc-900 shadow-2xl shadow-black/20 sm:p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-100 pb-4">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-black text-zinc-950">Borlo Live — Жишээ кампани</p>
-                <p className="mt-1 text-xs font-semibold text-zinc-500">Коммент → Захиалга → Баглаа</p>
-              </div>
-              <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700 ring-1 ring-green-100">Live</span>
-            </div>
-
-            <div className="mt-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4 shadow-inner shadow-blue-100/50">
-              <p className="text-xs font-bold uppercase text-zinc-500">Одоогийн бараа</p>
-              <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-2xl font-black text-zinc-950">A12 Даашинз</p>
-                  <p className="mt-1 truncate text-sm font-semibold text-zinc-600">Хувцас · Хар / M · 89,000₮</p>
-                </div>
-                <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white shadow-lg shadow-blue-600/25">Active</span>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                ['Хүлээгдэж буй', '8', 'bg-orange-50 text-orange-700'],
-                ['Төлсөн', '5', 'bg-green-50 text-green-700'],
-                ['Шалгах', '2', 'bg-amber-50 text-amber-700'],
-                ['Баглах', '5', 'bg-blue-50 text-blue-700'],
-              ].map(([label, value, tone]) => (
-                <div key={label} className="min-w-0 rounded-2xl border border-zinc-100 bg-white p-3 shadow-sm shadow-zinc-200/70">
-                  <p className="truncate text-xs font-bold text-zinc-500">{label}</p>
-                  <p className={`mt-2 inline-flex rounded-full px-3 py-1 text-lg font-black ${tone}`}>{value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-              <div className="min-w-0 rounded-3xl border border-zinc-100 bg-white p-4 shadow-sm shadow-zinc-200/60">
-                <p className="text-sm font-black text-zinc-950">Захиалгын жагсаалт</p>
-                <div className="mt-3 space-y-3">
-                  {[
-                    ['Алтанзул', 'A12 Хар M', 'Хүлээгдэж буй', 'bg-orange-50 text-orange-700'],
-                    ['Саруул', 'A12 Улаан L', 'Төлсөн', 'bg-green-50 text-green-700'],
-                    ['Номин', 'A12 Хар S', 'Шалгах', 'bg-amber-50 text-amber-700'],
-                  ].map(([name, product, status, tone]) => (
-                    <div key={`${name}-${product}`} className="flex min-w-0 items-center justify-between gap-2 rounded-2xl border border-zinc-100 bg-zinc-50 p-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-zinc-950">{name}</p>
-                        <p className="truncate text-xs font-semibold text-zinc-500">{product}</p>
-                      </div>
-                      <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${tone}`}>{status}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="min-w-0 rounded-3xl border border-zinc-100 bg-white p-4 shadow-sm shadow-zinc-200/60">
-                <p className="text-sm font-black text-zinc-950">Баглах</p>
-                <div className="mt-3 space-y-3">
-                  {['A12 Хар M × 2', 'A12 Улаан L × 1'].map((item) => (
-                    <div key={item} className="rounded-2xl border border-zinc-100 bg-zinc-50 p-3 text-sm font-bold text-zinc-700">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-blue-100 bg-gradient-to-b from-white to-zinc-50 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Эхний live-ээ 3 алхмаар эхлүүл</h2>
-            <p className="mt-4 text-lg leading-8 text-zinc-600">Бүртгэл, integration хүлээлгүйгээр comment paste workflow-оор шууд туршина</p>
-          </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {[
-              ['1', 'Бараагаа нэмнэ', 'Код, үнэ, өнгө, размер, үлдэгдлээ оруулна.'],
-              ['2', 'Comment-оо наана', 'Live дээр ирсэн “A12 хар M авъя” гэх мэт comment-оо Borlo-д наана.'],
-              ['3', 'Баглах жагсаалтаа гаргана', 'Төлсөн захиалгуудаа шалгаад баглаа боодлын жагсаалт болгоно.'],
-            ].map(([step, title, detail]) => (
-              <div key={step} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/70">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-lg shadow-blue-600/25">{step}</span>
-                <h3 className="mt-5 text-xl font-black text-zinc-950">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {['1 live үнэгүй', 'Монгол хэлтэй workflow', 'Facebook-first', '14,900₮ / 1 campaign'].map((item) => (
-            <div key={item} className="rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/60 px-4 py-5 text-center text-sm font-black text-zinc-900 shadow-xl shadow-blue-950/5">
-              {item}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="landing-how" className="bg-zinc-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Live үеийн workflow</h2>
-            <p className="mt-4 text-lg leading-8 text-zinc-600">Нэг live дотор seller-д хэрэгтэй бүх дараалал нэг самбарт харагдана</p>
-          </div>
-          <div className="mt-8 grid gap-3 md:grid-cols-5">
-            {['Коммент', 'Захиалга', 'Төлбөр', 'Нөөц', 'Баглаа'].map((step, index) => (
-              <div key={step} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg shadow-zinc-200/70">
-                <p className="text-sm font-black text-blue-600">0{index + 1}</p>
-                <p className="mt-3 text-lg font-black text-zinc-950">{step}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="landing-features" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Боломжууд</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              ['Комментоос захиалга', 'Comment paste workflow-оор захиалгаа жагсаалт болгоно'],
-              ['Төлбөрийн төлөв', 'Төлсөн, хүлээгдэж буй, шалгах төлөвөө ялгаж харна'],
-              ['Нөөцийн хяналт', 'Төлсөн захиалгатай уялдуулж үлдэгдлээ цэгцэлнэ'],
-              ['Барааны ангилал', 'Хувцас, гутал, гоо сайхан зэрэг ангиллаар бараагаа зохион байгуулна'],
-              ['Баглаа боодол', 'Төлсөн захиалгуудаа баглах жагсаалт болгоно'],
-              ['CSV export', 'Захиалга болон баглаа боодлын жагсаалтаа CSV болгон гаргана'],
-            ].map(([feature, detail]) => (
-              <div key={feature} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/60 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-blue-100">
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20" />
-                <p className="mt-5 text-lg font-black text-zinc-950">{feature}</p>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-gradient-to-b from-zinc-50 to-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Яагаад Borlo вэ?</h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {[
-              ['Live seller-д зориулсан', 'CRM эсвэл том ERP биш. Шууд live үеийн захиалга, төлбөр, баглаа боодол дээр төвлөрнө.'],
-              ['Монгол хэллэгтэй', 'Seller-д ойр үг хэллэгтэй: захиалга, төлбөр, үлдэгдэл, баглаа боодол.'],
-              ['Энгийн эхлэлтэй', 'Эхлээд comment-оо гараар наагаад workflow-оо туршина. Дараагийн шатанд integration нэмнэ.'],
-            ].map(([title, detail]) => (
-              <div key={title} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/60">
-                <h3 className="text-xl font-black text-zinc-950">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Барааны ангилал</h2>
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {[
-              'Хувцас',
-              'Гутал',
-              'Цүнх / Аксессуар',
-              'Гоо сайхан',
-              'Гэр ахуй',
-              'Гал тогоо',
-              'Хүүхэд / Нярай',
-              'Хүнс / Савласан бүтээгдэхүүн',
-              'Цахилгаан бараа / Жижиг хэрэгсэл',
-              'Гар урлал / Бусад',
-            ].map((category) => (
-              <div key={category} className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4 text-sm font-bold text-zinc-800 shadow-sm shadow-zinc-200/60">
-                {category}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="landing-pricing" className="bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.10),transparent_30rem),linear-gradient(180deg,#f8fafc,#ffffff)] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">Үнэ</h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-3 md:items-stretch">
-            {[
-              ['1 live үнэгүй', '0₮', 'Эхний live дээр workflow турших'],
-              ['1 Campaign Pass', '14,900₮', 'Нэг live / нэг кампани'],
-              ['Сарын багц', '79,000₮', 'Сар бүр'],
-            ].map(([title, price, detail], index) => (
-              <div
-                key={title}
-                className={`rounded-3xl border bg-white p-6 shadow-xl ${index === 1 ? 'border-blue-200 shadow-blue-100 md:scale-105' : 'border-zinc-200 shadow-zinc-200/60'}`}
-              >
-                <p className="text-lg font-black text-zinc-950">{title}</p>
-                <p className="mt-4 text-4xl font-black text-zinc-950">{price}</p>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-8 rounded-3xl border border-blue-100 bg-white p-5 text-sm font-semibold leading-7 text-zinc-600 shadow-lg shadow-blue-950/5">
-            Pro багц: 149,000₮ / сар — илүү олон live, захиалга, төлбөр, баглаа боодлын workflow, нэмэлт seller tools
-          </p>
-        </div>
-      </section>
-
-      <section id="landing-faq" className="bg-white px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-3xl font-black text-zinc-950 sm:text-4xl">FAQ</h2>
-          <div className="mt-8 space-y-3">
-            {[
-              ['Borlo яг яаж ажилладаг вэ?', 'Бараа, comment, төлбөр, нөөц, баглаа боодлын ажлыг нэг workflow дотор цэгцэлж харуулна.'],
-              ['Facebook-тэй шууд холбогдсон уу?', 'Эхний хувилбарт Facebook comment-оо хуулж наагаад Borlo workflow-г шууд туршина. Facebook API холболт дараагийн шатанд нэмэгдэнэ.'],
-              ['TikTok / Instagram ажилладаг уу?', 'Одоогоор TikTok/Instagram active integration байхгүй. Facebook-first байна.'],
-              ['Төлбөр автоматаар шалгадаг уу?', 'Одоогоор төлбөрийн мэдээллээ нааж шалгах guided workflow ашиглана. Gmail/банк notification automation нь дараагийн шатны ажил.'],
-              ['Нэг live үнэгүй юу?', 'Тийм. Эхний live дээр workflow-оо 0₮-өөр туршиж болно.'],
-              ['Миний бараа размергүй бол яах вэ?', '“Нэг размер / Free size” сонгож болно.'],
-              ['Барааны ангилал размерт нөлөөлөх үү?', 'Ангилал нь seller-д бараагаа цэгцлэхэд тусална. Размерийн сонголтыг бараандаа тааруулж тохируулна.'],
-              ['Өгөгдөл хаана хадгалагддаг вэ?', 'Өгөгдөл зөвхөн энэ төхөөрөмж дээр хадгалагдана.'],
-            ].map(([question, answer]) => (
-              <details key={question} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg shadow-zinc-200/60">
-                <summary className="cursor-pointer text-base font-black text-zinc-950">{question}</summary>
-                <p className="mt-3 text-sm leading-7 text-zinc-600">{answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="landing-contact" className="relative isolate overflow-hidden bg-zinc-950 px-4 py-20 text-white sm:px-6 lg:px-8">
-        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/30 blur-3xl" />
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-black sm:text-4xl">Дараагийн live-аа Borlo дээр туршаад үз</h2>
           <button
             type="button"
             onClick={onDemo}
-            className="mt-8 rounded-2xl bg-blue-500 px-7 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 ring-1 ring-white/10 transition hover:bg-blue-400 active:scale-[0.98]"
+            className="shrink-0 rounded-full bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.98] sm:hidden"
           >
-            1 live үнэгүй турших
+            Турших
+          </button>
+          <button
+            type="button"
+            onClick={onDemo}
+            className="hidden shrink-0 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-700 active:scale-[0.98] sm:inline-flex"
+          >
+            1 live үнэгүй
           </button>
         </div>
-      </section>
+      </header>
 
-      <footer className="bg-zinc-950 px-4 pb-10 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-lg font-black">Borlo</p>
-            <p className="mt-1 text-sm text-zinc-400">Facebook-first live selling assistant for Mongolian sellers</p>
+      {landingTab === 'home' && (
+        <section className="relative isolate bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.18),transparent_32rem),linear-gradient(180deg,#eff6ff_0%,#ffffff_52%,#f8fafc_100%)] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+          <div className="pointer-events-none absolute left-1/2 top-10 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-300/30 blur-3xl sm:h-96 sm:w-96" />
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+            <div className="min-w-0">
+              <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-blue-200 bg-white/85 px-4 py-2 text-sm font-bold text-blue-700 shadow-sm shadow-blue-900/5 backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.14)]" />
+                Facebook-first live selling assistant
+              </p>
+              <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[1.02] text-slate-950 sm:text-5xl lg:text-6xl">
+                Live худалдаагаа комментоос баглаа боодол хүртэл нэг дор удирд
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+                Facebook live хийдэг худалдаачдад зориулсан энгийн туслах систем. Комментоос захиалга үүсгэж, төлбөрийн төлөв хянаж, үлдэгдэл шинэчилж, баглаа боодлын жагсаалтаа гарга.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button
+                  type="button"
+                  onClick={onDemo}
+                  className="rounded-2xl bg-blue-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-600/25 ring-1 ring-blue-500/20 transition hover:bg-blue-700 active:scale-[0.98]"
+                >
+                  1 live үнэгүй турших
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLandingTab('how')}
+                  className="rounded-2xl border border-slate-200 bg-white/90 px-6 py-4 text-center text-base font-bold text-slate-900 shadow-lg shadow-slate-200/60 backdrop-blur transition hover:border-blue-200 hover:text-blue-700 active:scale-[0.98]"
+                >
+                  Яаж ажилладгийг харах
+                </button>
+              </div>
+              <div className="mt-6 grid max-w-2xl gap-3 sm:grid-cols-3">
+                {['Карт шаардахгүй', '5 минутанд эхэлнэ', 'Comment-оо гараар нааж туршина'].map((badge) => (
+                  <div key={badge} className="rounded-2xl border border-blue-100 bg-white/90 px-4 py-3 text-sm font-black text-slate-800 shadow-lg shadow-blue-950/5 backdrop-blur">
+                    {badge}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 max-w-2xl rounded-3xl border border-blue-100 bg-white/85 p-5 text-sm font-semibold leading-7 text-blue-950 shadow-xl shadow-blue-950/5 backdrop-blur">
+                Эхний хувилбарт Facebook comment-оо хуулж наагаад Borlo workflow-г шууд туршина. Real integration хүлээлгүйгээр захиалга, төлбөр, нөөц, баглаа боодлын дарааллаа шалгаж болно.
+              </div>
+            </div>
+
+            <div className="relative min-w-0 rounded-[2rem] border border-white/70 bg-white/80 p-3 shadow-2xl shadow-blue-950/20 ring-1 ring-blue-100/80 backdrop-blur sm:p-4">
+              <div className="pointer-events-none absolute -inset-3 -z-10 rounded-[2.25rem] bg-gradient-to-br from-blue-500/18 via-cyan-300/10 to-transparent blur-xl" />
+              <div className="rounded-[1.6rem] border border-slate-200/80 bg-slate-950 p-3 text-white shadow-xl shadow-slate-950/20">
+                <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  </div>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold text-blue-100">Live dashboard</span>
+                </div>
+                <div className="mt-4 rounded-[1.35rem] bg-white p-4 text-slate-900 shadow-2xl shadow-black/20 sm:p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-black text-slate-950">Borlo Live — Жишээ кампани</p>
+                      <p className="mt-1 text-xs font-semibold text-slate-500">Коммент → Захиалга → Баглаа</p>
+                    </div>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-100">Live</span>
+                  </div>
+                  <div className="mt-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4 shadow-inner shadow-blue-100/50">
+                    <p className="text-xs font-bold uppercase text-slate-500">Одоогийн бараа</p>
+                    <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-2xl font-black text-slate-950">A12 Даашинз</p>
+                        <p className="mt-1 truncate text-sm font-semibold text-slate-600">Хувцас · Хар / M · 89,000₮</p>
+                      </div>
+                      <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white shadow-lg shadow-blue-600/25">Active</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      ['Хүлээгдэж буй', '8', 'bg-orange-50 text-orange-700'],
+                      ['Төлсөн', '5', 'bg-emerald-50 text-emerald-700'],
+                      ['Шалгах', '2', 'bg-amber-50 text-amber-700'],
+                      ['Баглах', '5', 'bg-blue-50 text-blue-700'],
+                    ].map(([label, value, tone]) => (
+                      <div key={label} className="min-w-0 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm shadow-slate-200/70">
+                        <p className="truncate text-xs font-bold text-slate-500">{label}</p>
+                        <p className={`mt-2 inline-flex rounded-full px-3 py-1 text-lg font-black ${tone}`}>{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
+                    <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60">
+                      <p className="text-sm font-black text-slate-950">Захиалгын жагсаалт</p>
+                      <div className="mt-3 space-y-3">
+                        {[
+                          ['Алтанзул', 'A12 Хар M', 'Хүлээгдэж буй', 'bg-orange-50 text-orange-700'],
+                          ['Саруул', 'A12 Улаан L', 'Төлсөн', 'bg-emerald-50 text-emerald-700'],
+                          ['Номин', 'A12 Хар S', 'Шалгах', 'bg-amber-50 text-amber-700'],
+                        ].map(([name, product, status, tone]) => (
+                          <div key={`${name}-${product}`} className="flex min-w-0 items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-slate-50 p-3">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-black text-slate-950">{name}</p>
+                              <p className="truncate text-xs font-semibold text-slate-500">{product}</p>
+                            </div>
+                            <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${tone}`}>{status}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="min-w-0 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60">
+                      <p className="text-sm font-black text-slate-950">Баглах</p>
+                      <div className="mt-3 space-y-3">
+                        {['A12 Хар M × 2', 'A12 Улаан L × 1'].map((item) => (
+                          <div key={item} className="rounded-2xl border border-slate-100 bg-slate-50 p-3 text-sm font-bold text-slate-700">
+                            {item}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-sm text-zinc-500">© 2026 Borlo. Бүх эрх хуулиар хамгаалагдсан.</p>
-        </div>
-      </footer>
+        </section>
+      )}
+
+      {landingTab === 'how' && (
+        <section className={sectionClass}>
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-wide text-blue-600">Workflow</p>
+              <h2 className="mt-3 text-3xl font-black text-slate-950 sm:text-4xl">Эхний live-ээ 3 алхмаар эхлүүл</h2>
+              <p className="mt-4 text-lg leading-8 text-slate-600">Бүртгэл, integration хүлээлгүйгээр comment paste workflow-оор шууд туршина</p>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {[
+                ['1', 'Бараагаа нэмнэ', 'Код, үнэ, өнгө, размер, үлдэгдлээ оруулна.'],
+                ['2', 'Comment-оо наана', 'Live дээр ирсэн “A12 хар M авъя” гэх мэт comment-оо Borlo-д наана.'],
+                ['3', 'Баглах жагсаалтаа гаргана', 'Төлсөн захиалгуудаа шалгаад баглаа боодлын жагсаалт болгоно.'],
+              ].map(([step, title, detail]) => (
+                <div key={step} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-lg shadow-blue-600/25">{step}</span>
+                  <h3 className="mt-5 text-xl font-black text-slate-950">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 rounded-3xl border border-blue-100 bg-gradient-to-br from-white to-blue-50/70 p-6 shadow-sm shadow-blue-950/5">
+              <h3 className="text-2xl font-black text-slate-950">Live үеийн workflow</h3>
+              <p className="mt-3 text-base leading-7 text-slate-600">Нэг live дотор seller-д хэрэгтэй бүх дараалал нэг самбарт харагдана</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                {['Коммент', 'Захиалга', 'Төлбөр', 'Нөөц', 'Баглаа', 'Export'].map((step, index) => (
+                  <div key={step} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-black text-blue-600">0{index + 1}</p>
+                    <p className="mt-2 text-base font-black text-slate-950">{step}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {landingTab === 'features' && (
+        <section className={sectionClass}>
+          <div className="mx-auto max-w-7xl space-y-12">
+            <div>
+              <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">Боломжууд</h2>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  ['Комментоос захиалга', 'Comment paste workflow-оор захиалгаа жагсаалт болгоно'],
+                  ['Төлбөрийн төлөв', 'Төлсөн, хүлээгдэж буй, шалгах төлөвөө ялгаж харна'],
+                  ['Нөөцийн хяналт', 'Төлсөн захиалгатай уялдуулж үлдэгдлээ цэгцэлнэ'],
+                  ['Барааны ангилал', 'Хувцас, гутал, гоо сайхан зэрэг ангиллаар бараагаа зохион байгуулна'],
+                  ['Баглаа боодол', 'Төлсөн захиалгуудаа баглах жагсаалт болгоно'],
+                  ['CSV Export', 'Захиалга болон баглаа боодлын жагсаалтаа CSV болгон гаргана'],
+                ].map(([feature, detail]) => (
+                  <div key={feature} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-blue-100">
+                    <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20" />
+                    <p className="mt-5 text-lg font-black text-slate-950">{feature}</p>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">{detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">Яагаад Borlo вэ?</h2>
+              <div className="mt-8 grid gap-4 md:grid-cols-3">
+                {[
+                  ['Live seller-д зориулсан', 'CRM эсвэл том ERP биш. Шууд live үеийн захиалга, төлбөр, баглаа боодол дээр төвлөрнө.'],
+                  ['Монгол хэллэгтэй', 'Seller-д ойр үг хэллэгтэй: захиалга, төлбөр, үлдэгдэл, баглаа боодол.'],
+                  ['Энгийн эхлэлтэй', 'Эхлээд comment-оо гараар наагаад workflow-оо туршина. Дараагийн шатанд integration нэмнэ.'],
+                ].map(([title, detail]) => (
+                  <div key={title} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+                    <h3 className="text-xl font-black text-slate-950">{title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">{detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">Барааны ангилал</h2>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {[
+                  'Хувцас',
+                  'Гутал',
+                  'Цүнх / Аксессуар',
+                  'Гоо сайхан',
+                  'Гэр ахуй',
+                  'Гал тогоо',
+                  'Хүүхэд / Нярай',
+                  'Хүнс / Савласан бүтээгдэхүүн',
+                  'Цахилгаан бараа / Жижиг хэрэгсэл',
+                  'Гар урлал / Бусад',
+                ].map((category) => (
+                  <div key={category} className="rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-bold text-slate-800 shadow-sm shadow-slate-200/60">
+                    {category}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {landingTab === 'pricing' && (
+        <section className={`${sectionClass} bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.10),transparent_30rem)]`}>
+          <div className="mx-auto max-w-7xl">
+            <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">Үнэ</h2>
+            <div className="mt-8 grid gap-4 md:grid-cols-3 md:items-stretch">
+              {[
+                ['1 live үнэгүй', '0₮', 'Эхний live дээр workflow турших'],
+                ['1 live / campaign pass', '14,900₮', 'Нэг live / нэг кампани'],
+                ['Сарын багц', '79,000₮ / сар', 'Захиалга, төлбөр, нөөцийн workflow'],
+              ].map(([title, price, detail], index) => (
+                <div
+                  key={title}
+                  className={`rounded-3xl border bg-white p-6 shadow-sm ${index === 1 ? 'border-blue-200 shadow-blue-100 md:scale-105' : 'border-slate-200 shadow-slate-200/60'}`}
+                >
+                  <p className="text-lg font-black text-slate-950">{title}</p>
+                  <p className="mt-4 text-4xl font-black text-slate-950">{price}</p>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 rounded-3xl border border-blue-100 bg-white p-5 text-sm font-semibold leading-7 text-slate-600 shadow-sm shadow-blue-950/5">
+              Pro багц: 149,000₮ / сар — илүү олон live, нэмэлт seller tools.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {landingTab === 'faq' && (
+        <section className={sectionClass}>
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-3xl font-black text-slate-950 sm:text-4xl">FAQ</h2>
+            <div className="mt-8 space-y-3">
+              {[
+                ['Borlo яг яаж ажилладаг вэ?', 'Бараа, comment, төлбөр, нөөц, баглаа боодлын ажлыг нэг workflow дотор цэгцэлж харуулна.'],
+                ['Facebook-тэй шууд холбогдсон уу?', 'Эхний хувилбарт Facebook comment-оо хуулж наагаад Borlo workflow-г шууд туршина. Facebook API холболт дараагийн шатанд нэмэгдэнэ.'],
+                ['TikTok / Instagram ажилладаг уу?', 'Одоогоор TikTok/Instagram active integration байхгүй. Facebook-first байна.'],
+                ['Төлбөр автоматаар шалгадаг уу?', 'Одоогоор төлбөрийн мэдээллээ нааж шалгах guided workflow ашиглана. Gmail/банк notification automation нь дараагийн шатны ажил.'],
+                ['Нэг live үнэгүй юу?', 'Тийм. Эхний live дээр workflow-оо 0₮-өөр туршиж болно.'],
+                ['Миний бараа размергүй бол яах вэ?', '“Нэг размер / Free size” сонгож болно.'],
+                ['Барааны ангилал размерт нөлөөлөх үү?', 'Ангилал нь seller-д бараагаа цэгцлэхэд тусална. Размерийн сонголтыг бараандаа тааруулж тохируулна.'],
+                ['Өгөгдөл хаана хадгалагддаг вэ?', 'Өгөгдөл зөвхөн энэ төхөөрөмж дээр хадгалагдана.'],
+              ].map(([question, answer]) => (
+                <details key={question} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/60">
+                  <summary className="cursor-pointer text-base font-black text-slate-950">{question}</summary>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {landingTab === 'contact' && (
+        <>
+          <section className="relative isolate overflow-hidden bg-slate-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+            <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/30 blur-3xl" />
+            <div className="mx-auto max-w-4xl text-center">
+              <h2 className="text-3xl font-black sm:text-4xl">Дараагийн live-аа Borlo дээр туршаад үз</h2>
+              <p className="mt-4 text-sm font-semibold text-blue-100">Карт шаардахгүй · 5 минутанд эхэлнэ · Comment-оо гараар нааж туршина</p>
+              <button
+                type="button"
+                onClick={onDemo}
+                className="mt-8 rounded-2xl bg-blue-500 px-7 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 ring-1 ring-white/10 transition hover:bg-blue-400 active:scale-[0.98]"
+              >
+                1 live үнэгүй турших
+              </button>
+            </div>
+          </section>
+          <footer className="bg-slate-950 px-4 pb-10 text-white sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-black">Borlo</p>
+                <p className="mt-1 text-sm text-slate-400">Facebook-first live selling assistant for Mongolian sellers</p>
+              </div>
+              <p className="text-sm text-slate-500">© 2026 Borlo. Бүх эрх хуулиар хамгаалагдсан.</p>
+            </div>
+          </footer>
+        </>
+      )}
     </main>
   )
 }
