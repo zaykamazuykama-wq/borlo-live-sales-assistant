@@ -995,9 +995,9 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
           <div className="mt-8 space-y-3">
             {[
               ['Borlo яг яаж ажилладаг вэ?', 'Бараа, comment, төлбөр, нөөц, баглаа боодлын ажлыг нэг workflow дотор цэгцэлж харуулна.'],
-              ['Facebook-тэй шууд холбогдсон уу?', 'Эхний хувилбарт Facebook comment-оо хуулж наагаад Borlo workflow-г шууд туршина. Facebook API холболт дараагийн шатанд нэмэгдэнэ.'],
+              ['Facebook-тэй шууд холбогдсон уу?', 'Facebook live comment холболтыг controlled demo/pilot байдлаар туршина. Comment paste fallback хэвээр байна. Public production холболтод Meta/OAuth зөвшөөрөл шаардлагатай.'],
               ['TikTok / Instagram ажилладаг уу?', 'Одоогоор TikTok/Instagram active integration байхгүй. Facebook-first байна.'],
-              ['Төлбөр автоматаар шалгадаг уу?', 'Одоогоор төлбөрийн мэдээллээ нааж шалгах guided workflow ашиглана. Gmail/банк notification automation нь дараагийн шатны ажил.'],
+              ['Төлбөр автоматаар шалгадаг уу?', 'Одоогоор төлбөрийн мэдээллээ нааж шалгах guided workflow ашиглана. Gmail payment notification унших pilot холболтоор төлбөрийн мөр гаргана. Төлбөр тулгах логик rule-based хэвээр, шалгах хэсэг үлдэнэ.'],
               ['Нэг live үнэгүй юу?', 'Тийм. Эхний live дээр workflow-оо 0₮-өөр туршиж болно.'],
               ['Миний бараа размергүй бол яах вэ?', '“Нэг размер / Free size” сонгож болно.'],
               ['Барааны ангилал размерт нөлөөлөх үү?', 'Ангилал нь seller-д бараагаа цэгцлэхэд тусална. Размерийн сонголтыг бараандаа тааруулж тохируулна.'],
@@ -1134,7 +1134,7 @@ export default function LiveShopManagerDemo() {
       paymentsNav: "Төлбөр",
       productsNav: "Бараа",
       packingNav: "Баглаа боодол",
-      insightsNav: "Export",
+      insightsNav: "Тайлан",
       sellerLeadTitle: "Жишээ live хүсэлт",
       sellerLeadCopy: "Эхний live дээр Borlo-г туршиж үзээд, Коммент → Захиалга → Төлбөр → Нөөц → Баглаа урсгалыг шалгаарай.",
       facebookPlaceholder: "Facebook хуудас / live хаяг",
@@ -1165,7 +1165,7 @@ export default function LiveShopManagerDemo() {
       paymentsNav: "Payments",
       productsNav: "Products",
       packingNav: "Packing",
-      insightsNav: "Export",
+      insightsNav: "Report",
       sellerLeadTitle: "Demo request",
       sellerLeadCopy: "Try Borlo on your first live and verify the Comment → Order → Payment → Packing flow.",
       facebookPlaceholder: "Facebook page / live link",
@@ -1342,7 +1342,6 @@ export default function LiveShopManagerDemo() {
     noMatch: paymentReviewEvents.filter((item) => item.status === 'no_match').length,
     latePayments: paymentReviewEvents.filter((item) => item.status === 'late_payment').length,
   }), [paymentReviewEvents, successfulPaymentEvents])
-
   // Demand insights using May 4 final integrated product spec formula:
   // Demand score = (comment mentions * 1)
   //               + (successful orders * 3)
@@ -1520,6 +1519,12 @@ export default function LiveShopManagerDemo() {
       lowStockWarnings: variantInsightsArr.filter((item) => item.availableStock <= 1),
     }
   }, [products, orders, unclearComments, paymentReviewEvents])
+
+  const reportActionItems = [
+    paidPackingOrders.length > 0 ? `${paidPackingOrders.length} захиалга баглахад бэлэн.` : 'Коммент оруулж захиалга үүсгэнэ.',
+    paymentReviewEvents.length > 0 ? `${paymentReviewEvents.length} төлбөр шалгах шаардлагатай.` : 'Төлбөрийн мөрүүдээ нааж тулгана.',
+    restockSuggestions[0] ? `${restockSuggestions[0].code} дахин нөөцлөх дохио байна.` : 'Live дууссаны дараа тайлан энд гарна.',
+  ]
 
 
   const maxOrderNumber = useMemo(() => Math.max(0, ...orders.map((order) => orderNumber(order.id))), [orders])
@@ -1888,6 +1893,50 @@ export default function LiveShopManagerDemo() {
     downloadCsv('borlo-demand-summary.csv', header, rows)
   }
 
+  function copyPackingList() {
+    if (paidOrders.length === 0) {
+      setPackingListCopyStatus('Хуулах баглаа боодлын жагсаалт алга')
+      window.setTimeout(() => setPackingListCopyStatus(''), 2500)
+      return
+    }
+
+    const packingListHeader = 'Баглах жагсаалт:'
+    const packingListItems = packingGroups.map((item) => `${item.productCode} ${item.productName} / ${item.color} / ${item.size} — ${item.totalQuantity}ш`)
+    const packingListText = [packingListHeader, ...packingListItems].join('\n\n')
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(packingListText)
+      setPackingListCopyStatus('Баглаа боодлын жагсаалт хуулагдлаа')
+      window.setTimeout(() => setPackingListCopyStatus(''), 2500)
+    } else {
+      alert('Clipboard API is not available.')
+    }
+  }
+
+  function copyLiveClosingReport() {
+    const reportText = [
+      'Borlo live хаах тайлан',
+      `Нийт коммент: ${orders.length + unclearComments.length}`,
+      `Нийт захиалга / сонирхол: ${orders.length + unclearComments.length}`,
+      `Төлсөн захиалга: ${paidOrders.length}`,
+      `Төлөөгүй / хүлээгдэж буй захиалга: ${pendingOrders.length}`,
+      `Шалгах шаардлагатай төлбөр: ${paymentReviewEvents.length}`,
+      `Баталгаажсан орлого: ${money(revenue)}`,
+      `Тулгах шаардлагатай дүн: ${money(reviewAmount)}`,
+      `Баглахад бэлэн захиалга: ${paidPackingOrders.length}`,
+      `Хүргэлтэд өгөх захиалга: ${deliveryRows.length}`,
+      `Нийлсэн төлбөр таарсан тоо: ${paymentStatusCounts.combinedMatched}`,
+    ].join('\n')
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(reportText)
+      setCopyStatus('Live хаах тайлан хуулагдлаа')
+      window.setTimeout(() => setCopyStatus(''), 2500)
+    } else {
+      alert(reportText)
+    }
+  }
+
   function resetDemo() {
     const confirmed = window.confirm('Одоогийн жишээ/туршилтын өгөгдөл устаж, эхний өгөгдөл сэргээнэ. Үргэлжлүүлэх үү?')
     if (!confirmed) return
@@ -1938,7 +1987,7 @@ export default function LiveShopManagerDemo() {
             <div className="min-w-0">
               <button onClick={() => setMode('landing')} className="inline-flex rounded-2xl bg-slate-950 px-3 py-2 text-lg font-black text-white shadow-sm shadow-blue-950/10">Borlo</button>
               <h1 className="mt-4 text-2xl font-black leading-tight tracking-normal text-slate-950 sm:text-3xl">Borlo самбар</h1>
-              <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-blue-700">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа → Export</p>
+              <p className="mt-2 max-w-2xl text-sm font-bold leading-6 text-blue-700">Коммент → Захиалга → Төлбөр → Нөөц/Үлдэгдэл → Баглаа боодол → Тайлан</p>
               <p className="mt-3 inline-flex rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-slate-700">
                 Одоогоор өгөгдөл энэ төхөөрөмж дээр хадгалагдана.
               </p>
@@ -1972,7 +2021,7 @@ export default function LiveShopManagerDemo() {
               ['payments', 'Төлбөр'],
               ['products', 'Бараа'],
               ['packing', 'Баглаа'],
-              ['insights', 'Export'],
+              ['insights', 'Тайлан'],
               ['settings', 'Тохиргоо'],
             ].map(([view, label]) => (
               <button
@@ -2012,7 +2061,7 @@ export default function LiveShopManagerDemo() {
               </button>
               <button type="button" onClick={() => showDashboardView('insights')} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left shadow-sm transition active:scale-[0.99] hover:border-slate-300 hover:bg-white">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-black text-white">3</span>
-                <p className="mt-3 text-base font-black text-slate-950">Export бэлдэх</p>
+                <p className="mt-3 text-base font-black text-slate-950">Тайлан бэлдэх</p>
                 <p className="mt-2 text-sm text-slate-600">Төлбөр, үлдэгдэл, баглах жагсаалт, CSV татах хэсгээ шалгана.</p>
               </button>
             </div>
@@ -2077,7 +2126,7 @@ export default function LiveShopManagerDemo() {
               }}
               className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
             >
-              Export хэсэг нээх
+              Тайлан хэсэг нээх
             </button>
           </div>
           <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
@@ -2099,7 +2148,7 @@ export default function LiveShopManagerDemo() {
                 Коммент оруулж захиалга үүсгэнэ. Төлбөр, нөөц, баглаа боодлын дарааллыг нэг самбарт шалгана.
               </p>
               <p className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-slate-700">
-                Одоогоор Facebook comment-оо гараар нааж workflow шалгана. Real Facebook API холболт дараагийн шатанд нэмэгдэнэ.
+                Facebook live comment холболтыг controlled demo/pilot байдлаар туршина. Comment paste fallback хэвээр байна.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4 lg:min-w-[28rem]">
@@ -2249,17 +2298,31 @@ export default function LiveShopManagerDemo() {
         {activeView === 'insights' && (
           <>
         <section id="demand-insights" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
-          <h2 className="mb-4 text-2xl font-black">Export</h2>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-blue-600">Live хаах тайлан</p>
+              <h2 className="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">Тайлан</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+                Коммент, захиалга, төлбөр, нөөц/үлдэгдэл, баглаа боодлын ажлыг live дуусахад нэг дор шалгах seller-facing тайлан.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm('Лайвыг дуусгах уу?')) return
+                setLiveFinished(true)
+              }}
+              className="rounded-2xl bg-blue-600 px-5 py-3 font-bold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-700"
+            >
+              Live хаах
+            </button>
+          </div>
 
-          <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+          <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <h3 className="text-lg font-black text-slate-950">Одоо хийх 3 зүйл</h3>
             <div className="mt-3 grid gap-2 md:grid-cols-3">
-              {[
-                'Төлбөр хүлээж буй захиалгуудыг сануулах',
-                'Дууссан/бага үлдсэн барааг дахин бэлдэх',
-                'Баглахад бэлэн захиалгыг CSV файл болгох',
-              ].map((item, index) => (
-                <div key={item} className="rounded-xl bg-white p-3 text-sm font-semibold text-slate-700">
+              {reportActionItems.map((item, index) => (
+                <div key={item} className="rounded-xl bg-white p-3 text-sm font-semibold text-slate-700 shadow-sm">
                   <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">{index + 1}</span>
                   {item}
                 </div>
@@ -2267,177 +2330,135 @@ export default function LiveShopManagerDemo() {
             </div>
           </div>
 
-          <div className="mb-4 rounded-2xl bg-slate-50 p-4">
-            <h3 className="mb-2 text-lg font-black">Өнөөдрийн үзүүлэлт</h3>
-            <div className="grid gap-2 text-center sm:grid-cols-5">
-              <div>
-                <p className="text-sm text-slate-500">Коммент</p>
-                <p className="text-xl font-bold">{todayMetrics.commentMentions}</p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['Нийт коммент', orders.length + unclearComments.length, 'Коммент paste болон шалгах мөрүүд'],
+              ['Нийт захиалга / сонирхол', orders.length + unclearComments.length, 'Захиалга болсон болон шалгах сонирхол'],
+              ['Төлсөн захиалга', paidOrders.length, money(revenue)],
+              ['Төлөөгүй / хүлээгдэж буй захиалга', pendingOrders.length, money(pendingAmount)],
+              ['Шалгах шаардлагатай төлбөр', paymentReviewEvents.length, money(reviewAmount)],
+              ['Баталгаажсан орлого', money(revenue), `${paidOrders.length} төлсөн захиалга`],
+              ['Тулгах шаардлагатай дүн', money(reviewAmount), 'Шалгах хэсэгт үлдсэн мөрүүд'],
+              ['Баглахад бэлэн захиалга', paidPackingOrders.length, `${packingGroups.length} баглах бүлэг`],
+              ['Хүргэлтэд өгөх захиалга', deliveryRows.length, 'Хаяг/утас шалгах жагсаалт'],
+              ['Нийлсэн төлбөр таарсан тоо', paymentStatusCounts.combinedMatched, 'Нэг дор төлсөн мөрүүд'],
+              ['Stock-д буцсан / суллагдсан бараа', 'Тусдаа тоологч алга', 'Суллалт orders workflow-д хийгдэнэ'],
+              ['Эрсдэлтэй buyer', 'Тусдаа CRM өгөгдөл алга', 'Бодит blacklist automation идэвхтэй биш'],
+            ].map(([label, value, detail]) => (
+              <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                <p className="text-xs font-bold text-slate-500">{label}</p>
+                <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+                <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{detail}</p>
               </div>
-              <div>
-                <p className="text-sm text-slate-500">Захиалга</p>
-                <p className="text-xl font-bold">{todayMetrics.successfulOrders}</p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Төлсөн</p>
-                <p className="text-xl font-bold">{todayMetrics.paidOrders}</p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Хүрэлцээгүй</p>
-                <p className="text-xl font-bold">{todayMetrics.outOfStockRequests}</p>
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Шалгах</p>
-                <p className="text-xl font-bold">{todayMetrics.reviewCount}</p>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="mb-4">
-            <h3 className="mb-2 text-lg font-black">Эрэлттэй бараа</h3>
-            <div className="hidden overflow-auto md:block">
+          <div className="mt-5 rounded-3xl border border-slate-200 bg-white p-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h3 className="text-xl font-black text-slate-950">Тайлангийн үйлдлүүд</h3>
+                <p className="mt-1 text-sm text-slate-600">Одоо байгаа жагсаалт, төлбөрийн тулгалт, баглаа боодлын өгөгдлөөр ажиллана.</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={copyPackingList} className="rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-700">Баглах жагсаалт хуулах</button>
+                <button type="button" onClick={exportOrdersCsv} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 hover:bg-blue-50">Excel файл татах</button>
+                <button type="button" onClick={() => showDashboardView('payments')} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 hover:bg-blue-50">Төлбөрийн шалгах жагсаалт харах</button>
+                <button type="button" onClick={copyLiveClosingReport} className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 hover:bg-blue-50">Live хаах тайлан хуулах</button>
+              </div>
+            </div>
+            {(copyStatus || packingListCopyStatus) && (
+              <p className="mt-3 rounded-2xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700">
+                {copyStatus || packingListCopyStatus}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-5">
+            <h3 className="text-xl font-black text-slate-950">Баримттай эрэлтийн тайлан</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Одоогийн local захиалга, төлбөрийн төлөв, үлдэгдэл дээр үндэслэсэн rule-based тайлан. Таамаглал биш.
+            </p>
+            <div className="mt-4 hidden overflow-auto rounded-2xl border border-slate-200 md:block">
               <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="px-2 py-1">Бараа</th>
-                    <th className="px-2 py-1">Коммент</th>
-                    <th className="px-2 py-1">Захиалга</th>
-                    <th className="px-2 py-1">Төлсөн</th>
-                    <th className="px-2 py-1">Хүрэлцээгүй</th>
-                    <th className="px-2 py-1">Шалгах</th>
-                    <th className="px-2 py-1 text-right">Эрэлт</th>
+                <thead className="bg-slate-50 text-left text-xs font-black uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-3 py-3">Бараа</th>
+                    <th className="px-3 py-3">Өнгө / Сайз</th>
+                    <th className="px-3 py-3 text-center">Захиалга</th>
+                    <th className="px-3 py-3 text-center">Төлсөн</th>
+                    <th className="px-3 py-3 text-center">Хүлээгдэж буй</th>
+                    <th className="px-3 py-3 text-center">Үлдэгдэл</th>
+                    <th className="px-3 py-3">Дүгнэлт</th>
+                    <th className="px-3 py-3">Дараагийн үйлдэл</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {productInsights.map((item) => (
-                    <tr key={item.code} className="border-b">
-                      <td className="whitespace-nowrap px-2 py-1">{item.code} — {item.name}</td>
-                      <td className="px-2 py-1 text-center">{item.commentMentions}</td>
-                      <td className="px-2 py-1 text-center">{item.successfulOrders}</td>
-                      <td className="px-2 py-1 text-center">{item.paidOrders}</td>
-                      <td className="px-2 py-1 text-center">{item.outOfStockRequests}</td>
-                      <td className="px-2 py-1 text-center">{item.reviewCount}</td>
-                      <td className="px-2 py-1 text-right font-bold">{item.demandScore}</td>
-                    </tr>
-                  ))}
+                  {variantInsights.map((item) => {
+                    const pendingCount = Math.max(0, item.successfulOrders - item.paidOrders)
+                    const classification =
+                      item.outOfStockRequests > 0 || (item.availableStock <= 0 && item.successfulOrders > 0)
+                        ? 'Нөөц хүрээгүй'
+                        : item.paidOrders >= 2
+                          ? 'Баталгаатай эрэлт'
+                          : item.successfulOrders >= 3 && item.paidOrders < 2
+                            ? 'Сонирхол өндөр'
+                            : 'Эрэлт батлагдаагүй'
+                    const action =
+                      classification === 'Баталгаатай эрэлт'
+                        ? 'Дараагийн live дээр дахин гаргах'
+                        : classification === 'Нөөц хүрээгүй'
+                          ? 'Нөөц нэмэх эсэхийг шалгах'
+                          : 'Төлбөр баталгаажсаны дараа шийдэх'
+
+                    return (
+                      <tr key={item.key} className="border-t border-slate-200">
+                        <td className="whitespace-nowrap px-3 py-3 font-bold text-slate-950">{item.productCode} — {item.productName}</td>
+                        <td className="px-3 py-3">{item.color} / {item.size}</td>
+                        <td className="px-3 py-3 text-center">{item.successfulOrders}</td>
+                        <td className="px-3 py-3 text-center">{item.paidOrders}</td>
+                        <td className="px-3 py-3 text-center">{pendingCount}</td>
+                        <td className="px-3 py-3 text-center">{item.availableStock}</td>
+                        <td className="px-3 py-3"><span className="rounded-full bg-blue-50 px-2 py-1 text-xs font-bold text-blue-700">{classification}</span></td>
+                        <td className="px-3 py-3 text-slate-700">{action}</td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
-            <div className="grid gap-3 md:hidden">
-              {productInsights.map((item) => (
-                <div key={item.code} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-black">{item.code} — {item.name}</p>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                    <p>Коммент: <b>{item.commentMentions}</b></p>
-                    <p>Захиалга: <b>{item.successfulOrders}</b></p>
-                    <p>Төлсөн: <b>{item.paidOrders}</b></p>
-                    <p>Шалгах: <b>{item.reviewCount}</b></p>
-                    <p>Хүрэлцээгүй: <b>{item.outOfStockRequests}</b></p>
-                    <p>Эрэлт: <b>{item.demandScore}</b></p>
+            <div className="mt-4 grid gap-3 md:hidden">
+              {variantInsights.map((item) => {
+                const pendingCount = Math.max(0, item.successfulOrders - item.paidOrders)
+                const classification =
+                  item.outOfStockRequests > 0 || (item.availableStock <= 0 && item.successfulOrders > 0)
+                    ? 'Нөөц хүрээгүй'
+                    : item.paidOrders >= 2
+                      ? 'Баталгаатай эрэлт'
+                      : item.successfulOrders >= 3 && item.paidOrders < 2
+                        ? 'Сонирхол өндөр'
+                        : 'Эрэлт батлагдаагүй'
+                const action =
+                  classification === 'Баталгаатай эрэлт'
+                    ? 'Дараагийн live дээр дахин гаргах'
+                    : classification === 'Нөөц хүрээгүй'
+                      ? 'Нөөц нэмэх эсэхийг шалгах'
+                      : 'Төлбөр баталгаажсаны дараа шийдэх'
+
+                return (
+                  <div key={item.key} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="font-black text-slate-950">{item.productCode} — {item.productName}</p>
+                    <p className="mt-1 text-sm text-slate-600">{item.color} / {item.size}</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                      <p>Захиалга: <b>{item.successfulOrders}</b></p>
+                      <p>Төлсөн: <b>{item.paidOrders}</b></p>
+                      <p>Хүлээгдэж буй: <b>{pendingCount}</b></p>
+                      <p>Үлдэгдэл: <b>{item.availableStock}</b></p>
+                    </div>
+                    <p className="mt-3 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{classification}</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-700">{action}</p>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <h3 className="mb-2 text-lg font-black">Эрэлттэй хувилбар</h3>
-            <div className="hidden overflow-auto md:block">
-              <table className="min-w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left">
-                    <th className="px-2 py-1">Бараа</th>
-                    <th className="px-2 py-1">Өнгө</th>
-                    <th className="px-2 py-1">Сайз</th>
-                    <th className="px-2 py-1">Коммент</th>
-                    <th className="px-2 py-1">Захиалга</th>
-                    <th className="px-2 py-1">Төлсөн</th>
-                    <th className="px-2 py-1">Хүрэлцээгүй</th>
-                    <th className="px-2 py-1">Шалгах</th>
-                    <th className="px-2 py-1 text-right">Эрэлт</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {variantInsights.map((item) => (
-                    <tr key={item.key} className="border-b">
-                      <td className="px-2 py-1">{item.productCode}</td>
-                      <td className="px-2 py-1 text-center">{item.color}</td>
-                      <td className="px-2 py-1 text-center">{item.size}</td>
-                      <td className="px-2 py-1 text-center">{item.commentMentions}</td>
-                      <td className="px-2 py-1 text-center">{item.successfulOrders}</td>
-                      <td className="px-2 py-1 text-center">{item.paidOrders}</td>
-                      <td className="px-2 py-1 text-center">{item.outOfStockRequests}</td>
-                      <td className="px-2 py-1 text-center">{item.reviewCount}</td>
-                      <td className="px-2 py-1 text-right font-bold">{item.demandScore}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="grid gap-3 md:hidden">
-              {variantInsights.map((item) => (
-                <div key={item.key} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="font-black">{item.productCode} / {item.color} / {item.size}</p>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-                    <p>Коммент: <b>{item.commentMentions}</b></p>
-                    <p>Захиалга: <b>{item.successfulOrders}</b></p>
-                    <p>Төлсөн: <b>{item.paidOrders}</b></p>
-                    <p>Шалгах: <b>{item.reviewCount}</b></p>
-                    <p>Хүрэлцээгүй: <b>{item.outOfStockRequests}</b></p>
-                    <p>Эрэлт: <b>{item.demandScore}</b></p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div>
-              <h3 className="mb-2 text-lg font-black">Хүрэлцээгүй эрэлт</h3>
-              <ul className="space-y-2">
-                {outOfStockList.length === 0 && <li className="text-sm text-slate-500">Одоогоор хүрэлцээгүй эрэлт алга.</li>}
-                {outOfStockList.map((item) => (
-                  <li key={item.code} className="rounded-2xl bg-red-50 p-3 text-red-800">
-                    {item.code} — {item.name}: {item.outOfStockRequests} удаа
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="mb-2 text-lg font-black">Дахин нөөцлөх санал</h3>
-              <ul className="space-y-2">
-                {restockSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор дахин нөөцлөх санал алга.</li>}
-                {restockSuggestions.map((item) => (
-                  <li key={item.code} className="rounded-2xl bg-amber-50 p-3 text-amber-800">
-                    {item.code} — {item.name}: үлдэгдэл {item.availableStock}, эрэлт {item.demandScore}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="mb-2 text-lg font-black">Дараагийн лайвын санал</h3>
-              <ul className="space-y-2">
-                {nextLiveSuggestions.length === 0 && <li className="text-sm text-slate-500">Одоогоор санал алга.</li>}
-                {nextLiveSuggestions.map((item) => (
-                  <li key={item.key} className="rounded-2xl bg-blue-50 p-3 text-blue-800">
-                    {item.productCode} — {item.color}/{item.size}: эрэлт {item.demandScore}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="mb-2 text-lg font-black">Нөөц дуусах гэж байна</h3>
-              <ul className="space-y-2">
-                {lowStockWarnings.length === 0 && <li className="text-sm text-slate-500">Одоогоор нөөц дуусах гэж буй хувилбар алга.</li>}
-                {lowStockWarnings.map((item) => (
-                  <li key={item.key} className="rounded-2xl bg-amber-100 p-3 text-amber-800">
-                    {item.productCode} — {item.color}/{item.size}: үлдэгдэл {item.availableStock}
-                  </li>
-                ))}
-              </ul>
+                )
+              })}
             </div>
           </div>
         </section>
@@ -2450,7 +2471,8 @@ export default function LiveShopManagerDemo() {
             <div className="max-w-3xl">
               <h2 className="text-2xl font-black text-slate-950">Тохиргоо</h2>
               <p className="mt-2 text-sm leading-7 text-slate-600 sm:text-base">
-                Одоогоор Borlo нь guided trial хэлбэрээр ажиллаж байна. Жинхэнэ social API integration идэвхтэй биш.
+                Одоогоор Borlo нь guided trial хэлбэрээр ажиллаж байна. Facebook болон Gmail холболтыг controlled demo/pilot байдлаар туршина.
+                Manual comment paste болон manual payment paste fallback хэвээр байна.
               </p>
             </div>
 
@@ -2470,11 +2492,12 @@ export default function LiveShopManagerDemo() {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Сувгийн төлөв</p>
               <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
                 {[
-                  ['Facebook', 'Одоо ашиглаж байгаа үндсэн workflow', 'Comment paste workflow. Real Facebook API холболт идэвхтэй биш.', 'bg-green-50 text-green-700 border-green-100'],
+                  ['Facebook', 'Pilot төлөв', 'Facebook live comment холболтыг pilot байдлаар туршина. Comment paste fallback хэвээр байна.', 'bg-blue-50 text-blue-700 border-blue-100'],
+                  ['Gmail', 'Pilot төлөв', 'Gmail payment notification унших pilot холболтоор төлбөрийн мөр гаргана. Төлбөр тулгах логик rule-based хэвээр.', 'bg-blue-50 text-blue-700 border-blue-100'],
                   ['TikTok', 'Дараагийн шат', 'Одоогоор active integration биш.', 'bg-slate-100 text-slate-700 border-slate-200'],
                   ['Instagram', 'Дараагийн шат', 'Одоогоор active integration биш.', 'bg-slate-100 text-slate-700 border-slate-200'],
-                  ['Messenger', 'Дараагийн шат', 'Message automation одоогоор идэвхтэй биш.', 'bg-slate-100 text-slate-700 border-slate-200'],
-                  ['Telegram', 'Дараагийн шат', 'Seller notification дараагийн боломжит нэмэлт.', 'bg-slate-100 text-slate-700 border-slate-200'],
+                  ['Messenger', 'Идэвхгүй', 'Message automation одоогоор идэвхтэй биш.', 'bg-slate-100 text-slate-700 border-slate-200'],
+                  ['Telegram', 'Идэвхгүй', 'Seller notification одоогоор идэвхтэй биш.', 'bg-slate-100 text-slate-700 border-slate-200'],
                 ].map(([platform, status, description, tone]) => (
                   <div key={platform} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70">
                     <div className="flex flex-wrap items-center justify-between gap-2">
@@ -2488,7 +2511,7 @@ export default function LiveShopManagerDemo() {
             </div>
 
             <div className="mt-6 rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm font-semibold leading-7 text-slate-700">
-              Одоогийн статусууд нь жишээ болон төлөвлөгөөг харуулах зориулалттай. Жинхэнэ Facebook, TikTok, Instagram, Messenger, Telegram integration холбогдоогүй.
+              Public production холболтод Meta/OAuth зөвшөөрөл шаардлагатай. Төлбөрийн автомат production холболт энэ хувилбарт идэвхтэй биш.
             </div>
           </section>
         )}
@@ -2643,7 +2666,7 @@ export default function LiveShopManagerDemo() {
         <section className="rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-2xl font-black">Төлбөрийн мөрүүдээ наах</h2>
           <p className="mt-2 text-slate-700">Лайв дууссаны дараах эцсийн тулгалт хийхэд ашиглана. Төлбөрийн мэдэгдлийн мөрөө хуулж наагаад шалгана.</p>
-          <p className="mt-1 text-sm text-slate-500">PDF/зураг унших, банкны автомат холболт энэ хувилбарт идэвхгүй.</p>
+          <p className="mt-1 text-sm text-slate-500">PDF/зураг унших болон төлбөрийн production automation энэ хувилбарт идэвхгүй. Manual payment paste fallback хэвээр байна.</p>
           <div className="mt-3 grid gap-2 sm:grid-cols-5">
             {['Төлбөр таарсан', 'Төлбөрийн мэдээ дутуу', 'Хоцорсон төлбөр олдсон', 'Шалгалт шийдэгдсэн', 'Таараагүй хэвээр'].map((s) => <div key={s} className="rounded-xl bg-slate-50 p-3 text-sm font-semibold">{s}</div>)}
           </div>
@@ -2803,25 +2826,8 @@ export default function LiveShopManagerDemo() {
             </div>
             <div className="flex gap-2">
               <div className="flex gap-2">
-              <button onClick={() => {
-                if (paidOrders.length === 0) {
-                  setPackingListCopyStatus('Хуулах баглаа боодлын жагсаалт алга');
-                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
-                  return;
-                }
-                const packingListHeader = 'Баглах жагсаалт:';
-                const packingListItems = packingGroups.map((item) => `${item.productCode} ${item.productName} / ${item.color} / ${item.size} — ${item.totalQuantity}ш`);
-                const packingListText = [packingListHeader, ...packingListItems].join('\n\n');
-
-                if (navigator.clipboard) {
-                  navigator.clipboard.writeText(packingListText);
-                  setPackingListCopyStatus('Баглаа боодлын жагсаалт хуулагдлаа');
-                  window.setTimeout(() => setPackingListCopyStatus(''), 2500);
-                } else {
-                  alert('Clipboard API is not available.');
-                }
-              }} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
-              <button onClick={exportPackingCsv} className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-lg font-bold text-slate-900 hover:bg-blue-50">CSV файл татах</button>
+              <button onClick={copyPackingList} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Баглах жагсаалт хуулах</button>
+              <button onClick={exportPackingCsv} className="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-lg font-bold text-slate-900 hover:bg-blue-50">Excel файл татах</button>
             </div>
             </div>
           </div>
@@ -2947,7 +2953,7 @@ export default function LiveShopManagerDemo() {
             <ul className="mt-4 space-y-2 text-slate-700">
               <li>- Гараар Төлсөн болгох товч</li>
               <li>- Нөөц хадгалах/буцаах удирдлага</li>
-              <li>- Баглах жагсаалт CSV файл татах</li>
+              <li>- Баглах жагсаалт Excel файл татах</li>
             </ul>
           </div>
           <div className="rounded-3xl border border-blue-200 bg-white p-5 shadow-sm ring-1 ring-blue-100">
@@ -2972,7 +2978,7 @@ export default function LiveShopManagerDemo() {
               'Төлбөрийн мэдээлэл наах: 239000 Болор 99112233',
               '2 хүлээгдэж буй захиалга зэрэг Төлсөн болно',
               'Баглах жагсаалтад A12 болон C01 харагдана',
-              'CSV файл татах товчийг дарна',
+              'Excel файл татах товчийг дарна',
             ].map((step, index) => (
               <div key={step} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">
                 <span className="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">{index + 1}</span>
@@ -2985,46 +2991,6 @@ export default function LiveShopManagerDemo() {
           </>
         )}
 
-        {activeView === 'insights' && (
-          <>
-        <section id="insights" className="rounded-3xl bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-black">Export төв</h2>
-              <p className="text-slate-700">Коммент → Захиалга → Төлбөр → Нөөц → Баглаа</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (!window.confirm('Лайвыг дуусгах уу?')) return
-                setLiveFinished(true)
-              }}
-              className="rounded-2xl bg-blue-600 px-5 py-3 font-bold text-white hover:bg-blue-700"
-            >
-              Лайв дуусгах
-            </button>
-          </div>
-          {liveFinished && (
-            <div className="mt-4 space-y-4">
-              <p className="rounded-2xl bg-emerald-50 p-3 font-semibold text-emerald-800">Лайвын дараа Borlo таны захиалга, төлбөрийн тулгалт, баглаа боодлын жагсаалтыг CSV болгон гаргахад тусална.</p>
-              <div className="grid gap-3 lg:grid-cols-2">
-                <div className="rounded-2xl border p-4"><p className="font-black">A. Захиалгын жагсаалтын товч</p><p className="text-sm">нийт коммент: {todayMetrics.commentMentions} • захиалга илэрсэн коммент: {orders.length} • нийт захиалга: {orders.length} • нийт захиалгын дүн: {money(orders.reduce((s,o)=>s+o.amount,0))} • төлсөн дүн: {money(revenue)} • хүлээгдэж буй дүн: {money(pendingAmount)} • шалгах дүн: {money(reviewAmount)}</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">B. Төлбөрийн тулгалт</p><p className="text-sm">таарсан: {paymentStatusCounts.matched} • нэг дор төлсөн: {paymentStatusCounts.combinedMatched} • дутуу төлсөн: {paymentStatusCounts.underpaid} • илүү төлсөн: {paymentStatusCounts.overpaid} • тодорхойгүй: {paymentStatusCounts.ambiguous} • таараагүй: {paymentStatusCounts.noMatch} • оройтсон төлбөр: {paymentStatusCounts.latePayments}</p><p className="mt-2 text-sm font-semibold">Үйлдэл: Төлбөр шалгах • Төлбөрийн мөр наах • Тулгалтын CSV файл татах</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">C. Баглах жагсаалтын товч</p><p className="text-sm">баглах төлсөн захиалга: {paidOrders.length} • хүргэлтийн захиалга • өөрөө авах захиалга • яаралтай захиалга</p><p className="mt-2 text-sm">Татах: Захиалга CSV • Баглах жагсаалт CSV • Хүргэлтэд өгөх жагсаалт CSV</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">D/E. Бараа ба алдсан эрэлт</p><p className="text-sm">бараа/өнгө/размерын эрэлт • үлдсэн нөөц • дууссан хувилбар • дууссан хувилбар хүссэн коммент • алдсан орлогын тооцоо</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">F/H. Дараагийн лайвын зөвлөмж ба гүйцэтгэл (дүрэмд суурилсан)</p><p className="text-sm">өндөр хүсэлт/төлсөн тоо • бага үлдсэн нөөц • дууссан барааны эрэлт • шалгах эрэлт • хамгийн идэвхтэй комментын үе • хамгийн идэвхтэй захиалгын үе • комментоос захиалга болсон хувь • захиалгаас төлбөр болсон хувь</p></div>
-                <div className="rounded-2xl border p-4"><p className="font-black">G/I. Хэрэглэгчийн дагах ажил ба татах төв</p><p className="text-sm">төлсөн/хүлээгдэж буй/шалгах хэрэглэгч • давтан худалдан авагч • авахгүй үлдээсэн хэсэг • захиалга CSV • төлбөрийн тулгалт CSV • баглах/хүргэлт/барааны эрэлт/дууссан бараа/хэрэглэгч дагах ажил CSV</p></div>
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-          <h2 className="text-xl font-black">Тэмдэглэл</h2>
-          <p className="mt-2 text-slate-700">Энэ нь худалдагчийн жишээ live урсгал. Коммент → Захиалга → Төлбөр → Нөөц → Баглаа → Export гэсэн дарааллыг харуулж байна.</p>
-        </section>
-          </>
-        )}
       </div>
     </main>
   )
