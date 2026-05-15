@@ -1559,6 +1559,9 @@ export default function LiveShopManagerDemo() {
   const newProductStockExample = newБараа.sizeTemplate === 'one-size'
     ? 'Жишээ: Хар/Free:3, Улаан/Free:2'
     : 'Жишээ: Хар/S:1, Хар/M:2, Улаан/L:2'
+  const newProductSelectedCategoryLabel =
+    GUIDED_PRODUCT_CATEGORY_OPTIONS.find((option) => option.value === newБараа.category)?.label || CATEGORY_LABELS[newБараа.category]
+  const newProductSelectedSizeLabel = guidedSizeTemplateLabel(newБараа.sizeTemplate, newProductAudience)
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
@@ -3012,133 +3015,132 @@ export default function LiveShopManagerDemo() {
           </div>
 
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h3 className="text-2xl font-black text-slate-950">Шинэ бараа нэмэх</h3>
-            <div className="mt-5 space-y-4">
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">1</span>
-                  <h4 className="text-lg font-black text-slate-950">Үндсэн мэдээлэл</h4>
-                </div>
-                <div className="grid gap-4 md:grid-cols-3">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-2xl font-black text-slate-950">Шинэ бараа нэмэх</h3>
+              <p className="text-sm leading-6 text-slate-500">Бараагаа код, үнэ, төрөл, размер, өнгө, үлдэгдлээр бүртгэнэ.</p>
+            </div>
+
+            <div className="mt-5 space-y-5">
+              <section>
+                <h4 className="text-sm font-black uppercase tracking-[0.12em] text-slate-500">Үндсэн мэдээлэл</h4>
+                <div className="mt-3 grid gap-3 md:grid-cols-3">
                   <label className="block">
                     <span className="text-sm font-bold text-slate-700">Барааны код</span>
-                    <input placeholder="Жишээ: A12" className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.code} onChange={(e) => setNewБараа({ ...newБараа, code: e.target.value })} />
+                    <input placeholder="Жишээ: A12" className="mt-1.5 w-full rounded-2xl border border-slate-200 px-3 py-3 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.code} onChange={(e) => setNewБараа({ ...newБараа, code: e.target.value })} />
                   </label>
                   <label className="block">
                     <span className="text-sm font-bold text-slate-700">Барааны нэр</span>
-                    <input placeholder="Жишээ: Даашинз" className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.name} onChange={(e) => setNewБараа({ ...newБараа, name: e.target.value })} />
+                    <input placeholder="Жишээ: Даашинз" className="mt-1.5 w-full rounded-2xl border border-slate-200 px-3 py-3 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.name} onChange={(e) => setNewБараа({ ...newБараа, name: e.target.value })} />
                   </label>
                   <label className="block">
                     <span className="text-sm font-bold text-slate-700">Үнэ</span>
-                    <input placeholder="Жишээ: 89000" className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" type="number" value={newБараа.price} onChange={(e) => setNewБараа({ ...newБараа, price: e.target.value })} />
+                    <input placeholder="Жишээ: 89000" className="mt-1.5 w-full rounded-2xl border border-slate-200 px-3 py-3 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" type="number" value={newБараа.price} onChange={(e) => setNewБараа({ ...newБараа, price: e.target.value })} />
                   </label>
                 </div>
-              </div>
+              </section>
 
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">2</span>
+              <section className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                <div className="flex flex-col gap-1">
+                  <h4 className="text-base font-black text-slate-950">Барааны сонголт</h4>
+                  <p className="text-xs leading-5 text-slate-500">Ангиллаас эхлээд төрөл, размерын сонголтоо дарааллаар нь сонгоно.</p>
+                </div>
+
+                <div className="mt-4 space-y-4">
                   <div>
-                    <h4 className="text-lg font-black text-slate-950">Ангилал</h4>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">Эхлээд барааны ерөнхий ангиллыг сонгоно.</p>
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.1em] text-slate-500">Ангилал</p>
+                    <div className="flex flex-wrap gap-2">
+                      {GUIDED_PRODUCT_CATEGORY_OPTIONS.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => selectNewProductCategory(option.value)}
+                          className={`rounded-full border px-3 py-1.5 text-sm font-bold transition ${newБараа.category === option.value ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-200 pt-4">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.1em] text-slate-500">Хэнд зориулсан</p>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductAudienceOptions.map((audience) => (
+                        <button
+                          key={audience}
+                          type="button"
+                          onClick={() => selectNewProductAudience(audience)}
+                          className={`rounded-full border px-3 py-1.5 text-sm font-bold transition ${newProductAudience === audience ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
+                        >
+                          {audience}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-200 pt-4">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.1em] text-slate-500">Барааны төрөл</p>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductTypeOptions.map((productType) => (
+                        <button
+                          key={productType}
+                          type="button"
+                          onClick={() => selectNewProductType(productType)}
+                          className={`rounded-full border px-3 py-1.5 text-sm font-bold transition ${newProductType === productType ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
+                        >
+                          {productType}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-200 pt-4">
+                    <p className="mb-2 text-xs font-black uppercase tracking-[0.1em] text-slate-500">Размерын төрөл</p>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductSizeTemplateOptions.map((template) => (
+                        <button
+                          key={template}
+                          type="button"
+                          onClick={() => selectNewProductSizeTemplate(template)}
+                          className={`rounded-full border px-3 py-1.5 text-sm font-bold transition ${newБараа.sizeTemplate === template ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-600/20' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
+                        >
+                          {guidedSizeTemplateLabel(template, newProductAudience)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {GUIDED_PRODUCT_CATEGORY_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => selectNewProductCategory(option.value)}
-                      className={`rounded-full border px-3 py-2 text-sm font-bold transition ${newБараа.category === option.value ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="mt-3 text-xs leading-5 text-slate-500">Ангилал нь бараагаа бүлэглэхэд хэрэглэгдэнэ.</p>
-              </div>
 
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">3</span>
-                  <h4 className="text-lg font-black text-slate-950">Хэнд зориулсан</h4>
+                <div className="mt-4 flex flex-wrap items-center gap-1.5 rounded-2xl bg-blue-50 px-3 py-2 text-xs font-bold text-blue-900 ring-1 ring-blue-100">
+                  <span className="text-blue-600">Сонгосон:</span>
+                  <span>{newProductSelectedCategoryLabel}</span>
+                  <span className="text-blue-400">›</span>
+                  <span>{newProductAudience}</span>
+                  <span className="text-blue-400">›</span>
+                  <span>{newProductType}</span>
+                  <span className="text-blue-400">›</span>
+                  <span>{newProductSelectedSizeLabel}</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {newProductAudienceOptions.map((audience) => (
-                    <button
-                      key={audience}
-                      type="button"
-                      onClick={() => selectNewProductAudience(audience)}
-                      className={`rounded-full border px-3 py-2 text-sm font-bold transition ${newProductAudience === audience ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
-                    >
-                      {audience}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              </section>
 
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">4</span>
-                  <h4 className="text-lg font-black text-slate-950">Барааны төрөл</h4>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {newProductTypeOptions.map((productType) => (
-                    <button
-                      key={productType}
-                      type="button"
-                      onClick={() => selectNewProductType(productType)}
-                      className={`rounded-full border px-3 py-2 text-sm font-bold transition ${newProductType === productType ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
-                    >
-                      {productType}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">5</span>
-                  <div>
-                    <h4 className="text-lg font-black text-slate-950">Размерын төрөл</h4>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">Размерын төрөл нь тухайн барааны size сонголтыг тодорхойлно.</p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {newProductSizeTemplateOptions.map((template) => (
-                    <button
-                      key={template}
-                      type="button"
-                      onClick={() => selectNewProductSizeTemplate(template)}
-                      className={`rounded-2xl border px-3 py-2 text-left text-sm font-bold transition ${newБараа.sizeTemplate === template ? 'border-blue-600 bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'}`}
-                    >
-                      {guidedSizeTemplateLabel(template, newProductAudience)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-black text-white">6</span>
-                  <h4 className="text-lg font-black text-slate-950">Өнгө ба үлдэгдэл</h4>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
+              <section>
+                <h4 className="text-sm font-black uppercase tracking-[0.12em] text-slate-500">Өнгө ба үлдэгдэл</h4>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
                   <label className="block">
                     <span className="text-sm font-bold text-slate-700">Өнгө</span>
-                    <input placeholder="Жишээ: Хар, Улаан, Цагаан" className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
-                    <span className="mt-2 block text-xs leading-5 text-slate-500">Жишээ: Хар, Улаан, Цагаан</span>
+                    <input placeholder="Жишээ: Хар, Улаан, Цагаан" className="mt-1.5 w-full rounded-2xl border border-slate-200 px-3 py-3 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
+                    <span className="mt-1.5 block text-xs leading-5 text-slate-500">Жишээ: Хар, Улаан, Цагаан</span>
                   </label>
 
                   <label className="block">
                     <span className="text-sm font-bold text-slate-700">Өнгө/размер бүрийн үлдэгдэл</span>
-                    <textarea className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
-                    <span className="mt-2 block text-xs leading-5 text-slate-500">{newProductStockExample}</span>
+                    <textarea className="mt-1.5 min-h-24 w-full rounded-2xl border border-slate-200 px-3 py-3 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
+                    <span className="mt-1.5 block text-xs leading-5 text-slate-500">{newProductStockExample}</span>
                   </label>
                 </div>
-              </div>
+              </section>
 
-              <button onClick={addБараа} className="w-full rounded-2xl bg-blue-600 px-5 py-4 text-base font-bold text-white hover:bg-blue-700">
+              <button onClick={addБараа} className="w-full rounded-2xl bg-blue-600 px-5 py-3.5 text-base font-bold text-white hover:bg-blue-700">
                 Бараа нэмэх
               </button>
             </div>
