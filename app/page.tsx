@@ -130,15 +130,24 @@ const CATEGORY_LABELS: Record<ProductCategory, string> = {
   'handmade-other': 'Гар урлал / Бусад',
 }
 
-const PRODUCT_FILTER_OPTIONS: Array<{ value: ProductCategory | 'all'; label: string }> = [
+type ProductFilterCategory = 'all' | 'clothing' | 'shoes' | 'bag-accessory' | 'other'
+
+const PRODUCT_FILTER_OPTIONS: Array<{ value: ProductFilterCategory; label: string }> = [
   { value: 'all', label: 'Бүгд' },
   { value: 'clothing', label: 'Хувцас' },
   { value: 'shoes', label: 'Гутал' },
   { value: 'bag-accessory', label: 'Цүнх / Аксессуар' },
-  { value: 'beauty', label: 'Гоо сайхан' },
-  { value: 'kids-baby', label: 'Хүүхэд / Нярай' },
-  { value: 'home', label: 'Гэр ахуй' },
-  { value: 'handmade-other', label: 'Гар урлал / Бусад' },
+  { value: 'other', label: 'Бусад' },
+]
+
+const OTHER_PRODUCT_CATEGORIES: ProductCategory[] = [
+  'beauty',
+  'home',
+  'kitchen',
+  'kids-baby',
+  'food-packaged',
+  'electronics-small',
+  'handmade-other',
 ]
 
 const SIZE_TEMPLATE_LABELS: Record<РазмерTemplate, string> = {
@@ -1070,7 +1079,8 @@ export default function LiveShopManagerDemo() {
     variantStock: '',
   })
   const [language, setLanguage] = useState<'mn' | 'en'>('mn')
-  const [productFilterCategory, setProductFilterCategory] = useState<ProductCategory | 'all'>('all')
+  const [productFilterCategory, setProductFilterCategory] = useState<ProductFilterCategory>('all')
+  const [otherProductCategory, setOtherProductCategory] = useState<ProductCategory | 'all'>('all')
   const [selectedOnboardingStep, setSelectedOnboardingStep] = useState(1)
   const [reservationTimeoutMinutes, setReservationTimeoutMinutes] = useState(DEFAULT_RESERVATION_TIMEOUT_MINUTES)
   const [customReservationTimeout, setCustomReservationTimeout] = useState(String(DEFAULT_RESERVATION_TIMEOUT_MINUTES))
@@ -1288,7 +1298,24 @@ export default function LiveShopManagerDemo() {
   }, [])
 
   const activeБараа = products.find((product) => product.code === activeБарааCode) || products[0]
-  const filteredProducts = productFilterCategory === 'all' ? products : products.filter((product) => product.category === productFilterCategory)
+  const filteredProducts = products.filter((product) => {
+    if (productFilterCategory === 'all') return true
+    if (productFilterCategory === 'other') {
+      return otherProductCategory === 'all'
+        ? OTHER_PRODUCT_CATEGORIES.includes(product.category)
+        : product.category === otherProductCategory
+    }
+    return product.category === productFilterCategory
+  })
+  const productSummary = {
+    totalProducts: products.length,
+    totalStock: products.reduce((sum, product) => sum + totalStock(product), 0),
+    activeProducts: activeБараа ? 1 : 0,
+    outOfStockVariants: products.reduce(
+      (sum, product) => sum + product.variants.filter((variant) => variant.үлдэгдэл <= 0).length,
+      0,
+    ),
+  }
   const pendingOrders = orders.filter((order) => order.status === 'Хүлээгдэж буй')
   const paidOrders = orders.filter((order) => order.status === 'Төлсөн')
   const revenue = paidOrders.reduce((sum, order) => sum + order.amount, 0)
@@ -1597,7 +1624,7 @@ export default function LiveShopManagerDemo() {
       nextProduct,
     ])
     setActiveБарааCode(code)
-    setNewБараа({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', colors: '', variantStock: '' })
+    setNewБараа({ code: '', name: '', price: '', sizeTemplate: 'women-clothing', category: 'clothing', colors: '', variantStock: '' })
   }
 
   function parseComments() {
@@ -2562,61 +2589,166 @@ export default function LiveShopManagerDemo() {
 
         {activeView === 'products' && (
           <>
-        <section id="products" className="grid gap-5 lg:grid-cols-2">
+        <section id="products" className="space-y-5">
           <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Бүтээгдэхүүн</h2>
-            <div className="mt-4 space-y-3">
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                <div className="flex flex-wrap gap-2">
-                  {PRODUCT_FILTER_OPTIONS.map((filterOption) => (
-                    <button
-                      key={filterOption.value}
-                      type="button"
-                      onClick={() => setProductFilterCategory(filterOption.value)}
-                      className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${productFilterCategory === filterOption.value ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-700'}`}
-                    >
-                      {filterOption.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-sm text-slate-500">Сонгосон ангилал: {CATEGORY_LABELS[productFilterCategory] ?? 'Бүгд'}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="text-3xl font-black text-slate-950">Бараа</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                  Live-д зарах бараагаа код, үнэ, өнгө, размер, үлдэгдлээр бүртгэнэ.
+                </p>
               </div>
-              {filteredProducts.map((product) => (
-                <div key={product.code} className="rounded-2xl border border-slate-200 p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-xl font-black">{product.code} — {product.name}</p>
-                        <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
-                          {CATEGORY_LABELS[product.category]}
-                        </span>
-                      </div>
-                      <p className="text-slate-600">{money(product.price)} • үлдэгдэл {totalStock(product)} • {SIZE_TEMPLATE_LABELS[product.sizeTemplate]}</p>
-                      <p className="mt-1 text-sm text-slate-500">Өнгө: {product.colors.join(', ')}</p>
-                      <p className="mt-2 text-xs text-slate-500">
-                        {product.variants.map((variant) => `${variant.color}/${variant.size}: ${variant.үлдэгдэл}`).join(' • ')}
-                      </p>
-                    </div>
-                    <button onClick={() => setActiveБарааCode(product.code)} className={`rounded-2xl px-5 py-3 font-bold ${activeБарааCode === product.code ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
-                      {activeБарааCode === product.code ? 'Идэвхтэй' : 'Идэвхтэй болгох'}
-                    </button>
-                  </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {[
+                ['Нийт бараа', productSummary.totalProducts],
+                ['Нийт үлдэгдэл', productSummary.totalStock],
+                ['Одоо зарагдаж буй бараа', productSummary.activeProducts],
+                ['Нөөц дууссан variant', productSummary.outOfStockVariants],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+                  <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <input className="rounded-2xl border p-4" placeholder="Код: C03" value={newБараа.code} onChange={(e) => setNewБараа({ ...newБараа, code: e.target.value })} />
-              <input className="rounded-2xl border p-4" placeholder="Нэр" value={newБараа.name} onChange={(e) => setNewБараа({ ...newБараа, name: e.target.value })} />
-              <input className="rounded-2xl border p-4" placeholder="Үнэ" type="number" value={newБараа.price} onChange={(e) => setNewБараа({ ...newБараа, price: e.target.value })} />
-              <select className="rounded-2xl border p-4" value={newБараа.sizeTemplate} onChange={(e) => setNewБараа({ ...newБараа, sizeTemplate: e.target.value as РазмерTemplate })}>
-                {SELLER_SIZE_TEMPLATE_OPTIONS.map((template) => (
-                  <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <div className="flex flex-col gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-950">Барааны жагсаалт</h3>
+                <p className="mt-1 text-sm text-slate-500">Ангиллаар шүүж, одоо зарагдаж буй бараагаа сонгоно.</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {PRODUCT_FILTER_OPTIONS.map((filterOption) => (
+                  <button
+                    key={filterOption.value}
+                    type="button"
+                    onClick={() => {
+                      setProductFilterCategory(filterOption.value)
+                      if (filterOption.value !== 'other') setOtherProductCategory('all')
+                    }}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-bold transition ${productFilterCategory === filterOption.value ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-blue-50 hover:text-blue-700'}`}
+                  >
+                    {filterOption.label}
+                  </button>
                 ))}
-              </select>
-              <div className="rounded-2xl border p-4">
-                <label className="block text-sm font-semibold text-slate-900">Барааны ангилал</label>
+              </div>
+
+              {productFilterCategory === 'other' && (
+                <div className="max-w-sm">
+                  <label className="mb-1 block text-xs font-bold text-slate-500">Бусад ангилал</label>
+                  <select
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                    value={otherProductCategory}
+                    onChange={(e) => setOtherProductCategory(e.target.value as ProductCategory | 'all')}
+                  >
+                    <option value="all">Бүгд</option>
+                    {OTHER_PRODUCT_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>{CATEGORY_LABELS[category]}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              {filteredProducts.map((product) => {
+                const visibleVariants = product.variants.slice(0, 4)
+                const hiddenVariantCount = Math.max(product.variants.length - visibleVariants.length, 0)
+                return (
+                  <div key={product.code} className="rounded-2xl border border-slate-200 p-4">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-mono text-sm font-black text-slate-950">{product.code}</p>
+                            <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">
+                              {CATEGORY_LABELS[product.category]}
+                            </span>
+                            {activeБарааCode === product.code && (
+                              <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700">Идэвхтэй</span>
+                            )}
+                          </div>
+                          <h4 className="mt-1 truncate text-xl font-black text-slate-950">{product.name}</h4>
+                        </div>
+                        <button
+                          onClick={() => setActiveБарааCode(product.code)}
+                          className={`w-full rounded-xl px-3 py-2 text-sm font-bold sm:w-auto ${activeБарааCode === product.code ? 'bg-emerald-600 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}
+                        >
+                          {activeБарааCode === product.code ? 'Идэвхтэй' : 'Одоо зарагдаж буй болгох'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="rounded-2xl bg-slate-50 p-3">
+                          <p className="text-xs font-bold text-slate-500">Үнэ</p>
+                          <p className="mt-1 font-black text-slate-950">{money(product.price)}</p>
+                        </div>
+                        <div className="rounded-2xl bg-slate-50 p-3">
+                          <p className="text-xs font-bold text-slate-500">Үлдэгдэл</p>
+                          <p className="mt-1 font-black text-slate-950">{totalStock(product)}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-bold text-slate-500">Өнгө</p>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          {product.colors.map((color) => (
+                            <span key={color} className="rounded-full border border-slate-200 px-2 py-1 text-xs font-semibold text-slate-700">{color}</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-bold text-slate-500">Размер / үлдэгдэл</p>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          {visibleVariants.map((variant) => (
+                            <span key={`${product.code}-${variant.color}-${variant.size}`} className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                              {variant.color}/{variant.size}: {variant.үлдэгдэл}
+                            </span>
+                          ))}
+                          {hiddenVariantCount > 0 && (
+                            <span className="rounded-full bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-500">+{hiddenVariantCount} мөр</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+
+              {filteredProducts.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-sm font-semibold text-slate-500 lg:col-span-2">
+                  Энэ ангилалд тохирох бараа одоогоор алга.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <h3 className="text-2xl font-black text-slate-950">Шинэ бараа нэмэх</h3>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-bold text-slate-700">Барааны код</span>
+                <input className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.code} onChange={(e) => setNewБараа({ ...newБараа, code: e.target.value })} />
+              </label>
+              <label className="block">
+                <span className="text-sm font-bold text-slate-700">Барааны нэр</span>
+                <input className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.name} onChange={(e) => setNewБараа({ ...newБараа, name: e.target.value })} />
+              </label>
+              <label className="block">
+                <span className="text-sm font-bold text-slate-700">Үнэ</span>
+                <input className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" type="number" value={newБараа.price} onChange={(e) => setNewБараа({ ...newБараа, price: e.target.value })} />
+              </label>
+
+              <div className="rounded-2xl border border-slate-200 p-4">
+                <label className="block text-sm font-bold text-slate-700">Барааны ангилал</label>
                 <select
-                  className="mt-3 w-full rounded-2xl border px-3 py-3 text-sm"
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                   value={newБараа.category}
                   onChange={(e) => setNewБараа({ ...newБараа, category: e.target.value as ProductCategory })}
                 >
@@ -2624,20 +2756,38 @@ export default function LiveShopManagerDemo() {
                     <option key={key} value={key}>{label}</option>
                   ))}
                 </select>
-                <p className="mt-2 text-xs text-slate-500">Ангилал нь барааг ялгана. Размерын төрөл тусдаа сонгогдоно.</p>
+                <p className="mt-2 text-xs leading-5 text-slate-500">Ангилал нь бараагаа бүлэглэхэд хэрэглэгдэнэ.</p>
               </div>
-              <input className="rounded-2xl border p-4 sm:col-span-2" placeholder="Өнгө: Хар, Улаан, Цагаан" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
-              <textarea className="min-h-24 rounded-2xl border p-4 sm:col-span-2" placeholder="Үлдэгдэл: Хар/S:1, Хар/M:2, Улаан/L:2" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
-              <button onClick={addБараа} className="rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white hover:bg-blue-700 sm:col-span-2">Бүтээгдэхүүн нэмэх</button>
-            </div>
-          </div>
 
-          <div className="rounded-3xl bg-white p-5 shadow-sm">
-            <h2 className="text-2xl font-black">Нөөц горим: Лайв коммент гараар оруулах</h2>
-          <p className="mt-1 text-sm text-slate-500">Үндсэн урсгал нь жишээ live коммент. Энэ хэсэг нь нэмэлт гараар оруулах арга.</p>
-            <p className="mt-1 text-sm text-slate-500">Жишээ: Болор: A12 хар M авъя • Сараа: A12 хар 3XL авъя • Номин: C01 цагаан 42 авъя • E01 цагаан 28 авъя • F01 хар 32 2ш</p>
-            <textarea className="mt-4 min-h-44 w-full rounded-2xl border p-4 text-base" value={commentPaste} onChange={(e) => setCommentPaste(e.target.value)} />
-            <button onClick={parseComments} className="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-lg font-bold text-white">Комментоос захиалга үүсгэх</button>
+              <div className="rounded-2xl border border-blue-100 bg-blue-50/40 p-4">
+                <label className="block text-sm font-bold text-slate-700">Размерын төрөл</label>
+                <select
+                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
+                  value={newБараа.sizeTemplate}
+                  onChange={(e) => setNewБараа({ ...newБараа, sizeTemplate: e.target.value as РазмерTemplate })}
+                >
+                  {SELLER_SIZE_TEMPLATE_OPTIONS.map((template) => (
+                    <option key={template} value={template}>{SIZE_TEMPLATE_LABELS[template]}</option>
+                  ))}
+                </select>
+                <p className="mt-2 text-xs leading-5 text-slate-500">Размерын төрөл нь тухайн барааны size сонголтыг тодорхойлно.</p>
+              </div>
+
+              <label className="block">
+                <span className="text-sm font-bold text-slate-700">Өнгө</span>
+                <input className="mt-2 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.colors} onChange={(e) => setNewБараа({ ...newБараа, colors: e.target.value })} />
+              </label>
+
+              <label className="block sm:col-span-2">
+                <span className="text-sm font-bold text-slate-700">Өнгө/размер бүрийн үлдэгдэл</span>
+                <textarea className="mt-2 min-h-24 w-full rounded-2xl border border-slate-200 p-4 outline-none focus:border-blue-300 focus:ring-4 focus:ring-blue-100" value={newБараа.variantStock} onChange={(e) => setNewБараа({ ...newБараа, variantStock: e.target.value })} />
+                <span className="mt-2 block text-xs leading-5 text-slate-500">Жишээ: Хар/S:1, Хар/M:2, Улаан/L:2</span>
+              </label>
+
+              <button onClick={addБараа} className="rounded-2xl bg-blue-600 px-5 py-4 text-base font-bold text-white hover:bg-blue-700 sm:col-span-2">
+                Шинэ бараа нэмэх
+              </button>
+            </div>
           </div>
         </section>
           </>
