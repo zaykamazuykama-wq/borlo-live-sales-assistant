@@ -668,8 +668,20 @@ function getPaymentStatusLabel(status?: PaymentStatus) {
   return 'Төлөв тодорхойгүй'
 }
 
+type LandingSection = 'home' | 'how' | 'features' | 'pricing' | 'faq' | 'contact'
+
 function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard: () => void }) {
+  const [selectedLandingSection, setSelectedLandingSection] = useState<LandingSection>('home')
   const [selectedStep, setSelectedStep] = useState(1)
+
+  const landingNavItems: { key: LandingSection; label: string }[] = [
+    { key: 'home', label: 'Нүүр' },
+    { key: 'how', label: 'Яаж ажилладаг' },
+    { key: 'features', label: 'Боломжууд' },
+    { key: 'pricing', label: 'Үнэ' },
+    { key: 'faq', label: 'Асуулт' },
+    { key: 'contact', label: 'Холбоо барих' },
+  ]
 
   const onboardingSteps = [
     {
@@ -706,17 +718,16 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
 
   return (
     <main id="landing" className="min-h-screen overflow-x-hidden bg-white text-zinc-900">
-      <header className="sticky top-0 z-50 border-b border-blue-100/80 bg-white/85 shadow-sm shadow-blue-950/5 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <a href="#landing" className="shrink-0 rounded-2xl bg-zinc-950 px-3 py-2 text-xl font-black text-white shadow-lg shadow-blue-950/10">Borlo</a>
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-zinc-600 lg:flex">
-            <a href="#landing" className="transition hover:text-blue-600">Нүүр</a>
-            <a href="#landing-how" className="transition hover:text-blue-600">Яаж ажилладаг</a>
-            <a href="#landing-features" className="transition hover:text-blue-600">Боломжууд</a>
-            <a href="#landing-pricing" className="transition hover:text-blue-600">Үнэ</a>
-            <a href="#landing-faq" className="transition hover:text-blue-600">FAQ</a>
-            <a href="#landing-contact" className="transition hover:text-blue-600">Холбоо барих</a>
-          </nav>
+      <header className="sticky top-0 z-50 border-b border-blue-100/80 bg-white/90 shadow-sm shadow-blue-950/5 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => setSelectedLandingSection('home')}
+            className="shrink-0 rounded-2xl bg-zinc-950 px-3 py-2 text-xl font-black text-white shadow-lg shadow-blue-950/10"
+          >
+            Borlo
+          </button>
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
@@ -733,10 +744,31 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
               1 live үнэгүй
             </button>
           </div>
+          </div>
+          <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 text-sm font-bold text-zinc-600 sm:flex-wrap sm:overflow-visible">
+            {landingNavItems.map((item) => {
+              const isActive = selectedLandingSection === item.key
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => setSelectedLandingSection(item.key)}
+                  className={`shrink-0 rounded-full px-3 py-2 transition active:scale-[0.98] ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                      : 'bg-white text-zinc-600 ring-1 ring-zinc-200 hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-200'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )
+            })}
+          </nav>
         </div>
       </header>
 
-      <section className="relative isolate bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.18),transparent_32rem),linear-gradient(180deg,#eff6ff_0%,#ffffff_48%,#ffffff_100%)] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      {selectedLandingSection === 'home' && (
+      <section className="relative isolate bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.18),transparent_32rem),linear-gradient(180deg,#eff6ff_0%,#ffffff_48%,#ffffff_100%)] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
         <div className="pointer-events-none absolute left-1/2 top-10 -z-10 h-72 w-72 -translate-x-1/2 rounded-full bg-blue-300/30 blur-3xl sm:h-96 sm:w-96" />
         <div className="pointer-events-none absolute right-0 top-24 -z-10 hidden h-80 w-80 rounded-full bg-cyan-200/35 blur-3xl lg:block" />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
@@ -759,12 +791,13 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
               >
                 1 live үнэгүй турших
               </button>
-              <a
-                href="#landing-how"
+              <button
+                type="button"
+                onClick={() => setSelectedLandingSection('how')}
                 className="rounded-2xl border border-zinc-200 bg-white/90 px-6 py-4 text-center text-base font-bold text-zinc-900 shadow-lg shadow-zinc-200/60 backdrop-blur transition hover:border-blue-200 hover:text-blue-700 active:scale-[0.98]"
               >
                 Яаж ажилладгийг харах
-              </a>
+              </button>
             </div>
             <div className="mt-6 grid max-w-2xl gap-3 sm:grid-cols-3">
               {['Карт шаардахгүй', '5 минутанд эхэлнэ', 'Comment-оо гараар нааж туршина'].map((badge) => (
@@ -859,7 +892,136 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
           </div>
         </div>
       </section>
+      )}
 
+      {selectedLandingSection === 'how' && (
+        <section className="border-y border-blue-100 bg-gradient-to-b from-white to-zinc-50 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-3xl">
+              <p className="text-sm font-black uppercase tracking-wide text-blue-600">Яаж ажилладаг</p>
+              <h2 className="mt-3 text-3xl font-black text-zinc-950 sm:text-4xl">Live setup 3 алхамтай</h2>
+              <p className="mt-4 text-lg leading-8 text-zinc-600">Seller өдөр тутмын live workflow-оо comment paste fallback-аар шууд туршиж, дараа нь pilot холболтуудыг тусад нь шалгана.</p>
+            </div>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {[
+                ['1', 'Бараагаа нэмнэ', 'Код, үнэ, өнгө, размер, үлдэгдлээ бүртгээд live-д зарах бараагаа бэлдэнэ.'],
+                ['2', 'Коммент-оо наана', 'Live дээр ирсэн “A12 хар M авъя” гэх мэт комментоо нааж захиалга үүсгэнэ.'],
+                ['3', 'Баглах жагсаалтаа гаргана', 'Төлбөрийн төлөвөө шалгаад баглаа боодлын жагсаалтаа гаргана.'],
+              ].map(([step, title, detail]) => (
+                <div key={step} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/70">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-lg shadow-blue-600/25">{step}</span>
+                  <h3 className="mt-5 text-xl font-black text-zinc-950">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedLandingSection === 'features' && (
+        <section className="bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <p className="text-sm font-black uppercase tracking-wide text-blue-600">Боломжууд</p>
+            <h2 className="mt-3 text-3xl font-black text-zinc-950 sm:text-4xl">Live seller-д хэрэгтэй үндсэн workflow</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                ['Комментоос захиалга', 'Comment paste fallback-аар барааны код, өнгө, размер уншиж захиалга үүсгэнэ.'],
+                ['Төлбөрийн төлөв', 'Төлсөн, хүлээгдэж буй, шалгах шаардлагатай төлбөрөө ялгаж харна.'],
+                ['Нөөцийн хяналт', 'Захиалга болон үлдэгдлийн мэдээллээ нэг самбар дээр хянана.'],
+                ['Барааны ангилал', 'Бараагаа хувцас, гутал, аксессуар зэрэг бүлгээр цэгцэлнэ.'],
+                ['Баглаа боодол', 'Төлбөр нь тодорхой болсон захиалгуудаа баглах жагсаалт болгоно.'],
+                ['Тайлан', 'Live хаах тайлан, баримттай эрэлтийн тайлангаа харна.'],
+              ].map(([feature, detail]) => (
+                <div key={feature} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-200/60 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-blue-100">
+                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20" />
+                  <p className="mt-5 text-lg font-black text-zinc-950">{feature}</p>
+                  <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedLandingSection === 'pricing' && (
+        <section className="bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.10),transparent_30rem),linear-gradient(180deg,#f8fafc,#ffffff)] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <p className="text-sm font-black uppercase tracking-wide text-blue-600">Үнэ</p>
+            <h2 className="mt-3 text-3xl font-black text-zinc-950 sm:text-4xl">Live бүрийн хэмжээнд тааруулж сонгоно</h2>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ['1 live үнэгүй', '0₮', 'Эхний live дээр workflow турших'],
+                ['Нэг live/campaign pass', '14,900₮', 'Нэг live эсвэл нэг campaign-д ашиглах'],
+                ['Monthly', '79,000₮', 'Сар бүрийн тогтмол live workflow'],
+                ['Pro', '149,000₮', 'Илүү олон live болон seller tools'],
+              ].map(([title, price, detail], index) => (
+                <div
+                  key={title}
+                  className={`rounded-3xl border bg-white p-6 shadow-xl ${index === 1 ? 'border-blue-200 shadow-blue-100 lg:scale-105' : 'border-zinc-200 shadow-zinc-200/60'}`}
+                >
+                  <p className="text-lg font-black text-zinc-950">{title}</p>
+                  <p className="mt-4 text-4xl font-black text-zinc-950">{price}</p>
+                  <p className="mt-3 text-sm leading-7 text-zinc-600">{detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedLandingSection === 'faq' && (
+        <section className="bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+          <div className="mx-auto max-w-4xl">
+            <p className="text-sm font-black uppercase tracking-wide text-blue-600">Асуулт</p>
+            <h2 className="mt-3 text-3xl font-black text-zinc-950 sm:text-4xl">Түгээмэл асуулт</h2>
+            <div className="mt-8 space-y-3">
+              {[
+                ['Facebook-тэй шууд холбогдсон уу?', 'Facebook live comment холболтыг controlled demo/pilot байдлаар туршина. Comment paste fallback хэвээр байна. Public production холболтод Meta/OAuth зөвшөөрөл шаардлагатай.'],
+                ['Gmail payment notification гэж юу вэ?', 'Gmail payment notification унших pilot холболтоор төлбөрийн мөр гаргана. Төлбөр тулгах workflow rule-based хэвээр байна.'],
+                ['TikTok/Instagram ажилладаг уу?', 'Одоогоор TikTok/Instagram active integration байхгүй. Borlo Facebook-first workflow дээр төвлөрсөн.'],
+                ['Миний бараа размергүй бол яах вэ?', 'Размергүй бараанд нэг размер эсвэл Free size сонголт ашиглаж болно.'],
+                ['Нэг live үнэгүй юу?', 'Тийм. Эхний 1 live үнэгүй туршиж workflow-оо шалгаж болно.'],
+              ].map(([question, answer]) => (
+                <details key={question} className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-lg shadow-zinc-200/60">
+                  <summary className="cursor-pointer text-base font-black text-zinc-950">{question}</summary>
+                  <p className="mt-3 text-sm leading-7 text-zinc-600">{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {selectedLandingSection === 'contact' && (
+        <section className="relative isolate overflow-hidden bg-zinc-950 px-4 py-14 text-white sm:px-6 sm:py-16 lg:px-8">
+          <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/30 blur-3xl" />
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-sm font-black uppercase tracking-wide text-blue-200">Холбоо барих</p>
+            <h2 className="mt-3 text-3xl font-black sm:text-4xl">Дараагийн live-аа Borlo дээр туршаад үз</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-zinc-300">Эхний 1 live үнэгүй туршиж, жишээ өгөгдөлтэй dashboard workflow-г шууд харж болно.</p>
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={onDemo}
+                className="rounded-2xl bg-blue-500 px-7 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/30 ring-1 ring-white/10 transition hover:bg-blue-400 active:scale-[0.98]"
+              >
+                Эхний 1 live үнэгүй турших
+              </button>
+              <button
+                type="button"
+                onClick={onDashboard}
+                className="rounded-2xl border border-white/15 bg-white/10 px-7 py-4 text-base font-bold text-white shadow-xl shadow-black/20 transition hover:bg-white/15 active:scale-[0.98]"
+              >
+                Жишээ өгөгдөлтэй харах
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {false && (
+      <>
       <section className="border-y border-blue-100 bg-gradient-to-b from-white to-zinc-50 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
@@ -1034,6 +1196,8 @@ function LandingPage({ onDemo, onDashboard }: { onDemo: () => void; onDashboard:
           </button>
         </div>
       </section>
+      </>
+      )}
 
       <footer className="bg-zinc-950 px-4 pb-10 text-white sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
